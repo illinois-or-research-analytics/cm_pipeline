@@ -1,0 +1,13 @@
+2023-02-13 01:37:10,802 - __main__ - DEBUG - Program started
+2023-02-13 01:37:46,952 - __main__ - DEBUG - Program started
+2023-02-13 01:37:46,952 - __main__ - ERROR - An error occured in the CM Workflow: 'resolutions'
+2023-02-13 01:38:11,266 - __main__ - DEBUG - Program started
+2023-02-13 01:38:11,267 - __main__ - ERROR - An error occured in the CM Workflow: 'resolutions'
+Traceback (most recent call last):
+  File "/Users/vkpailodi/Work/Github/cm_pipeline/main.py", line 50, in <module>
+    cm_workflow = Workflow(config)
+  File "/Users/vkpailodi/Work/Github/cm_pipeline/source/workflow.py", line 18, in __init__
+    clustering = Clustering(config.items('clustering'))
+  File "/Users/vkpailodi/Work/Github/cm_pipeline/source/stage.py", line 36, in __init__
+    self. resolutions = self.config['resolutions'].split(',')
+KeyError: 'resolutions'
