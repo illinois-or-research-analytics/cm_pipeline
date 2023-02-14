@@ -1,37 +1,29 @@
 from argparse import ArgumentParser
 from source.workflow import Workflow
 import configparser
+from datetime import datetime
 import logging
+import logging.config
 import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) 
-LOG_FILE = os.path.join(ROOT_DIR, 'cm_pipeline.log')
+LOG_CONFIG = os.path.join(ROOT_DIR, 'log.config')
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
 
-def setup_logger(log_file):
-    #instantiate root logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+def setup_logger():
 
-    # Create handlers
-    c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler(LOG_FILE)
+    os.makedirs(LOG_DIR, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
+    log_file_name = os.path.join(LOG_DIR, f"cm_pipeline_{timestamp}.log")
 
-    c_handler.setLevel(logging.DEBUG)
-    f_handler.setLevel(logging.DEBUG)
+    logging.config.fileConfig(
+        LOG_CONFIG,
+        disable_existing_loggers=False,
+        defaults={"logfilename": log_file_name},
+    )
 
-    # Create formatters and add it to handlers
-    c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    c_handler.setFormatter(c_format)
-    f_handler.setFormatter(f_format)
-
-    logger.addHandler(c_handler)
-    logger.addHandler(f_handler)
-
-    return logger
-    
 if __name__ == "__main__":
-    setup_logger(LOG_FILE)
+    setup_logger()
 
     logger = logging.getLogger(__name__)
     

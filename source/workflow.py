@@ -1,4 +1,5 @@
-from source.stage import Cleanup, Clustering
+from source.cleanup import Cleanup
+from source.clustering import Clustering
 import logging
 
 # Create a custom logger
