@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 def run(cmd_list, check_errors= True):
     try:
-        # ToDo: Uncomment this while testing on Valhalla 
-        # subprocess.run(cmd_list, check=check_errors)
         logger.info(f"Executing {' '.join(cmd_list)}")
+        subprocess.run(cmd_list, check=check_errors)
+        
     except FileNotFoundError as exc:
         error_msg = f"Process failed because the executable could not be found.\n{exc}"
         logger.error(error_msg)
@@ -21,3 +21,4 @@ def run(cmd_list, check_errors= True):
                         Returned {exc.returncode}\n{exc}"
         logger.error(error_msg)
         raise subprocess.CalledProcessError(error_msg)
+

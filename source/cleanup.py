@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 class Cleanup(Stage):
     def __init__(self, config_params):
         super().__init__(config_params)
-        # Todo: replace placeholder with a fixed output file name
+        # Todo: replace placeholder with a fixed output file name at the end
+        os.makedirs(self.config['outputdir'], exist_ok=True)
         self.output_file = os.path.join(self.config['outputdir'], f"network_name_{time.strftime('%Y%m%d-%H%M%S')}.tsv")
 
     def execute(self):

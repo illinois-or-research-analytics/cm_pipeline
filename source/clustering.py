@@ -11,8 +11,9 @@ class Clustering(Stage):
         super().__init__(config)
         
          # Todo: replace placeholder with a fixed output file name
+        os.makedirs(self.config['outputdir'], exist_ok=True)
         self.output_file = os.path.join(self.config['outputdir'], f"placeholder_{time.strftime('%Y%m%d-%H%M%S')}.tsv")
-        self. resolutions = self.config['resolution'].split(',')
+        self.resolutions = self.config['resolution'].split(',')
     
     def execute(self):
         for resolution in self.resolutions:
