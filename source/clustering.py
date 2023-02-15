@@ -18,5 +18,5 @@ class Clustering(Stage):
     def execute(self):
         for resolution in self.resolutions:
             logger.info("Executing Leiden with resolution %s", resolution)
-            cmd = ["run_leiden", "-i", self.config['inputfile'], "-r", resolution, "-o", self.output_file]
+            cmd = ["runleiden", "-i", self.config['inputfile'], "-r", resolution, "-o", self.output_file]
             run(cmd)
