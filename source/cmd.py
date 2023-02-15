@@ -20,5 +20,5 @@ def run(cmd_list, check_errors= True):
         error_msg = f"Process failed because did not return a successful return code. \
                         Returned {exc.returncode}\n{exc}"
         logger.error(error_msg)
-        raise subprocess.CalledProcessError(error_msg)
+        raise subprocess.CalledProcessError(cmd_list,error_msg)
 
