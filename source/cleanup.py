@@ -8,7 +8,7 @@ from string import Template
 
 logger = logging.getLogger(__name__)
 
-OUTPUT_FILE_NAME = '$network_name$sepcleaned.tsv'
+OUTPUT_FILE_NAME = '${network_name}_cleaned.tsv'
 
 class Cleanup(Stage):
     def __init__(self, config_params, network_name, output_dir):
@@ -18,7 +18,7 @@ class Cleanup(Stage):
     
     def _get_output_file_name_from_template(self, template_str):
         template =  Template(template_str)
-        output_file_name = template.substitute(network_name = self.network_name, sep='_')
+        output_file_name = template.substitute(network_name = self.network_name)
         return output_file_name
     
     def execute(self):

@@ -8,7 +8,7 @@ from string import Template
 
 logger = logging.getLogger(__name__)
 
-OUTPUT_FILE_NAME = "$network_name$sep_u$algorithm$sep_d$resolution.tsv"
+OUTPUT_FILE_NAME = "${network_name}_${algorithm}.${resolution}.tsv"
 
 class Clustering(Stage):
     def __init__(self, config_params, network_name, output_dir):
@@ -23,8 +23,6 @@ class Clustering(Stage):
         template =  Template(template_str)
         output_file_name = template.substitute(network_name = self.network_name,
                                                algorithm = self.config[ALGORITHM_KEY], 
-                                               sep_u='_',
-                                               sep_d='.',
                                                resolution=resolution)
         return output_file_name
     
