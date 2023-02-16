@@ -1,5 +1,6 @@
 from source.cleanup import Cleanup
 from source.clustering import Clustering
+from source.filtering import Filtering
 from source.constants import *
 import logging
 
@@ -19,6 +20,10 @@ class Workflow:
         if config.has_section(CLUSTERING_SECTION):
             clustering = Clustering(config.items(CLUSTERING_SECTION))
             self.stages.append(clustering)
+        
+        if config.has_section(FILTERING_SECTION):
+            filtering = (config.items(FILTERING_SECTION))
+            self.stages.append(filtering)
 
     def run(self):
         hostlogger.info("Starting the CM Workflow..")

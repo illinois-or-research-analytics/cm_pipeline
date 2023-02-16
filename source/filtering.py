@@ -7,7 +7,7 @@ from source.constants import *
 
 logger = logging.getLogger(__name__)
 
-class Cleanup(Stage):
+class Filtering(Stage):
     def __init__(self, config_params):
         super().__init__(config_params)
         os.makedirs(self.config[OUTPUT_DIR_KEY], exist_ok=True)
@@ -15,6 +15,6 @@ class Cleanup(Stage):
         self.output_file = os.path.join(self.config[OUTPUT_DIR_KEY], f"placeholder_{time.strftime('%Y%m%d-%H%M%S')}.tsv")
 
     def execute(self):
-        logger.info("Removing duplicate rows, parallel edges, and self-loops")
-        cmd = ["Rscript", self.config[SCRIPT_KEY], self.config[INPUT_FILE_KEY], self.output_file ]
+        logger.info("Filtering to get clusters with N>10 and non-trees")
+        cmd = ["Rscript", self.config[SCRIPT_KEY], self.config[INPUT_FILE_KEY], self.config[CLUSTERINGFILE_KEY, self.config[OUTPUTFILETAG_KEY]] ]
         run(cmd)
