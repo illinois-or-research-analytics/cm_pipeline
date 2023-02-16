@@ -22,7 +22,7 @@ class Workflow:
             self.stages.append(clustering)
         
         if config.has_section(FILTERING_SECTION):
-            filtering = (config.items(FILTERING_SECTION))
+            filtering = Filtering(config.items(FILTERING_SECTION))
             self.stages.append(filtering)
 
     def run(self):
