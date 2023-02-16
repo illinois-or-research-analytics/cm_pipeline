@@ -1,0 +1,4 @@
+[tools]
+ikc_path = "{project_root}/hm01/tools/ikc.py"
+leiden_path = ""
+viecut_path = "{project_root}/hm01/tools/mincut"

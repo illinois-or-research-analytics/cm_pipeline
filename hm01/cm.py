@@ -7,21 +7,29 @@ from typing import List, Optional, Tuple, Union, Dict, Deque, cast
 import math
 import time
 from collections import deque
-from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from hm01.clusterers.leiden_wrapper import LeidenClusterer, Quality
 from itertools import chain
 import treeswift as ts
 import networkit as nk
 from structlog import get_logger
 import jsonpickle
+
 from hm01.clusterers.abstract_clusterer import AbstractClusterer
 from hm01.clusterers.ikc_wrapper import IkcClusterer
+from hm01.clusterers.leiden_wrapper import LeidenClusterer, Quality
 from hm01.context import context
 from hm01.mincut_requirement import MincutRequirement
-from hm01.pruner import prune_graph
+from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
+#from hm01.pruner import prune_graph
+
 import sys
 import sqlite3
 import pickle as pkl
+
+class ClustererSpec(str, Enum):
+    """ Container for Clusterer Specification """  
+    leiden = "leiden"
+    ikc = "ikc"
+    leiden_mod = "leiden_mod"
 
 def algorithm_g(global_graph: Graph,
     graphs: List[IntangibleSubgraph],
