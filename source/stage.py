@@ -9,11 +9,8 @@ class Stage(object):
         self.config = dict(config)
         self.network_name = network_name
         self.output_dir = output_dir
-        
         self._check_paths()
-        os.makedirs(self.output_dir, exist_ok=True)
         
-    
     def execute(self):
         
         raise NotImplementedError("Implement the execute function in each subclass")
@@ -26,8 +23,12 @@ class Stage(object):
         """
         1. Checks the input and output paths for ~ in the paths and replace it with user home directory.
         """
-        path_keys = [INPUT_FILE_KEY, OUTPUT_DIR_KEY, SCRIPT_KEY, CLUSTERING_FILE_KEY]
+        # default dir
+        self.output_dir = os.path.expanduser(self.output_dir)
+        os.makedirs(self.output_dir, exist_ok=True)
 
+        # other paths in config file
+        path_keys = [INPUT_FILE_KEY, SCRIPT_KEY, CLUSTERING_FILE_KEY]
         for key in path_keys:
             if key in self.config:
                 self.config[key] = os.path.expanduser(self.config[key])
