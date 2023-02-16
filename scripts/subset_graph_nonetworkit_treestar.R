@@ -11,7 +11,7 @@
 ## Example: Rscript subset_graph.R oc_integer_el.tsv oc_leiden.5.tsv oc_l5_trimmed
 
 library(data.table)
-library(feather)
+# library(feather)
 rm(list=ls())
 
 args = commandArgs(trailingOnly=TRUE)
@@ -84,6 +84,6 @@ t5[type=='tree' & max_deg==node_count-1,type :='star']
 #write to tsv
 write.table(t5,file=paste0(args[3],'_treestarcounts.tsv'),sep='\t',row.names=F)
 # write trimmed graph
-write_feather(trimmed_g,paste0(args[3],'_g.feather'))
+# write_feather(trimmed_g,paste0(args[3],'_g.feather'))
 # write trimmed clustering
-write_feather(sized_clusters,paste0(args[3],'_clus.feather'))
+# write_feather(sized_clusters,paste0(args[3],'_clus.feather'))
