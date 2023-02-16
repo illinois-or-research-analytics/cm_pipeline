@@ -8,7 +8,7 @@ from string import Template
 
 logger = logging.getLogger(__name__)
 
-OUTPUT_FILE_NAME = '$network_name $sep cleaned.tsv'
+OUTPUT_FILE_NAME = '$network_name$sepcleaned.tsv'
 
 class Cleanup(Stage):
     def __init__(self, config_params, network_name, output_dir):

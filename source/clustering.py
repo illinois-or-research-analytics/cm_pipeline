@@ -8,7 +8,7 @@ from string import Template
 
 logger = logging.getLogger(__name__)
 
-OUTPUT_FILE_NAME = "$network_name $sep_u $algorithm $sep_d.tsv"
+OUTPUT_FILE_NAME = "$network_name$sep_u$algorithm$sep_d$resolution.tsv"
 
 class Clustering(Stage):
     def __init__(self, config_params, network_name, output_dir):
@@ -19,12 +19,13 @@ class Clustering(Stage):
         # list of clustering files for different resolutions
         self.output_files = []
     
-    def _get_output_file_name_from_template(self, template_str):
+    def _get_output_file_name_from_template(self, template_str, resolution):
         template =  Template(template_str)
         output_file_name = template.substitute(network_name = self.network_name,
                                                algorithm = self.config[ALGORITHM_KEY], 
-                                               sep_u='_', 
-                                               sep_d='.')
+                                               sep_u='_',
+                                               sep_d='.',
+                                               resolution=resolution)
         return output_file_name
     
     def execute(self):
@@ -32,7 +33,7 @@ class Clustering(Stage):
             logger.info("Executing Leiden with resolution %s", resolution)
             
             output_file = os.path.join(self.output_dir, 
-                                        self._get_output_file_name_from_template(OUTPUT_FILE_NAME))
+                                        self._get_output_file_name_from_template(OUTPUT_FILE_NAME, resolution))
             self.output_files.append(output_file)
 
             cmd = ["runleiden", "-i", self.config[INPUT_FILE_KEY], "-r", resolution, "-o", output_file]
