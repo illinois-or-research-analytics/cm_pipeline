@@ -20,7 +20,7 @@ class Stage(object):
         """
         1. Checks the input and output paths for ~ in the paths and replace it with user home directory.
         """
-        path_keys = [INPUT_FILE_KEY, OUTPUT_DIR_KEY, SCRIPT_KEY]
+        path_keys = [INPUT_FILE_KEY, OUTPUT_DIR_KEY, SCRIPT_KEY, CLUSTERINGFILE_KEY]
 
         for key in path_keys:
             if key in self.config:
