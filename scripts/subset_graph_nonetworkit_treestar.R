@@ -1,11 +1,12 @@
 # script that reduces the size of a large graph to allow find_trees.py to run more efficiently.
 # Updated to add annotations for stars
 # George Chacko Jan 16, 2023
+# Updated in cm_pipeline repo to generate the output file in user specified file
 
-# usage "Rscript subset_graph.R  <parent_network> <input clustering file> <output_edgelist_string>
+# usage "Rscript subset_graph.R  <parent_network> <input clustering file> <user_specified_output_edgelist_name.tsv>
 # parent_network: edgelist as tsv without headers
 # input clustering file: node+id, cluster_id without headers
-# output_edgelist_string: a text tag such as oc_l5_trimmed
+# output_edgelist_name: a tsv file name oc_l5_trimmed.tsv
 
 
 ## Example: Rscript subset_graph.R oc_integer_el.tsv oc_leiden.5.tsv oc_l5_trimmed
@@ -82,7 +83,8 @@ t5 <- merge(temp,t4,by.x='cluster_id',by.y='V2')[,.(cluster_id,node_count,edge_c
 t5[type=='tree' & max_deg==node_count-1,type :='star']
 
 #write to tsv
-write.table(t5,file=paste0(args[3],'_treestarcounts.tsv'),sep='\t',row.names=F)
+write.table(t5,file=args[3],sep='\t',row.names=F)
+# write.table(t5,file=paste0(args[3],'_treestarcounts.tsv'),sep='\t',row.names=F)
 # write trimmed graph
 # write_feather(trimmed_g,paste0(args[3],'_g.feather'))
 # write trimmed clustering
