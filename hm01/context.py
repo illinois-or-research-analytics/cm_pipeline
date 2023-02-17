@@ -14,7 +14,7 @@ class Context:
     def __init__(self):
         # hm01 working dir to store intermediate files
         self._working_dir = "hm01_working_dir"
-        self.transient = False
+        self.transient = False  # Should this working dir be temporary?  
 
     def with_working_dir(self, working_dir):
         self._working_dir = working_dir

@@ -11,6 +11,14 @@ def prune_graph(
     connectivity_requirement: MincutRequirement,
     clusterer: AbstractClusterer,
 ) -> int:
+    """ This stage comes before the mincut stage for each cluster. 
+    Remove the single vertices that have degrees lower than the mincut requirement until there exists no such vertices.
+
+    Params:
+        graph (RealizedSubgraph)                        : Graph to prune
+        connectivity_requirement (MincutRequirement)    : the mincut requirement
+        clusterer (AbstractClusterer)                   : Clusterer used to create the subgraph (for determining validity of the threshold)
+    """
     mcd = graph.mcd()
     if mcd > connectivity_requirement.validity_threshold(clusterer, graph):
         return 0

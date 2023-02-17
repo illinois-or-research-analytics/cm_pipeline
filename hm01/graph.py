@@ -48,14 +48,14 @@ class AbstractGraph:
         return sorted([self.degree(u) for u in self.nodes()])
 
     def intangible_subgraph_from_compact(self, ids: List[int], suffix: str):
-        """Create an intangible subgraph from a list of ids that represent nodes in the compacted (i.e., made continuous) graph
+        """ Create an intangible subgraph from a list of ids that represent nodes in the compacted (i.e., made continuous) graph
         """
         return self.intangible_subgraph([self.hydrator[i] for i in ids], suffix)
 
     def find_clusters(
         self, clusterer: AbstractClusterer, with_singletons: bool = True
     ) -> Iterator[IntangibleSubgraph]:
-        """Find clusters using the given clusterer"""
+        """ Find clusters using the given clusterer"""
         log.info(
             f"Finding clusters using clusterer",
             id=self.index,
@@ -69,7 +69,7 @@ class AbstractGraph:
             return clusterer.cluster_without_singletons(self)
 
 class Graph(AbstractGraph):
-    """Wrapped graph over a networkit graph with an ID label"""
+    """ Wrapped graph over a networkit graph with an ID label """
 
     def __init__(self, data, index):
         self._data = data  # nk graph
@@ -82,37 +82,39 @@ class Graph(AbstractGraph):
 
     @staticmethod
     def from_nk(graph, index=""):
-        """Create a wrapped graph from a networkit graph"""
+        """ Create a wrapped graph from a networkit graph """
         return Graph(graph, index)
 
     @staticmethod
     def from_edgelist(path):
-        """Read a graph from an edgelist file"""
+        """ Read a graph from an edgelist file """
         edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
         nk_graph = edgelist_reader.read(path)
         return Graph.from_nk(nk_graph)
 
     @staticmethod
     def from_metis(path):
+        """ Read from .metis format """
         metis_reader = nk.graphio.METISGraphReader()
         return Graph.from_nk(metis_reader.read(path))
         
     def n(self) -> int:
-        """Number of nodes"""
+        """ Number of nodes """
         return self._data.numberOfNodes()
 
     def m(self) -> int:
-        """Number of edges"""
+        """ Number of edges """
         return self._data.numberOfEdges()
 
     @cache
     def mcd(self) -> int:
+        """ Get the minimum degree value """
         if self.n() == 0:
             return 0
         return min(self._data.degree(n) for n in self._data.iterNodes())
 
     def find_mincut(self) -> mincut.MincutResult:
-        """Find a mincut wrapped over Viecut"""
+        """ Find a mincut wrapped over Viecut """
         return mincut.viecut(self)
 
     def neighbors(self, u):
@@ -124,7 +126,7 @@ class Graph(AbstractGraph):
     def cut_by_mincut(
         self, mincut_res: mincut.MincutResult
     ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
-        """Cut the graph by the mincut result"""
+        """ Cut the graph by the mincut result """
         light = self.induced_subgraph(mincut_res.light_partition, "a")
         heavy = self.induced_subgraph(mincut_res.heavy_partition, "b")
         return light, heavy
@@ -134,7 +136,7 @@ class Graph(AbstractGraph):
         return nk.graphtools.getContinuousNodeIds(self._data)
 
     def construct_hydrator(self):
-        """Hydrator: a mapping from the compacted id to the original id"""
+        """ Hydrator: a mapping from the compacted id to the original id """
         n = self.n()
         hydrator = [0] * n
         continuous_ids = self.continuous_ids  # .items()
@@ -153,7 +155,7 @@ class Graph(AbstractGraph):
         return self.induced_subgraph([self.hydrator[i] for i in ids], suffix)
 
     def as_compact_edgelist_filepath(self):
-        """Get a filepath to the graph as a compact/continuous edgelist file"""
+        """ Get a filepath to the graph as a compact/continuous edgelist file """
         p = context.request_graph_related_path(self, "edgelist")
         towrite = nk.graphtools.getCompactedGraph(self._data, self.continuous_ids)
         nk.graphio.writeGraph(towrite, p, nk.Format.EdgeListTabZero)
@@ -163,17 +165,17 @@ class Graph(AbstractGraph):
         return self._data.degree(u)
 
     def as_metis_filepath(self):
-        """Get a filepath to the graph to a (continuous) METIS file"""
+        """ Get a filepath to the graph to a (continuous) METIS file """
         p = context.request_graph_related_path(self, "metis")
         nk.graphio.writeGraph(self._data, p, nk.Format.METIS)
         return p
 
     def nodes(self):
-        """Iterate over the nodes"""
+        """ Iterate over the nodes """
         return self._data.iterNodes()
 
     def modularity_of(self, g: IntangibleSubgraph) -> float:
-        """calculate the modularity of the subset `g` with respect to `self`
+        """ Calculate the modularity of the subset `g` with respect to `self`
         
         Modularity is higher when clusters are densely connected within clusters but sparsely 
         connected between clusters
@@ -201,7 +203,7 @@ class Graph(AbstractGraph):
 
     @staticmethod
     def from_straight_line(n: int, index=""):
-        """A linked-list graph with n nodes"""
+        """ A linked-list graph with n nodes """
         return Graph.from_edges([(i, i + 1) for i in range(n - 1)], index)
 
     @staticmethod
@@ -230,6 +232,7 @@ class RealizedSubgraph(AbstractGraph):
     _graph: Graph
 
     def __init__(self, intangible: IntangibleSubgraph, graph: Graph):
+        """ Convert nodelist into adjacency list """
         self.index = intangible.index
         self.nodeset = intangible.nodeset
         self.adj: Dict[int, set[int]] = {}
@@ -358,13 +361,13 @@ class RealizedSubgraph(AbstractGraph):
 
 @dataclass
 class IntangibleSubgraph:
-    """A yet to be realized subgraph, containing only the node ids"""
+    """ A yet to be realized subgraph, containing only the node ids """
 
     subset: List[int]
     index: str
 
     def realize(self, graph: Graph) -> RealizedSubgraph:
-        """Realize the subgraph"""
+        """ Realize the subgraph """
         return RealizedSubgraph(self, graph)
 
     def __len__(self):

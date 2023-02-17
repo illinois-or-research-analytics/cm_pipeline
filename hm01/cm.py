@@ -33,6 +33,27 @@ class ClustererSpec(str, Enum):
     ikc = "ikc"
     leiden_mod = "leiden_mod"
 
+class ClusterTreeNode(ts.Node):
+    """ Object to represent a cluster in the mincut/recluster recursion tree 
+    
+    The root of the tree is the entire graph. When a a cluster is cut and reclustered into new clusters,
+    the original cluster is a parent node to the children clusters.
+    """
+    extant: bool
+    graph_index: str
+    num_nodes: int
+    cut_size: Optional[int]
+    validity_threshold: Optional[float]
+
+def annotate_tree_node(
+    node: ClusterTreeNode, graph: Union[Graph, IntangibleSubgraph, RealizedSubgraph]
+):
+    """ Labels a ClusterTreeNode with its respective cluster """
+    node.label = graph.index
+    node.graph_index = graph.index
+    node.num_nodes = graph.n()
+    node.extant = False
+
 def update_cid_membership(
     subgraph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
     node2cids: Dict[int, str],
@@ -279,12 +300,13 @@ def main(
     # Load full graph into Graph object
     edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
     nk_graph = edgelist_reader.read(input)
-    log.info(
-        f"loaded graph",
-        n=nk_graph.numberOfNodes(),
-        m=nk_graph.numberOfEdges(),
-        elapsed=time.time() - time1,
-    )
+    if not quiet:
+        log.info(
+            f"loaded graph",
+            n=nk_graph.numberOfNodes(),
+            m=nk_graph.numberOfEdges(),
+            elapsed=time.time() - time1,
+        )
     root_graph = Graph(nk_graph, "")
 
     # Load clustering
