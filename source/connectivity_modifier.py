@@ -33,28 +33,18 @@ class ConnectivityModifier(Stage):
             raise FileNotFoundError(error_msg, e)
         return cm_ready_input_files
 
-    def _get_cleaned_input_file(self):
-        if CLEANED_INPUT_FILE_KEY in self.config:
-            cleaned_input_file = self.config[CLEANED_INPUT_FILE_KEY]
-        elif CLEANUP_SECTION in self.prev_stages:
-            cleanup_stage = self.prev_stages[CLEANUP_SECTION]
-            cleaned_input_file = cleanup_stage.cleaned_output_file
-        else:
-            raise Exception(f"{CLEANED_INPUT_FILE_KEY} not specified in config file or Cleanup stage failed to generate the cleaned file")
-        return cleaned_input_file
-
     @timeit
     def execute(self):
         logging.info("******** STARTED CONNECTIVITY MODIFIER STAGE ********")
         cm_ready_input_files = self.get_cm_ready_input_files()
-       
+        cleaned_input_file = self._get_cleaned_input_file()
+
         for resolution in self.default_config.resolutions:
             # Step 1: CM
             logger.info("Running CM with %s for resolution %s", self.default_config.algorithm, resolution)
             cm_ready_input_file = cm_ready_input_files.get(resolution)
             cm_preprocess_op_file_name = self._get_output_file_name_from_template(CM_PREPROCESS_OP_FILE_NAME, resolution)
-            cm_preprocess_output_file =  os.path.join(self.default_config.output_dir, cm_preprocess_op_file_name)
-            cleaned_input_file = self._get_cleaned_input_file()
+            cm_preprocess_output_file =  os.path.join(self.default_config.output_dir, cm_preprocess_op_file_name) 
             
             cmd = [
                    "cm",
@@ -96,7 +86,7 @@ class ConnectivityModifier(Stage):
             cm_final_op_file = os.path.join(self.default_config.output_dir, cm_final_op_file_name)
 
             logger.info("Converting Json to tsv for resolution %s", resolution)
-
+            
             # Todo: Move this to a function
             try:
                 with open(cm_uni_preprocessed_op_json_file, 'r') as f:

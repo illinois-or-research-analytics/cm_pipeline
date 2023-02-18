@@ -38,6 +38,7 @@ class FilteringAfCm(Stage):
     def execute(self):
         logging.info("******** STARTED FILTERING AFTER CM STAGE ********")
         cm_files = self._get_cm_files()
+        cleaned_input_file = self._get_cleaned_input_file()
         
         for resolution in self.default_config.resolutions:
             
@@ -50,6 +51,7 @@ class FilteringAfCm(Stage):
             
             cmd = ["Rscript", 
                    self.config[FILTERING_SCRIPT_KEY], 
+                   cleaned_input_file,
                    cm_file, 
                    filtering_output_file
                    ] 

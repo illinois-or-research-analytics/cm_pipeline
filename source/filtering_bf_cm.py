@@ -37,7 +37,8 @@ class FilteringBfCm(Stage):
     def execute(self):
         logging.info("******** STARTED FILTERING BEFORE CM STAGE ********")
         clustering_files = self.get_clustering_input_files() 
-        
+        cleaned_input_file = self._get_cleaned_input_file()
+
         for resolution in self.default_config.resolutions:     
             logger.info("Filtering to get clusters with N>10 and non-trees for resolution %s", resolution)
             # Step 1: takes a Leiden clustering output in tsv and returns an annotation of its clusters (those above size 10)
@@ -47,6 +48,7 @@ class FilteringBfCm(Stage):
             filtering_output_file =  os.path.join(self.default_config.output_dir, filtering_op_file_name)
             cmd = ["Rscript", 
                    self.config[FILTERING_SCRIPT_KEY], 
+                   cleaned_input_file,
                    clustering_file, 
                    filtering_output_file
                    ] 

@@ -15,21 +15,6 @@ class Clustering(Stage):
         super().__init__(config, default_config, stage_num, prev_stages)
         # list of clustering files for different resolutions
         self.clustering_output_files = OrderedDict()
-    
-    def _get_cleaned_input_file(self):
-        """
-        This function checks if the input file should be the output files from the previous stage
-        unless specifed in the param.config file.
-        """
-        
-        if CLEANED_INPUT_FILE_KEY in self.config:
-            cleaned_input_file = self.config[CLEANED_INPUT_FILE_KEY]
-        elif CLEANUP_SECTION in self.prev_stages:
-            cleanup_stage = self.prev_stages.get(CLEANUP_SECTION)
-            cleaned_input_file = cleanup_stage.cleaned_output_file
-        else:
-            raise Exception("Cleaned input file not found in config file was not generated in the cleanup stage")
-        return cleaned_input_file
 
     @timeit
     def execute(self):
