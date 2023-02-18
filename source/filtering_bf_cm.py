@@ -62,7 +62,8 @@ class FilteringBfCm(Stage):
             self.cm_ready_filtered_files[resolution]= cm_ready_output_file
             
             cmd = ["Rscript", 
-                   self.config[CM_READY_SCRIPT_KEY], 
+                   self.config[CM_READY_SCRIPT_KEY],
+                   cleaned_input_file,
                    filtering_output_file, 
                    cm_ready_output_file
                    ] 

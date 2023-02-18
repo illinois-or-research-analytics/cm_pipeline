@@ -65,7 +65,8 @@ class FilteringAfCm(Stage):
             self.cm_ready_filtered_files[resolution] = final_output_file
             
             cmd = ["Rscript", 
-                   self.config[CM_READY_SCRIPT_KEY], 
+                   self.config[CM_READY_SCRIPT_KEY],
+                   cleaned_input_file, 
                    filtering_output_file, 
                    final_output_file
                    ] 
