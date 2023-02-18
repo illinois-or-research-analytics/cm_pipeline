@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 OUTPUT_FILE_NAME = 'S${stage_num}_${network_name}_cleaned.tsv'
 
 class Cleanup(Stage):
-    def __init__(self, config, network_name, output_dir, stage_num, prev_stage):
-        super().__init__(config, network_name, output_dir, stage_num, prev_stage)
+    def __init__(self, config, network_name, output_dir, stage_num, prev_stages):
+        super().__init__(config, network_name, output_dir, stage_num, prev_stages)
         
         self.cleaned_output_file = os.path.join(self.output_dir, self._get_output_file_name_from_template(OUTPUT_FILE_NAME))
     
@@ -24,7 +24,7 @@ class Cleanup(Stage):
     
     def execute(self):
         logging.info("******** STARTED CLEANUP STAGE ********")
-        logger.info("Removing duplicate rows, parallel edges, and self-loops")
+        logger.debug("Removing duplicate rows, parallel edges, and self-loops")
         cmd = ["Rscript", self.config[SCRIPT_KEY], self.config[INPUT_FILE_KEY], self.cleaned_output_file ]
         run(cmd)
         logging.info("******** FINISHED CLEANUP STAGE ********")

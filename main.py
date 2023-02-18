@@ -40,7 +40,7 @@ if __name__ == "__main__":
     logger.debug("Program started")
     try:
         cm_workflow = Workflow(config)
-        cm_workflow.run()
+        cm_workflow.start()
         logger.debug("Program finished")
     except Exception as e:
         error_message="An error occured in the CM Workflow"

@@ -1,6 +1,9 @@
+from collections import OrderedDict
 from source.cleanup import Cleanup
 from source.clustering import Clustering
-from source.filtering import Filtering
+from source.filtering_bf_cm import FilteringBfCm
+from source.filtering_af_cm import FilteringAfCm
+from source.connectivity_modifier import ConnectivityModifier
 from source.constants import *
 import logging
 
@@ -10,7 +13,7 @@ hostlogger = logging.getLogger(__name__)
 class Workflow:
     def __init__(self, config):
 
-        self.stages = []
+        self.stages = OrderedDict()
         self.config = config
 
         # Read the network name, output_dir from the config file.
@@ -30,9 +33,17 @@ class Workflow:
             stage_num = stage_num + 1
             self._add_stage(Clustering, CLUSTERING_SECTION, stage_num)
             
-        if config.has_section(FILTERING_SECTION):
-             stage_num = stage_num + 1
-             self._add_stage(Filtering, FILTERING_SECTION, stage_num)
+        if config.has_section(FILTERING_BF_CM_SECTION):
+            stage_num = stage_num + 1
+            self._add_stage(FilteringBfCm, FILTERING_BF_CM_SECTION, stage_num)
+        
+        if config.has_section(CONNECTIVITY_MODIFIER_SECTION):
+            stage_num = stage_num + 1
+            self._add_stage(ConnectivityModifier, CONNECTIVITY_MODIFIER_SECTION, stage_num)
+        
+        if config.has_section(FILTERING_AF_CM_SECTION):
+            stage_num = stage_num + 1
+            self._add_stage(FilteringAfCm, FILTERING_AF_CM_SECTION, stage_num)
             
     def _add_stage(self, StageClass, section_name, stage_num):
         stage_class_obj = StageClass(
@@ -40,19 +51,13 @@ class Workflow:
                                 network_name = self.network_name, 
                                 output_dir = self.output_dir,
                                 stage_num = stage_num,
-                                prev_stage = self.previous_stage()  
+                                prev_stages = self.stages  
                         )
-        self.stages.append(stage_class_obj)
-    
-    def previous_stage(self):
-        if self.stages:
-            return self.stages[-1]
-        else:
-            return None
+        self.stages[section_name]=stage_class_obj
 
-    def run(self):
+    def start(self):
         hostlogger.info("Starting the CM Workflow..")
-        for stage in self.stages:
+        for stage in self.stages.values():
             stage.execute() 
         hostlogger.info("Finished the CM Workflow")
 

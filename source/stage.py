@@ -1,15 +1,16 @@
 import os
 import time
 import logging
+from collections import OrderedDict
 from string import Template
 from source.constants import *
 
 class Stage(object):
-    def __init__(self, config, network_name, output_dir, stage_num, prev_stage=None):
+    def __init__(self, config, network_name, output_dir, stage_num, prev_stages=OrderedDict()):
         self.config = dict(config)
         self.network_name = network_name
         self.stage_num = stage_num
-        self.prev_stage = prev_stage
+        self.prev_stages = prev_stages
         self.output_dir = output_dir
         self._check_paths()
         
