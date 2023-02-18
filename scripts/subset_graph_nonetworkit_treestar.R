@@ -9,7 +9,7 @@
 # output_edgelist_name: a tsv file name oc_l5_trimmed.tsv
 
 
-## Example: Rscript subset_graph.R oc_integer_el.tsv oc_leiden.5.tsv oc_l5_trimmed
+## Example: Rscript subset_graph.R oc_integer_el.tsv oc_leiden.5.tsv oc_l5_trimmed.tsv
 
 library(data.table)
 # library(feather)
