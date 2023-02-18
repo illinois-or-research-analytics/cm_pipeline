@@ -4,6 +4,7 @@ from source.stage import Stage
 from source.cmd import run
 from source.constants import *
 from string import Template
+from source.timeit import timeit
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class Cleanup(Stage):
                                                stage_num = self.stage_num)
         return output_file_name
     
+    @timeit
     def execute(self):
         logging.info("******** STARTED CLEANUP STAGE ********")
         logger.debug("Removing duplicate rows, parallel edges, and self-loops")

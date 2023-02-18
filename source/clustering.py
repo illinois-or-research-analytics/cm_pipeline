@@ -3,6 +3,7 @@ import os
 from collections import OrderedDict
 from source.stage import Stage
 from source.cmd import run
+from source.timeit import timeit
 from source.constants import *
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ class Clustering(Stage):
             raise Exception("Cleaned input file not found in config file was not generated in the cleanup stage")
         return cleaned_input_file
 
+    @timeit
     def execute(self):
         logging.info("******** STARTED CLUSTERING STAGE ********")
         cleaned_input_file = self._get_cleaned_input_file()

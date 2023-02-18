@@ -5,6 +5,7 @@ from source.clustering import Clustering
 from source.filtering_bf_cm import FilteringBfCm
 from source.filtering_af_cm import FilteringAfCm
 from source.connectivity_modifier import ConnectivityModifier
+from source.timeit import timeit
 from source.constants import *
 import logging
 
@@ -50,6 +51,7 @@ class Workflow:
                         )
         self.stages[section_name]=stage_class_obj
 
+    @timeit
     def start(self):
         hostlogger.info("******** STARTED CM WORKFLOW ********")
         for stage in self.stages.values():

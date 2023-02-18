@@ -3,6 +3,7 @@ import os
 from collections import OrderedDict
 from source.stage import Stage
 from source.cmd import run
+from source.timeit import timeit
 from source.constants import *
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ class FilteringBfCm(Stage):
             raise FileNotFoundError(error_msg, e)
         return clustering_input_files
 
+    @timeit
     def execute(self):
         logging.info("******** STARTED FILTERING BEFORE CM STAGE ********")
         clustering_files = self.get_clustering_input_files() 

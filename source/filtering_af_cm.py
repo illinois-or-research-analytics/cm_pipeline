@@ -3,6 +3,7 @@ import os
 from collections import OrderedDict
 from source.stage import Stage
 from source.cmd import run
+from source.timeit import timeit
 from source.constants import *
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class FilteringAfCm(Stage):
             raise FileNotFoundError(error_msg, e)
         return cm_input_files
 
+    @timeit
     def execute(self):
         logging.info("******** STARTED FILTERING AFTER CM STAGE ********")
         cm_files = self._get_cm_files()

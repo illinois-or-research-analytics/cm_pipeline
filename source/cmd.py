@@ -5,14 +5,15 @@ https://realpython.com/python-subprocess/#an-example-of-exception-handling
 import subprocess
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 def run(cmd_list, check_errors= True):
     try:
-        logger.info(f"Executing Command: {' '.join(cmd_list)}")
+        logger.debug(f"Executing Command: {' '.join(cmd_list)}")
         # subprocess.run(cmd_list, check=check_errors)
-        # result = subprocess.run(cmd_list, check=check_errors, capture_output=True, text=True)
-        # logger.debug("Output: %s", result.stdout)
+        result = subprocess.run(cmd_list, check=check_errors, capture_output=True, text=True)
+        logger.debug("Output: %s", result.stdout)
     except FileNotFoundError as exc:
         error_msg = f"Process failed because the executable could not be found.\n{exc}"
         logger.error(error_msg)

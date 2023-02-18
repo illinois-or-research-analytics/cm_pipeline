@@ -4,6 +4,7 @@ import json
 from collections import OrderedDict
 from source.stage import Stage
 from source.cmd import run
+from source.timeit import timeit
 from source.constants import *
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ class ConnectivityModifier(Stage):
             raise Exception(f"{CLEANED_INPUT_FILE_KEY} not specified in config file or Cleanup stage failed to generate the cleaned file")
         return cleaned_input_file
 
+    @timeit
     def execute(self):
         logging.info("******** STARTED CONNECTIVITY MODIFIER STAGE ********")
         cm_ready_input_files = self.get_cm_ready_input_files()
@@ -94,7 +96,7 @@ class ConnectivityModifier(Stage):
             cm_final_op_file = os.path.join(self.default_config.output_dir, cm_final_op_file_name)
 
             logger.info("Converting Json to tsv for resolution %s", resolution)
-            
+
             # Todo: Move this to a function
             try:
                 with open(cm_uni_preprocessed_op_json_file, 'r') as f:
