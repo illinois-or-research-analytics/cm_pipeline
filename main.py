@@ -28,9 +28,9 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     
     parser = ArgumentParser(
-                    prog = 'cm_pp',
-                    description = 'Test the CM pipeline with test dataset')
-    parser.add_argument('param_config', help='Config file with CM pipeline parameters')
+                            prog = 'cm_pp',
+                            description = 'Test the CM pipeline with test dataset')
+    parser.add_argument('param_config', help = 'Config file with CM pipeline parameters')
     args = parser.parse_args()
 
     # Read the contents of Config file

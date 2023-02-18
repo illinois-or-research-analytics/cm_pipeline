@@ -2,30 +2,18 @@ import logging
 import os
 from collections import OrderedDict
 from source.stage import Stage
-from source.cleanup import Cleanup
 from source.cmd import run
 from source.constants import *
-from string import Template
 
 logger = logging.getLogger(__name__)
 
 OUTPUT_FILE_NAME = "S${stage_num}_${network_name}_${algorithm}.${resolution}.tsv"
 
 class Clustering(Stage):
-    def __init__(self, config, network_name, output_dir, stage_num,  prev_stages):
-        super().__init__(config, network_name, output_dir, stage_num, prev_stages)
-        self.resolutions = [resolution.strip() for resolution in self.config[RESOLUTION_KEY].split(',')]
+    def __init__(self, config, default_config, stage_num, prev_stages):
+        super().__init__(config, default_config, stage_num, prev_stages)
         # list of clustering files for different resolutions
         self.clustering_output_files = OrderedDict()
-        self.algorithm = self.config[ALGORITHM_KEY]
-    
-    def _get_output_file_name_from_template(self, template_str, resolution):
-        template =  Template(template_str)
-        output_file_name = template.substitute(network_name = self.network_name,
-                                               algorithm = self.algorithm, 
-                                               resolution=resolution,
-                                               stage_num=self.stage_num)
-        return output_file_name
     
     def _get_cleaned_input_file(self):
         """
@@ -45,11 +33,13 @@ class Clustering(Stage):
     def execute(self):
         logging.info("******** STARTED CLUSTERING STAGE ********")
         cleaned_input_file = self._get_cleaned_input_file()
-        for resolution in self.resolutions:
-            output_file = os.path.join(self.output_dir, 
+        
+        for resolution in self.default_config.resolutions:
+            output_file = os.path.join(self.default_config.output_dir, 
                                         self._get_output_file_name_from_template(OUTPUT_FILE_NAME, resolution))
             self.clustering_output_files[resolution] = output_file
-            logger.info("Executing Leiden with resolution %s", resolution)
-            cmd = ["runleiden", "-i", cleaned_input_file , "-r", resolution, "-o", output_file]
+            logger.info("Running %s with resolution %s", self.default_config.algorithm, resolution)
+            
+            cmd = [self.config[CLUSTERING_SCRIPT_KEY], "-i", cleaned_input_file , "-r", resolution, "-o", output_file]
             run(cmd)
         logging.info("******** FINISHED CLUSTERING STAGE ********")
