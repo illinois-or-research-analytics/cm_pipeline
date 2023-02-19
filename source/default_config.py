@@ -16,7 +16,7 @@ class DefaultConfig(object):
                             "in the config file.")
     
     def _create_output_dir_with_time_stamp(self):
-        output_dir_name = f'cm-pp-output-{self.timestamp}'
+        output_dir_name = f'{self.network_name}-cm-pp-output-{self.timestamp}'
         output_dir = os.path.join(self.root_output_dir, output_dir_name)
         os.makedirs(output_dir, exist_ok=True)
         return output_dir
