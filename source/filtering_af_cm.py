@@ -2,7 +2,6 @@ import logging
 import os
 from collections import OrderedDict
 from source.stage import Stage
-from source.cmd import run
 from source.timeit import timeit
 from source.constants import *
 
@@ -47,7 +46,7 @@ class FilteringAfCm(Stage):
             cm_file = cm_files.get(resolution)
             filtering_op_file_name = self._get_output_file_name_from_template(FILTERING_AF_CM_OP_FILE_NAME,
                                                                               resolution)
-            filtering_output_file =  os.path.join(self.default_config.output_dir, filtering_op_file_name)
+            filtering_output_file =  self._get_op_file_path_for_resolution(resolution, filtering_op_file_name)
             
             cmd = ["Rscript", 
                    self.config[FILTERING_SCRIPT_KEY], 
@@ -55,13 +54,13 @@ class FilteringAfCm(Stage):
                    cm_file, 
                    filtering_output_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
 
             # Step 2: takes the output of Step 1, selects non-tree clusters, 
             # and reduces the original Leiden clustering to non-tree clusters of size > 10
             logger.info("Making the filtered output file to have node id and cluster id columns for %s", resolution)
             final_output_file_name = self._get_output_file_name_from_template(FINAL_OUTPUT_FILE_NAME, resolution)
-            final_output_file = os.path.join(self.default_config.output_dir, final_output_file_name)   
+            final_output_file = self._get_op_file_path_for_resolution(resolution, final_output_file_name)   
             self.cm_ready_filtered_files[resolution] = final_output_file
             
             cmd = ["Rscript", 
@@ -70,5 +69,5 @@ class FilteringAfCm(Stage):
                    filtering_output_file, 
                    final_output_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
             logging.info("******** FINISHED FILTERING AFTER CM STAGE ********")

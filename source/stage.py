@@ -2,6 +2,7 @@ import os
 from collections import OrderedDict
 from string import Template
 from source.constants import *
+from source.cmd import Cmd
 
 class Stage(object):
     def __init__(self, config, default_config, stage_num, prev_stages=OrderedDict()):
@@ -10,6 +11,7 @@ class Stage(object):
         self.stage_num = stage_num
         self.prev_stages = prev_stages
         self._check_paths()
+        self.cmd_obj = Cmd(default_config)
         
     def execute(self):
         raise NotImplementedError("Implement the execute function in each subclass")
@@ -60,3 +62,10 @@ class Stage(object):
         for key in path_keys:
             if key in self.config:
                 self.config[key] = os.path.expanduser(self.config[key])
+    
+    def _get_op_file_path_for_resolution(self, resolution, op_file_name):
+        op_folder_name = f'res-{resolution}'
+        op_folder = os.path.join(self.default_config.output_dir, op_folder_name)
+        os.makedirs(op_folder, exist_ok=True)
+        op_file_name = os.path.join(op_folder, op_file_name)
+        return op_file_name

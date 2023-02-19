@@ -2,7 +2,6 @@ import logging
 import os
 from collections import OrderedDict
 from source.stage import Stage
-from source.cmd import run
 from source.timeit import timeit
 from source.constants import *
 
@@ -22,11 +21,12 @@ class Clustering(Stage):
         cleaned_input_file = self._get_cleaned_input_file()
         
         for resolution in self.default_config.resolutions:
-            output_file = os.path.join(self.default_config.output_dir, 
-                                        self._get_output_file_name_from_template(OUTPUT_FILE_NAME, resolution))
+            op_file_name = self._get_output_file_name_from_template(OUTPUT_FILE_NAME, resolution)
+            output_file = self._get_op_file_path_for_resolution(resolution, op_file_name)
+
             self.clustering_output_files[resolution] = output_file
             logger.info("Running %s with resolution %s", self.default_config.algorithm, resolution)
             
             cmd = [self.config[CLUSTERING_SCRIPT_KEY], "-i", cleaned_input_file , "-r", resolution, "-o", output_file]
-            run(cmd)
+            self.cmd_obj.run(cmd)
         logging.info("******** FINISHED CLUSTERING STAGE ********")

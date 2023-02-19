@@ -1,7 +1,6 @@
 import logging
 import os
 from source.stage import Stage
-from source.cmd import run
 from source.constants import *
 from string import Template
 from source.timeit import timeit
@@ -27,5 +26,5 @@ class Cleanup(Stage):
         logging.info("******** STARTED CLEANUP STAGE ********")
         logger.debug("Removing duplicate rows, parallel edges, and self-loops")
         cmd = ["Rscript", self.config[CLEANUP_SCRIPT_KEY], self.config[INPUT_FILE_KEY], self.cleaned_output_file ]
-        run(cmd)
+        self.cmd_obj.run(cmd)
         logging.info("******** FINISHED CLEANUP STAGE ********")

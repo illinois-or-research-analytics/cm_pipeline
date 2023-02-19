@@ -2,7 +2,6 @@ import logging
 import os
 from collections import OrderedDict
 from source.stage import Stage
-from source.cmd import run
 from source.timeit import timeit
 from source.constants import *
 
@@ -43,23 +42,24 @@ class FilteringBfCm(Stage):
             logger.info("Filtering to get clusters with N>10 and non-trees for resolution %s", resolution)
             # Step 1: takes a Leiden clustering output in tsv and returns an annotation of its clusters (those above size 10)
             clustering_file = clustering_files.get(resolution)
-            filtering_op_file_name = self._get_output_file_name_from_template(FILTERING_OUTPUT_FILE_NAME,
-                                                                              resolution)
-            filtering_output_file =  os.path.join(self.default_config.output_dir, filtering_op_file_name)
+            filtering_op_file_name = self._get_output_file_name_from_template(FILTERING_OUTPUT_FILE_NAME, resolution)
+            filtering_output_file =  self._get_op_file_path_for_resolution(resolution, filtering_op_file_name)
+            
             cmd = ["Rscript", 
                    self.config[FILTERING_SCRIPT_KEY], 
                    cleaned_input_file,
                    clustering_file, 
                    filtering_output_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
 
             # Step 2: takes the output of Step 1, selects non-tree clusters, 
             # and reduces the original Leiden clustering to non-tree clusters of size > 10
             logger.info("Making the filtered output file compatible with Connectivity modifier for %s", resolution)
+            
             cm_ready_output_file_name = self._get_output_file_name_from_template(CM_READY_OUTPUT_FILE_NAME, resolution)
-            cm_ready_output_file = os.path.join(self.default_config.output_dir, cm_ready_output_file_name)   
-            self.cm_ready_filtered_files[resolution]= cm_ready_output_file
+            cm_ready_output_file = self._get_op_file_path_for_resolution(resolution, cm_ready_output_file_name)   
+            self.cm_ready_filtered_files[resolution] = cm_ready_output_file
             
             cmd = ["Rscript", 
                    self.config[CM_READY_SCRIPT_KEY],
@@ -67,5 +67,5 @@ class FilteringBfCm(Stage):
                    filtering_output_file, 
                    cm_ready_output_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
             logging.info("******** FINISHED FILTERING BEFORE CM STAGE ********")

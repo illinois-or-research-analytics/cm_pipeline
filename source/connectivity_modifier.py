@@ -3,7 +3,6 @@ import os
 import json
 from collections import OrderedDict
 from source.stage import Stage
-from source.cmd import run
 from source.timeit import timeit
 from source.constants import *
 
@@ -18,7 +17,7 @@ class ConnectivityModifier(Stage):
         super().__init__(config, default_config, stage_num, prev_stages)
         self.cm_output_files = OrderedDict()
 
-    def get_cm_ready_input_files(self):
+    def _get_cm_ready_input_files(self):
         try:
             if INPUT_CM_READY_FILE_DIR_KEY in self.config:
                 cm_ready_input_files = os.listdir(self.config[INPUT_CM_READY_FILE_DIR_KEY])
@@ -33,10 +32,22 @@ class ConnectivityModifier(Stage):
             raise FileNotFoundError(error_msg, e)
         return cm_ready_input_files
 
+    def _gen_cm_final_tsv_from_json(self, cm_uni_preprocessed_op_json_file, cm_final_op_file):
+        try:
+            with open(cm_uni_preprocessed_op_json_file, 'r') as f:
+                with open(cm_final_op_file, 'w+') as g:
+                    for line in f:
+                        cluster = json.loads(line)
+                        label = cluster["label"]
+                        for node in cluster["nodes"]:
+                            g.write(f"{node}\t{label}\n")
+        except FileNotFoundError:
+            raise Exception("%s output file from cm universal not found", cm_uni_preprocessed_op_json_file)
+        
     @timeit
     def execute(self):
         logging.info("******** STARTED CONNECTIVITY MODIFIER STAGE ********")
-        cm_ready_input_files = self.get_cm_ready_input_files()
+        cm_ready_input_files = self._get_cm_ready_input_files()
         cleaned_input_file = self._get_cleaned_input_file()
 
         for resolution in self.default_config.resolutions:
@@ -44,7 +55,7 @@ class ConnectivityModifier(Stage):
             logger.info("Running CM with %s for resolution %s", self.default_config.algorithm, resolution)
             cm_ready_input_file = cm_ready_input_files.get(resolution)
             cm_preprocess_op_file_name = self._get_output_file_name_from_template(CM_PREPROCESS_OP_FILE_NAME, resolution)
-            cm_preprocess_output_file =  os.path.join(self.default_config.output_dir, cm_preprocess_op_file_name) 
+            cm_preprocess_output_file =  self._get_op_file_path_for_resolution(resolution, cm_preprocess_op_file_name) 
             
             cmd = [
                    "cm",
@@ -61,12 +72,14 @@ class ConnectivityModifier(Stage):
                    "-o",
                    cm_preprocess_output_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
 
             # Step 2: CM Universal
             logger.info("Running CM Universal for resolution %s", resolution)
+            
             cm_uni_preprocessed_op_file_name = self._get_output_file_name_from_template(CM_UNI_PREPROCESS_OP_FILE_NAME, resolution)
-            cm_uni_preprocessed_op_file = os.path.join(self.default_config.output_dir, cm_uni_preprocessed_op_file_name)
+            cm_uni_preprocessed_op_file = self._get_op_file_path_for_resolution(resolution, cm_uni_preprocessed_op_file_name)
+            
             cmd = [
                     "cm2universal",
                     "-g",
@@ -76,28 +89,19 @@ class ConnectivityModifier(Stage):
                     "-o",
                     cm_uni_preprocessed_op_file
                    ] 
-            run(cmd)
+            self.cmd_obj.run(cmd)
 
             # Step 3: json2membership
             cm_uni_preprocessed_op_json_file_name = f"{cm_uni_preprocessed_op_file_name}.after.json"
-            cm_uni_preprocessed_op_json_file = os.path.join(self.default_config.output_dir, cm_uni_preprocessed_op_json_file_name)
+            cm_uni_preprocessed_op_json_file = self._get_op_file_path_for_resolution(resolution, cm_uni_preprocessed_op_json_file_name)
         
             cm_final_op_file_name = self._get_output_file_name_from_template(CM_FINAL_OP_FILE_NAME,resolution)
-            cm_final_op_file = os.path.join(self.default_config.output_dir, cm_final_op_file_name)
+            cm_final_op_file = self._get_op_file_path_for_resolution(resolution, cm_final_op_file_name)
 
             logger.info("Converting Json to tsv for resolution %s", resolution)
+            self.cm_output_files[resolution] = cm_final_op_file
             
-            # Todo: Move this to a function
-            try:
-                with open(cm_uni_preprocessed_op_json_file, 'r') as f:
-                    with open(cm_final_op_file, 'w+') as g:
-                        for line in f:
-                            cluster = json.loads(line)
-                            label = cluster["label"]
-                            for node in cluster["nodes"]:
-                                g.write(f"{node}\t{label}\n")
-                self.cm_output_files[resolution] = cm_final_op_file
-            except FileNotFoundError:
-                raise Exception("%s output file from cm universal not found", cm_uni_preprocessed_op_json_file)
-
+            # Comment the below line for quick testing of workflow paths
+            self._gen_cm_final_tsv_from_json(cm_uni_preprocessed_op_json_file, cm_final_op_file)
+           
         logging.info("******** FINISHED CONNECTIVITY MODIFIER STAGE ********")
