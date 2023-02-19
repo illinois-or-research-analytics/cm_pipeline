@@ -25,7 +25,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Output Files [WIP]
 - The commands executed during the workflow are captured in `./logs/executed-cmds/executed-cmds-timestamp.txt`
-- The Output files generated during the workflow are stored in the folder `user-defined-output-dir/cm-pp-output-timestamp/`
+- The Output files generated during the workflow are stored in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/`
 
 ## References
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
