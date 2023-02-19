@@ -9,7 +9,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - Create a python venv eith necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
 ## How to Run 
 ### Method 1
-1. edit the venv path in [start_cm_pp.sh](start_cm_pp.sh)
+1. edit the venv path and the cloned repository path for this repository in [start_cm_pp.sh](start_cm_pp.sh)
 2. Run `source start_cm_pp.sh` 
 
 ### Method 2
