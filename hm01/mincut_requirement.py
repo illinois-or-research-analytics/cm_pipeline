@@ -1,9 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import math
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
-from .clusterers.leiden_wrapper import LeidenClusterer
-from .clusterers.ikc_wrapper import IkcClusterer
+from clusterers.abstract_clusterer import AbstractClusterer
+from clusterers.leiden_wrapper import LeidenClusterer
+from clusterers.ikc_wrapper import IkcClusterer
 from typing import List, Optional, Tuple, Union, Dict, Deque
 
 
