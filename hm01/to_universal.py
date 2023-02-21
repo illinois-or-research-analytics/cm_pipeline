@@ -91,15 +91,15 @@ class ClusteringSkeleton:
                 f.write(json.dumps(d) + "\n")
 
 # TODO: arguments below should eventually be converted to Path types
-def main(
-    input: str = typer.Option(..., "--input", "-i"),
-    quiet: Optional[bool] = typer.Option(False, "--quiet", "-q"),
-    graph_path: str = typer.Option(..., "--graph", "-g"),
-    output: str = typer.Option(..., "--output_prefix", "-o"),
+def cm2universal(
+    input,
+    quiet,
+    graph,
+    tree,
+    node2cid,
+    output,
 ):
     """Compute two sets of statistics for a hiearchical clustering"""
-    sys.setrecursionlimit(1231231234)
-
     if not quiet:
         log = get_logger()
 
@@ -107,21 +107,12 @@ def main(
     treepath = input + ".tree.json"
     assert os.path.exists(treepath)
     assert os.path.exists(graph_path)
-    graph = Graph.from_edgelist(graph_path)
 
-    if not quiet:
-        log.info("loaded graph", graph_n=graph.n(), graph_m=graph.m())
-
-    with open(treepath, "r") as f:
-        tree: ts.Tree = typing.cast(ts.Tree, jsonpickle.decode(f.read()))
     for n in tree.traverse_postorder():
         n.nodes = []
     metadata = ClusteringMetadata(tree)
-    node2cid = {}
     with open(input, "r") as f:
         for l in f:
-            node, cid = l.strip().split()
-            node2cid[int(node)] = cid
             metadata.lookup[cid].nodes.append(int(node))
 
     if not quiet:
@@ -141,11 +132,3 @@ def main(
     extant_skeletons = ClusteringSkeleton.from_graphs(graph, extant_clusters, metadata)
     ClusteringSkeleton.write_ndjson(original_skeletons, output + ".before.json")
     ClusteringSkeleton.write_ndjson(extant_skeletons, output + ".after.json")
-
-
-def entry_point():
-    typer.run(main)
-
-
-if __name__ == "__main__":
-    entry_point()
