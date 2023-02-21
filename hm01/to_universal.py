@@ -12,9 +12,9 @@ import json
 from structlog import get_logger
 import sys
 
-from hm01.graph import Graph, IntangibleSubgraph
-from hm01.cm import ClusterTreeNode
-from .clusterers.leiden_wrapper import LeidenClusterer
+from graph import Graph, IntangibleSubgraph
+from cluster_tree import ClusterTreeNode
+from clusterers.leiden_wrapper import LeidenClusterer
 
 
 class ClusteringMetadata:
@@ -92,7 +92,6 @@ class ClusteringSkeleton:
 
 # TODO: arguments below should eventually be converted to Path types
 def cm2universal(
-    input,
     quiet,
     graph,
     tree,
@@ -103,17 +102,12 @@ def cm2universal(
     if not quiet:
         log = get_logger()
 
-    assert os.path.exists(input)
-    treepath = input + ".tree.json"
-    assert os.path.exists(treepath)
-    assert os.path.exists(graph_path)
-
     for n in tree.traverse_postorder():
         n.nodes = []
     metadata = ClusteringMetadata(tree)
-    with open(input, "r") as f:
-        for l in f:
-            metadata.lookup[cid].nodes.append(int(node))
+    
+    for node, cid in node2cid.items():
+        metadata.lookup[cid].nodes.append(int(node))
 
     if not quiet:
         log.info("loaded clustering")

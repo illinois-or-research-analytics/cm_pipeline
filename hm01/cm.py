@@ -15,13 +15,15 @@ import treeswift as ts
 import networkit as nk
 import jsonpickle
 
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
-from hm01.clusterers.ikc_wrapper import IkcClusterer
-from hm01.clusterers.leiden_wrapper import LeidenClusterer, Quality
-from hm01.context import context
-from hm01.mincut_requirement import MincutRequirement
-from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from hm01.pruner import prune_graph
+from clusterers.abstract_clusterer import AbstractClusterer
+from clusterers.ikc_wrapper import IkcClusterer
+from clusterers.leiden_wrapper import LeidenClusterer, Quality
+from context import context
+from mincut_requirement import MincutRequirement
+from graph import Graph, IntangibleSubgraph, RealizedSubgraph
+from pruner import prune_graph
+from to_universal import cm2universal
+from cluster_tree import ClusterTreeNode
 
 import sys
 import sqlite3
@@ -32,18 +34,6 @@ class ClustererSpec(str, Enum):
     leiden = "leiden"
     ikc = "ikc"
     leiden_mod = "leiden_mod"
-
-class ClusterTreeNode(ts.Node):
-    """ Object to represent a cluster in the mincut/recluster recursion tree 
-    
-    The root of the tree is the entire graph. When a a cluster is cut and reclustered into new clusters,
-    the original cluster is a parent node to the children clusters.
-    """
-    extant: bool
-    graph_index: str
-    num_nodes: int
-    cut_size: Optional[int]
-    validity_threshold: Optional[float]
 
 def annotate_tree_node(
     node: ClusterTreeNode, graph: Union[Graph, IntangibleSubgraph, RealizedSubgraph]
@@ -331,6 +321,8 @@ def main(
             f.write(f"{n} {cid}\n")
     with open(output + ".tree.json", "w+") as f:
         f.write(cast(str, jsonpickle.encode(tree)))
+
+    cm2universal(quiet, root_graph, tree, labels, output)
 
 def entry_point():
     typer.run(main)

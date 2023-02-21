@@ -7,10 +7,10 @@ import csv
 
 import networkit as nk
 
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
+from clusterers.abstract_clusterer import AbstractClusterer
 
-from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from hm01.context import context
+from graph import Graph, IntangibleSubgraph, RealizedSubgraph
+from context import context
 
 
 @dataclass
@@ -106,7 +106,7 @@ class IkcClusterer(AbstractClusterer):
     def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
         clusters = {}
         with open(filepath, newline="") as csvfile:
-            if 
+            #if 
             reader = csv.reader(csvfile, delimiter=",")
             for row in reader:
                 node_id = int(row[0])

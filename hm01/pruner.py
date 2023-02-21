@@ -1,8 +1,8 @@
 from __future__ import annotations
-from hm01.graph import RealizedSubgraph
+from graph import RealizedSubgraph
 
-from hm01.mincut_requirement import MincutRequirement
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
+from mincut_requirement import MincutRequirement
+from clusterers.abstract_clusterer import AbstractClusterer
 from heapdict import heapdict
 
 

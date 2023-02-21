@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Union
-from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
+from graph import Graph, IntangibleSubgraph, RealizedSubgraph
+from clusterers.abstract_clusterer import AbstractClusterer
 from enum import Enum
 import leidenalg as la
 

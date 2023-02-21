@@ -42,9 +42,9 @@ class Context:
         """ Load configuration for hm01 """
         # Locate toml file
         lookup_paths = [
-            "cm.toml",
+            # "cm.toml",
             # os.path.join(os.path.expanduser("~"), ".config", "cm", "config.toml"),
-            os.path.join(os.path.dirname(__file__), "..", "default_config.toml"),
+            os.path.join(os.path.dirname(__file__), "config.toml"),
         ]
 
         # Load the toml file into config

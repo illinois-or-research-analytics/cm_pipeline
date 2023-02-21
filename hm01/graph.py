@@ -6,9 +6,9 @@ import networkit as nk
 from collections import defaultdict
 from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
-from . import mincut
-from .context import context
+from clusterers.abstract_clusterer import AbstractClusterer
+import mincut
+from context import context
 from structlog import get_logger
 from functools import cache, cached_property
 from typing import Protocol
