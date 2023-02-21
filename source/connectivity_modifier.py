@@ -14,7 +14,7 @@ CM_UNI_PREPROCESS_OP_FILE_NAME = "S${stage_num}.2_${network_name}_${" \
                                  "algorithm}.${" \
                                  "resolution}_preprocessed_cm_uni.tsv"
 CM_FINAL_OP_FILE_NAME = "S${stage_num}.3_${network_name}_${algorithm}.${" \
-                        "resolution}_cm_final.tsv"
+                        "resolution}_after_cm.tsv"
 
 
 class ConnectivityModifier(Stage):

@@ -48,5 +48,5 @@ if __name__ == "__main__":
         cm_workflow.start()
         logger.debug("Program finished")
     except Exception as e:
-        error_message = "An error occured in the CM Workflow"
+        error_message = "An error occurred in the CM Workflow"
         logger.exception(error_message + ": %s", e)

@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 FILTERING_OUTPUT_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
                              "algorithm}.${resolution}_treestarcounts.tsv"
-CM_READY_OUTPUT_FILE_NAME = "S${stage_num}.2_${network_name}_${algorithm}.${" \
-                            "resolution}_cm_ready.tsv"
+CM_READY_OUTPUT_FILE_NAME = "S${stage_num}.2_cm_ready_${network_name}_" \
+                            "${algorithm}.${resolution}_nontree_n10.tsv"
 
 
 class FilteringBfCm(Stage):

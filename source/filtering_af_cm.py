@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 FILTERING_AF_CM_OP_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
                                "algorithm}.${resolution}_treestarcounts.tsv"
 FINAL_OUTPUT_FILE_NAME = "S${stage_num}.2_${network_name}_${algorithm}.${" \
-                         "resolution}_final.tsv"
+                         "resolution}_final_nontree_n10_clusters.tsv"
 
 
 class FilteringAfCm(Stage):

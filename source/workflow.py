@@ -59,5 +59,7 @@ class Workflow:
         host_logger.info("******** STARTED CM WORKFLOW ********")
         for stage in self.stages.values():
             stage.execute()
-        stage.cmd_obj.write_placeholder()
+
+        # Todo:
+        list(self.stages.values())[-1].cmd_obj.write_placeholder()
         host_logger.info("******** FINISHED CM WORKFLOW ********")
