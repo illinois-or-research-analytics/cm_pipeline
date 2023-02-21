@@ -12,9 +12,9 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Context:
     def __init__(self):
-        # hm01 working dir to store intermediate files
+        # (VR) hm01 working dir to store intermediate files
         self._working_dir = "hm01_working_dir"
-        self.transient = False  # Should this working dir be temporary?  
+        self.transient = False  # (VR) Should this working dir be temporary?  
 
     def with_working_dir(self, working_dir):
         self._working_dir = working_dir
@@ -24,7 +24,7 @@ class Context:
         self.transient = True
         return self
 
-    # External tool properites
+    # (VR) External tool properites
     @property
     def ikc_path(self):
         return self.config["tools"]["ikc_path"].format(project_root=PROJECT_ROOT)
@@ -39,21 +39,21 @@ class Context:
 
     @cached_property
     def config(self):
-        """ Load configuration for hm01 """
-        # Locate toml file
+        """ (VR) Load configuration for hm01 """
+        # (VR) Locate toml file
         lookup_paths = [
             # "cm.toml",
             # os.path.join(os.path.expanduser("~"), ".config", "cm", "config.toml"),
             os.path.join(os.path.dirname(__file__), "config.toml"),
         ]
 
-        # Load the toml file into config
+        # (VR) Load the toml file into config
         for path in lookup_paths:
             if os.path.exists(path):
                 with open(path, "rb") as f:
                     return load(f)
 
-        # If the toml wasn't located, raise FileNotFoundError
+        # (VR) If the toml wasn't located, raise FileNotFoundError
         raise FileNotFoundError(
             "Config file not found in any of the following paths: "
             + ", ".join(lookup_paths)
@@ -61,20 +61,20 @@ class Context:
 
     @cached_property
     def working_dir(self):
-        """ Create working directory """
+        """ (VR) Create working directory """
         if not os.path.exists(self._working_dir):
             os.mkdir(self._working_dir)
         else:
             if self.transient:
                 raise Exception("Working directory already exists under transient mode")
 
-        # If in transient mode, delete the working directory on exit
+        # (VR) If in transient mode, delete the working directory on exit
         if self.transient:
             atexit.register(lambda: shutil.rmtree(self._working_dir))
         return self._working_dir
 
     def request_graph_related_path(self, graph, suffix):
-        """ Get filepath to write intermediate graphs to
+        """ (VR) Get filepath to write intermediate graphs to
         
         Parameters:
             graph (AbstractGraph)   : graph object to store
@@ -89,11 +89,11 @@ class Context:
         )
 
     def request_subpath(self, suffix) -> str:
-        """ (For Checkpointing) Get file in working directory """
+        """ (VR) (For Checkpointing) Get file in working directory """
         return os.path.join(self.working_dir, suffix)
 
     def find_latest_checkpoint(self) -> Optional[str]:
-        """ (For Checkpointing) Get last checkpoint from CM run """
+        """ (VR) (For Checkpointing) Get last checkpoint from CM run """
         checkpoints = glob.glob(os.path.join(self.working_dir, "*.pkl"))
         if not checkpoints:
             return None

@@ -55,7 +55,7 @@ class AbstractGraph:
     def find_clusters(
         self, clusterer: AbstractClusterer, with_singletons: bool = True
     ) -> Iterator[IntangibleSubgraph]:
-        """ Find clusters using the given clusterer"""
+        """ (VR) Find clusters using the given clusterer"""
         log.info(
             f"Finding clusters using clusterer",
             id=self.index,
@@ -82,19 +82,19 @@ class Graph(AbstractGraph):
 
     @staticmethod
     def from_nk(graph, index=""):
-        """ Create a wrapped graph from a networkit graph """
+        """ (VR) Create a wrapped graph from a networkit graph """
         return Graph(graph, index)
 
     @staticmethod
     def from_edgelist(path):
-        """ Read a graph from an edgelist file """
+        """ (VR) Read a graph from an edgelist file """
         edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
         nk_graph = edgelist_reader.read(path)
         return Graph.from_nk(nk_graph)
 
     @staticmethod
     def from_metis(path):
-        """ Read from .metis format """
+        """ (VR) Read from .metis format """
         metis_reader = nk.graphio.METISGraphReader()
         return Graph.from_nk(metis_reader.read(path))
         
@@ -126,7 +126,7 @@ class Graph(AbstractGraph):
     def cut_by_mincut(
         self, mincut_res: mincut.MincutResult
     ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
-        """ Cut the graph by the mincut result """
+        """ (VR) Cut the graph by the mincut result """
         light = self.induced_subgraph(mincut_res.light_partition, "a")
         heavy = self.induced_subgraph(mincut_res.heavy_partition, "b")
         return light, heavy
@@ -175,7 +175,7 @@ class Graph(AbstractGraph):
         return self._data.iterNodes()
 
     def modularity_of(self, g: IntangibleSubgraph) -> float:
-        """ Calculate the modularity of the subset `g` with respect to `self`
+        """ (VR) Calculate the modularity of the subset `g` with respect to `self`
         
         Modularity is higher when clusters are densely connected within clusters but sparsely 
         connected between clusters
@@ -232,7 +232,7 @@ class RealizedSubgraph(AbstractGraph):
     _graph: Graph
 
     def __init__(self, intangible: IntangibleSubgraph, graph: Graph):
-        """ Convert nodelist into adjacency list """
+        """ (VR) Convert nodelist into adjacency list """
         self.index = intangible.index
         self.nodeset = intangible.nodeset
         self.adj: Dict[int, set[int]] = {}

@@ -11,7 +11,7 @@ def prune_graph(
     connectivity_requirement: MincutRequirement,
     clusterer: AbstractClusterer,
 ) -> int:
-    """ This stage comes before the mincut stage for each cluster. 
+    """ (VR) This stage comes before the mincut stage for each cluster. 
     Remove the single vertices that have degrees lower than the mincut requirement until there exists no such vertices.
 
     Params:
