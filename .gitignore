@@ -1,4 +1,6 @@
 .vscode/*
 logs/*.log
 source/__pycache__/
+hm01/__pycache__/
 .DS_Store
+.idea/*
