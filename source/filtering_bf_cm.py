@@ -63,7 +63,7 @@ class FilteringBfCm(Stage):
             
             cmd = ["Rscript", 
                    self.config[CM_READY_SCRIPT_KEY],
-                   cleaned_input_file,
+                   clustering_file,
                    filtering_output_file, 
                    cm_ready_output_file
                    ] 

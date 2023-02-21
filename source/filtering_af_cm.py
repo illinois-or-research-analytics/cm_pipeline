@@ -50,7 +50,7 @@ class FilteringAfCm(Stage):
             
             cmd = ["Rscript", 
                    self.config[FILTERING_SCRIPT_KEY], 
-                   cleaned_input_file,
+                   cm_file,
                    cm_file, 
                    filtering_output_file
                    ] 
