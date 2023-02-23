@@ -5,7 +5,8 @@ from source.clustering import Clustering
 from source.cmd import Cmd
 from source.filtering_bf_cm import FilteringBfCm
 from source.filtering_af_cm import FilteringAfCm
-from source.connectivity_modifier import ConnectivityModifier
+from source.connectivity_modifier_new import ConnectivityModifierNew
+from source.connectivity_modifier_old import ConnectivityModifierOld
 from source.stage import Stage
 from source.timeit import timeit
 from source.constants import *
@@ -41,9 +42,17 @@ class Workflow:
 
         if config.has_section(CONNECTIVITY_MODIFIER_SECTION):
             stage_num = stage_num + 1
-            self._add_stage(
-                ConnectivityModifier, CONNECTIVITY_MODIFIER_SECTION, stage_num
-                )
+            # Choose between new and old cm versions
+            if self.default_config.cm_version == CM_VERSION_OLD_VAL:
+                self._add_stage(
+                    ConnectivityModifierOld, CONNECTIVITY_MODIFIER_SECTION,
+                    stage_num
+                    )
+            if self.default_config.cm_version == CM_VERSION_NEW_VAL:
+                self._add_stage(
+                    ConnectivityModifierNew, CONNECTIVITY_MODIFIER_SECTION,
+                    stage_num
+                    )
 
         if config.has_section(FILTERING_AF_CM_SECTION):
             stage_num = stage_num + 1
