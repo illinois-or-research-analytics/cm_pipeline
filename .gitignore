@@ -1,6 +1,9 @@
 .vscode/*
 logs/*.log
+logs/executed-cmds/*.txt
 source/__pycache__/
 hm01/__pycache__/
+__pycache__/
+hm01/clustereres/__pycache__
 .DS_Store
 .idea/*
