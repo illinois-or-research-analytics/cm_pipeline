@@ -92,4 +92,9 @@ class FilteringAfCm(Stage):
                    final_output_file
                    ]
             self.cmd_obj.run(cmd)
+
+            # add the final output file to files_to_analyse dict
+            FilteringAfCm.files_to_analyse[RESOLUTION_KEY][resolution].append(
+                final_output_file
+                )
             logging.info("******** FINISHED FILTERING AFTER CM STAGE ********")

@@ -2,12 +2,15 @@ from collections import OrderedDict
 from source.default_config import DefaultConfig
 from source.cleanup import Cleanup
 from source.clustering import Clustering
+from source.cmd import Cmd
 from source.filtering_bf_cm import FilteringBfCm
 from source.filtering_af_cm import FilteringAfCm
 from source.connectivity_modifier import ConnectivityModifier
+from source.stage import Stage
 from source.timeit import timeit
 from source.constants import *
 import logging
+import os
 
 # Create a custom logger
 host_logger = logging.getLogger(__name__)
@@ -20,6 +23,7 @@ class Workflow:
 
         # Read the default config.
         self.default_config = DefaultConfig(dict(config[DEFAULT]))
+        self.cmd_obj = Cmd(self.default_config)
 
         stage_num = 0
         # Note: maintain the order in which the sections are parsed
@@ -54,12 +58,38 @@ class Workflow:
             )
         self.stages[section_name] = stage_class_obj
 
+    def _get_analysis_file(self, resolution):
+        op_folder_name = "analysis"
+        op_folder = os.path.join(
+            self.default_config.output_dir, op_folder_name
+            )
+        os.makedirs(op_folder, exist_ok=True)
+        op_file_name = f"{self.default_config.network_name}_{resolution}_{op_folder_name}.csv"
+        op_file_name = os.path.join(op_folder, op_file_name)
+        return op_file_name
+
+    def generate_analysis_report(self):
+        host_logger.info("******** GENERATING ANALYSIS REPORTS ********")
+        for resolution in Stage.files_to_analyse[RESOLUTION_KEY]:
+            res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
+                resolution]
+            analysis_csv_file = self._get_analysis_file(resolution)
+            cmd = ['Rscript',
+                   "./scripts/analysis.R",
+                   Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY],
+                   analysis_csv_file,
+                   ]
+            cmd.extend(res_files_to_analyse)
+            self.cmd_obj.run(cmd)
+        host_logger.info(
+            "******** FINISHED GENERATING ANALYSIS REPORTS ******"
+            )
+
     @timeit
     def start(self):
         host_logger.info("******** STARTED CM WORKFLOW ********")
         for stage in self.stages.values():
             stage.execute()
-
         # Todo:
         list(self.stages.values())[-1].cmd_obj.write_placeholder()
         host_logger.info("******** FINISHED CM WORKFLOW ********")

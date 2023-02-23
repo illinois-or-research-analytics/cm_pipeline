@@ -93,6 +93,11 @@ class FilteringBfCm(Stage):
                    cm_ready_output_file
                    ]
             self.cmd_obj.run(cmd)
+
+            # add the cm_ready output file to files_to_analyse dict
+            FilteringBfCm.files_to_analyse[RESOLUTION_KEY][resolution].append(
+                cm_ready_output_file
+                )
             logging.info(
                 "******** FINISHED FILTERING BEFORE CM STAGE ********"
                 )

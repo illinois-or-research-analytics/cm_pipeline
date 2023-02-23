@@ -1,11 +1,24 @@
 import os
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from string import Template
 from source.constants import *
 from source.cmd import Cmd
 
 
 class Stage(object):
+    """
+    This is a class variable and hence all the instances will have access
+     files_to_analyse = {
+                         'cleaned_ip_file': 'S1_cit_patents_cleaned.tsv',
+                         '0.1': [],
+                         '0.5': []
+                         }
+    """
+    files_to_analyse = {
+            CLEANED_INPUT_FILE_KEY: "",
+            RESOLUTION_KEY: defaultdict(list)
+        }
+
     def __init__(
             self, config, default_config, stage_num, prev_stages=None
             ):
@@ -18,6 +31,7 @@ class Stage(object):
         self.prev_stages = prev_stages
         self._check_paths()
         self.cmd_obj = Cmd(default_config)
+        self.files_to_analyse = OrderedDict()
 
     def execute(self):
         raise NotImplementedError(

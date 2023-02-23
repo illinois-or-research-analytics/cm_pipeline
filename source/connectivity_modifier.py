@@ -139,4 +139,9 @@ class ConnectivityModifier(Stage):
                 cm_uni_preprocessed_op_json_file, cm_final_op_file
                 )
 
+            # add the cm final output file to files_to_analyse dict
+            ConnectivityModifier.files_to_analyse[RESOLUTION_KEY][resolution].append(
+                cm_final_op_file
+                )
+
         logging.info("******** FINISHED CONNECTIVITY MODIFIER STAGE ********")

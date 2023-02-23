@@ -18,8 +18,12 @@ class Cleanup(Stage):
             self.default_config.output_dir,
             self._get_output_file_name_from_template(OUTPUT_FILE_NAME)
             )
+        Cleanup.files_to_analyse[
+            CLEANED_INPUT_FILE_KEY] = self.cleaned_output_file
 
-    def _get_output_file_name_from_template(self, template_str, resolution=None):
+    def _get_output_file_name_from_template(
+            self, template_str, resolution=None
+            ):
         template = Template(template_str)
         output_file_name = template.substitute(
             network_name=self.default_config.network_name,

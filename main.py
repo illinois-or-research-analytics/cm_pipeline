@@ -46,6 +46,7 @@ if __name__ == "__main__":
     try:
         cm_workflow = Workflow(config)
         cm_workflow.start()
+        cm_workflow.generate_analysis_report()
         logger.debug("Program finished")
     except Exception as e:
         error_message = "An error occurred in the CM Workflow"

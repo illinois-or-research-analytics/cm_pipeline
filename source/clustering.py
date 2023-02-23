@@ -38,4 +38,9 @@ class Clustering(Stage):
             cmd = [self.config[CLUSTERING_SCRIPT_KEY], "-i",
                    cleaned_input_file, "-r", resolution, "-o", output_file]
             self.cmd_obj.run(cmd)
+
+            # add the clustering output file to files_to_analyse dict
+            Clustering.files_to_analyse[RESOLUTION_KEY][resolution].append(
+                output_file
+                )
         logging.info("******** FINISHED CLUSTERING STAGE ********")
