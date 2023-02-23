@@ -17,9 +17,10 @@ def timeit(func):
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
+        convert_h_m_s = time.strftime("%H:%M:%S", time.gmtime(total_time))
         logger.info(
             f'Function {func.__name__}{args}{kwargs} '
-            f'Took {total_time:.4f} seconds'
+            f'Took (HH:MM:SS) {convert_h_m_s}'
             )
         return result
 
