@@ -84,6 +84,7 @@ class ConnectivityModifierNew(Stage):
             cmd = [
                 "python",
                 "./hm01/cm.py",
+                "-i",
                 cleaned_input_file,
                 "-c",
                 self.default_config.algorithm,
