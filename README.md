@@ -10,7 +10,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Setup 
 - Clone the cm_pipeline repository
-- Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup ]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
+- Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 - Edit [start_cm_pp.sh](start_cm_pp.sh) to point to the right venv and the cloned repository path of the cm_pipeline by giving the full path from user home or any other directory.)
 - Any of the below methods can be used to start the pipeline
 
@@ -20,7 +20,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
   ### Method 2
   1. Activate the venv which has the neccessary packages 
-  2. python -m main param.config
+  2. Run `python -m main param.config`
 
 
 ## Setting the levels for logging
@@ -38,4 +38,9 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
 
+## TODOs:
+- Support to run the workflow with individual stages (as opposed to end to end)
+- Integrate `leiden_alg` script.
+- Add edge_coverage in the analysis file for `*treestar_counts.tsv`
+- Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
 
