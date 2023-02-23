@@ -68,6 +68,7 @@ class Workflow:
         op_file_name = os.path.join(op_folder, op_file_name)
         return op_file_name
 
+    @timeit
     def generate_analysis_report(self):
         host_logger.info("******** GENERATING ANALYSIS REPORTS ********")
         for resolution in Stage.files_to_analyse[RESOLUTION_KEY]:
