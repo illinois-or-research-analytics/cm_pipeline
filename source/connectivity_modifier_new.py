@@ -80,10 +80,11 @@ class ConnectivityModifierNew(Stage):
             cm_nw_preprocess_output_file = self._get_op_file_path_for_resolution(
                 resolution, cm_nw_preprocess_op_file_name
                 )
-
+            # Todo: Comment the --quiet argument to run cm in verbose mode
             cmd = [
                 "python",
                 "./hm01/cm.py",
+                "--quiet",
                 "-i",
                 cleaned_input_file,
                 "-c",
