@@ -34,6 +34,10 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - The Output files generated during the workflow are stored in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/`
 - The descriptive analysis files can be found in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/analysis` with the `*.csv` file for each of the resolution values.
 
+## Note:
+- At present the new version of `CM` is executed in quiet mode. If you want to run it in verbose mode then 
+comment the `--quiet` argument in [source/connectiviy_modifier_new.py](source/connectiviy_modifier_new.py)
+
 ## References
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
