@@ -50,4 +50,5 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline.
 - Mechanism to sync the scripts used within cm_pipeline with the latest changes.
 - Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 
+- Copy the log file to the output directory at the end of the workflow
 
