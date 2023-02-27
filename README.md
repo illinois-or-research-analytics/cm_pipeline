@@ -1,6 +1,9 @@
 # cm_pipeline
 Modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
 
+## Overview 
+![cm_pipeline Overview](figures/cm_pp_overview.png)
+
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
 - Description of the config file keys can be found here [param_template.config](param_template.config) 
