@@ -22,7 +22,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
   2. Run `source start_cm_pp.sh` 
 
   ### Method 2
-  1. Activate the venv which has the neccessary packages 
+  1. Activate the venv which has the necessary packages 
   2. Run `python -m main param.config`
 
 

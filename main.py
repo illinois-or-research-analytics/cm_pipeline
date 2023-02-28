@@ -5,6 +5,7 @@ from datetime import datetime
 import logging
 import logging.config
 import os
+import shutil
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_CONFIG = os.path.join(ROOT_DIR, 'log.config')
@@ -22,10 +23,11 @@ def setup_logger():
         disable_existing_loggers=False,
         defaults={"logfilename": log_file_name},
         )
+    return log_file_name
 
 
 if __name__ == "__main__":
-    setup_logger()
+    log_file = setup_logger()
 
     logger = logging.getLogger(__name__)
 
@@ -48,6 +50,12 @@ if __name__ == "__main__":
         cm_workflow.start()
         cm_workflow.generate_analysis_report()
         logger.debug("Program finished")
+        # Copy the log file and executed-cmds file to the target folder
+        shutil.copy(log_file, cm_workflow.default_config.output_dir)
+        shutil.copy(
+            cm_workflow.cmd_obj.executed_cmds_text,
+            cm_workflow.default_config.output_dir
+            )
     except Exception as e:
         error_message = "An error occurred in the CM Workflow"
         logger.exception(error_message + ": %s", e)
