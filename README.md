@@ -50,8 +50,7 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - Integrate `leiden_alg` script.
 - Add edge_coverage in the analysis file for `*treestar_counts.tsv`
 - Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
-- Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline.
+- Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline. [DONE]
 - Mechanism to sync the scripts used within cm_pipeline with the latest changes.
 - Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 
-- Copy the log file to the output directory at the end of the workflow
 
