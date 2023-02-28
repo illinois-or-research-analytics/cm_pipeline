@@ -7,10 +7,8 @@ from source.constants import *
 
 logger = logging.getLogger(__name__)
 
-FILTERING_AF_CM_OP_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
-                               "algorithm}.${resolution}_treestarcounts.tsv"
-FINAL_OUTPUT_FILE_NAME = "S${stage_num}.2_${network_name}_${algorithm}.${" \
-                         "resolution}_final_nontree_n10_clusters.tsv"
+FILTERING_AF_CM_OP_FILE_NAME = "S${stage_num}_${network_name}_${" \
+                               "algorithm}.${resolution}_filtered_final.tsv"
 
 
 class FilteringAfCm(Stage):
@@ -39,16 +37,13 @@ class FilteringAfCm(Stage):
 
     @timeit
     def execute(self):
-        logging.info("******** STARTED FILTERING AFTER CM STAGE ********")
+        logging.info("******** STARTED POST CM FILTERING ********")
         cm_files = self._get_cm_files()
-        cleaned_input_file = self._get_cleaned_input_file()
-
         for resolution in self.default_config.resolutions:
 
             logger.info(
                 "Filtering to get clusters with N>10 and "
-                "non-trees for resolution %s",
-                resolution
+                "for resolution %s", resolution
                 )
             # Step 1: takes a Leiden clustering output in tsv and returns an
             # annotation of its clusters (those above size 10)
@@ -60,41 +55,17 @@ class FilteringAfCm(Stage):
             filtering_output_file = self._get_op_file_path_for_resolution(
                 resolution, filtering_op_file_name
                 )
+            self.cm_ready_filtered_files[resolution] = filtering_output_file
 
             cmd = ["Rscript",
                    self.config[FILTERING_SCRIPT_KEY],
-                   cleaned_input_file,
                    cm_file,
                    filtering_output_file
                    ]
             self.cmd_obj.run(cmd)
 
-            # Step 2: takes the output of Step 1, selects non-tree clusters, 
-            # and reduces the original Leiden clustering to
-            # non-tree clusters of size > 10
-            logger.info(
-                "Making the filtered output file to have node id and "
-                "cluster id columns for %s",
-                resolution
-                )
-            final_output_file_name = self._get_output_file_name_from_template(
-                FINAL_OUTPUT_FILE_NAME, resolution
-                )
-            final_output_file = self._get_op_file_path_for_resolution(
-                resolution, final_output_file_name
-                )
-            self.cm_ready_filtered_files[resolution] = final_output_file
-
-            cmd = ["Rscript",
-                   self.config[CM_READY_SCRIPT_KEY],
-                   cm_file,
-                   filtering_output_file,
-                   final_output_file
-                   ]
-            self.cmd_obj.run(cmd)
-
-            # add the final output file to files_to_analyse dict
+            # add the final filtered output file to files_to_analyse dict
             FilteringAfCm.files_to_analyse[RESOLUTION_KEY][resolution].append(
-                final_output_file
+                filtering_output_file
                 )
-            logging.info("******** FINISHED FILTERING AFTER CM STAGE ********")
+            logging.info("******** FINISHED POST CM FILTERING ********")
