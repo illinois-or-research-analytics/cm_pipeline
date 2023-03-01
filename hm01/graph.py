@@ -13,6 +13,11 @@ from structlog import get_logger
 from functools import cache, cached_property
 from typing import Protocol
 
+from sys import path
+path.append('tools/python-mincut/build')
+path.append('tools/python-mincut/src')
+from pygraph import PyGraph
+
 log = get_logger()
 
 # TODO: AbstractGraph type should incorporate all duplicate code of all the Graph classes
