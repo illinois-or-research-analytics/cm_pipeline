@@ -23,4 +23,4 @@ c_10 <- c[,.N,by='V2'][N>10]
 c <- c[V2 %in% c_10$V2]
 
 #write to tsv
-write.table(c,file=args[2]),sep='\t',row.names=F, col.names=F)
+write.table(c,file=args[2],sep='\t',row.names=F,col.names=F)
