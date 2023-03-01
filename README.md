@@ -13,6 +13,15 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Setup 
 - Clone the cm_pipeline repository
+- Set up `python-mincut` by running the following commands from the root of the repository
+```bash
+git submodule update --init --recursive
+cd hm01/tools/python-mincut
+mkdir build
+cd build
+cmake .. && make
+cd ../../../..
+```
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 - Edit [start_cm_pp.sh](start_cm_pp.sh) to point to the right venv and the cloned repository path of the cm_pipeline by giving the full path from user home or any other directory.)
 - Any of the below methods can be used to start the pipeline
