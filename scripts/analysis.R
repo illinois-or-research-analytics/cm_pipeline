@@ -24,7 +24,7 @@ for (i in 1:length(algo_res)) {
 
 # get only the .tsv base file names by removing the file paths
 names(algo_list_res) <- lapply(algo_res, FUN=function(x) tail(strsplit(x, "/")[[1]], 1))
-t <- lapply(algo_list_res, FUN=function(x) x[,.N,by='V2'][N>10,.(cc=length(N),nc=sum(N)/nc_denom,count=sum(N),min=min(N),med=median(N),max=max(N))])
+t <- lapply(algo_list_res, FUN=function(x) x[,.N,by='V2'][N>1,.(cc=length(N),nc=sum(N)/nc_denom,count=sum(N),min=min(N),med=median(N),max=max(N))])
 t <- cbind(names(t),rbindlist(t))[,.(Rx=V1,clus_ct=cc,node_cov=round(100*nc,1),node_count=count,min,med,max)]
 write.table(t, file=args[2], sep=",", col.names=TRUE, row.names=F)
 
