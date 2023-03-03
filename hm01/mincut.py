@@ -5,8 +5,6 @@ from typing import List, Tuple, Union
 # from hm01.graph import Graph, RealizedSubgraph
 
 from context import context
-import subprocess
-import re
 import os
 
 script_path = os.path.abspath(__file__)
@@ -33,7 +31,6 @@ def viecut(graph):
 
 def run_viecut_command(pygraph, hydrator=None):
     """Run the viecut command and return the output path"""
-    # cmd = [context.viecut_path, "-b", "-s", "-o", output_path, metis_path, "cactus"]
     algorithm = 'noi'
     queue_implementation = 'bqueue'
     balanced = False
