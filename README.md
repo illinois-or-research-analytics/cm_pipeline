@@ -6,7 +6,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
-- Description of the config file keys can be found here [param_template.config](param_template.config) 
+- Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
 
 ## Requirements [WIP]
 - Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
@@ -62,8 +62,8 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
 
 ## TODOs:
-- Support to run the workflow with individual stages (as opposed to end to end)
-- Integrate `leiden_alg` script.
+- Support to run the workflow with individual stages (as opposed to "end to end")
+- Integrate `leiden_alg` script by GC. [DONE]
 - Add edge_coverage in the analysis file for `*treestar_counts.tsv`
 - Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
 - Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline. [DONE]

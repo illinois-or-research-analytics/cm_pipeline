@@ -43,7 +43,7 @@ class Cmd(object):
         except subprocess.CalledProcessError as exc:
             error_msg = f"Process failed because did not return a " \
                         f"successful return code. \
-                        Returned {exc.returncode}\n{exc.output}"
+                        Returned {exc.returncode}\n{exc.stderr}"
             logger.error(error_msg)
             raise subprocess.CalledProcessError(cmd_list, error_msg)
 

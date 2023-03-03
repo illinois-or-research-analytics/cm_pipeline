@@ -16,10 +16,33 @@ class Clustering(Stage):
         # list of clustering files for different resolutions
         self.clustering_output_files = OrderedDict()
 
+    def _get_clustering_script(self):
+        clustering_script_name = self.config.get(
+            CLUSTERING_SCRIPT_KEY,
+            LEIDEN_ALG_SCRIPT_VALUE
+            )
+        if clustering_script_name == RUNLEIDEN_SCRIPT_VALUE:
+            clustering_script = ["runleiden"]
+        elif clustering_script_name == LEIDEN_ALG_SCRIPT_VALUE:
+            clustering_script = ["python", "./scripts/run_leiden.py"]
+        return clustering_script
+
+    def _get_n_iteration(self):
+        n_iteration = []
+        clustering_script_name = self.config.get(
+            CLUSTERING_SCRIPT_KEY,
+            LEIDEN_ALG_SCRIPT_VALUE
+            )
+        if clustering_script_name == LEIDEN_ALG_SCRIPT_VALUE:
+            n_iteration = ["-n", self.config.get(NUMBER_OF_ITERATIONS_KEY, 2)]
+        return n_iteration
+
     @timeit
     def execute(self):
         logging.info("******** STARTED CLUSTERING STAGE ********")
         cleaned_input_file = self._get_cleaned_input_file()
+        clustering_script = self._get_clustering_script()
+        n_iterations = self._get_n_iteration()
 
         for resolution in self.default_config.resolutions:
             op_file_name = self._get_output_file_name_from_template(
@@ -35,8 +58,15 @@ class Clustering(Stage):
                 resolution
                 )
 
-            cmd = [self.config[CLUSTERING_SCRIPT_KEY], "-i",
-                   cleaned_input_file, "-r", resolution, "-o", output_file]
+            script_args = [
+                "-i",
+                cleaned_input_file,
+                "-r",
+                resolution,
+                "-o",
+                output_file
+                ]
+            cmd = clustering_script + script_args + n_iterations
             self.cmd_obj.run(cmd)
 
             # add the clustering output file to files_to_analyse dict
