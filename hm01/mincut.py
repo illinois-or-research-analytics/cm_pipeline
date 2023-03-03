@@ -9,9 +9,14 @@ import subprocess
 import re
 import os
 
+script_path = os.path.abspath(__file__)
+dir_name = os.path.dirname(script_path)
+os.chdir(dir_name)
+
 from sys import path
 path.append('tools/python-mincut/build')
 path.append('tools/python-mincut/src')
+
 from pygraph import PyGraph
 from mincut_wrapper import MincutResult
 

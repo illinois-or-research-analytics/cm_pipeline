@@ -165,17 +165,17 @@ def algorithm_g(
             log.debug("calculated validity threshold", validity_threshold=valid_threshold)
             log.debug(
                 "mincut computed",
-                a_side_size=len(mincut_res.light_partition),
-                b_side_size=len(mincut_res.heavy_partition),
-                cut_size=mincut_res.cut_size,
+                a_side_size=len(mincut_res.get_light_partition()),
+                b_side_size=len(mincut_res.get_heavy_partition()),
+                cut_size=mincut_res.get_cut_size(),
             )
         
         # (VR) Set the current cluster's cut size
-        tree_node.cut_size = mincut_res.cut_size
+        tree_node.cut_size = mincut_res.get_cut_size()
         tree_node.validity_threshold = valid_threshold
 
         # (VR) If the cut size is below validity, split!
-        if mincut_res.cut_size <= valid_threshold and mincut_res.cut_size > 0:
+        if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
             # (VR) Split partitions and set them as children nodes
             p1, p2 = subgraph.cut_by_mincut(mincut_res)
             node_a = ClusterTreeNode()
