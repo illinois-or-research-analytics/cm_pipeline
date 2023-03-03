@@ -15,6 +15,11 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - Clone the cm_pipeline repository
 - Set up `python-mincut` by running the following commands from the root of the repository
 ```bash
+module load python3/3.10.0
+module load cmake/3.25.1
+module load openmpi/4.0.1
+module load gcc/9.2.0
+
 git submodule update --init --recursive
 cd hm01/tools/python-mincut
 mkdir build
