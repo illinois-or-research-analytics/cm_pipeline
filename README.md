@@ -10,26 +10,14 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Requirements [WIP]
 - Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
+- `cmake` version `3.19.0` and above should be installed..
+- `openmpi/4.0.1` and `gcc/9.2.0`
 
 ## Setup 
 - Clone the cm_pipeline repository
-- Set up `python-mincut` by running the following commands from the root of the repository
-```bash
-module load python3/3.10.0
-module load cmake/3.25.1
-module load openmpi/4.0.1
-module load gcc/9.2.0
-
-git submodule update --init --recursive
-cd hm01/tools/python-mincut
-mkdir build
-cd build
-cmake .. && make
-cd ../../../..
-```
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 - Edit [start_cm_pp.sh](start_cm_pp.sh) to point to the right venv and the cloned repository path of the cm_pipeline by giving the full path from user home or any other directory.)
-- Any of the below methods can be used to start the pipeline
+- Any of the below methods can be used to set-up mincut and start the pipeline
 
   ### Method 1
   1. edit the venv path and the cloned repository path for this repository in [start_cm_pp.sh](start_cm_pp.sh)
@@ -37,6 +25,20 @@ cd ../../../..
 
   ### Method 2
   1. Activate the venv which has the necessary packages 
+  2. Set up `python-mincut` by running the following commands from the root of the repository
+      ```bash
+      module load python3/3.10.0
+      module load cmake/3.25.1
+      module load openmpi/4.0.1
+      module load gcc/9.2.0
+
+      git submodule update --init --recursive
+      cd hm01/tools/python-mincut
+      mkdir build
+      cd build
+      cmake .. && make
+      cd ../../../..
+      ```
   2. Run `python -m main param.config`
 
 
