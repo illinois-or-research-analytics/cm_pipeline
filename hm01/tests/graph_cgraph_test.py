@@ -8,6 +8,10 @@ print("Loading graph...")
 G = Graph.from_edgelist('/shared/rsquared/vikrams_ikc_cluster_el.tsv')
 print("Done")
 
+print("Printing Graph details")
+print(f"Number of edges: {G.m()}")
+print(f"Number of nodes: {G.n()}")
+
 print("Converting to realized subgraph...")
 G = G.to_realized_subgraph()
 print("Done")

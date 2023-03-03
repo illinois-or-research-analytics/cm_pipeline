@@ -94,7 +94,7 @@ class Graph(AbstractGraph):
     @staticmethod
     def from_edgelist(path):
         """ (VR) Read a graph from an edgelist file """
-        edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
+        edgelist_reader = nk.graphio.EdgeListReader("\t", 0, continuous = False)
         nk_graph = edgelist_reader.read(path)
         return Graph.from_nk(nk_graph)
 
@@ -366,15 +366,11 @@ class RealizedSubgraph(AbstractGraph):
     
     def as_pygraph(self) -> CGraph:
         edges = []
-        nodes = set()
-        for u in self.nodes():
+        nodes = list(self.nodeset)
+        for u in nodes:
             for v in self.adj[u]:
-                nodes.add(v)
                 edges.append((u, v))
-        print(f"PyGraph edges: {len(edges)}")
-        print(f"Pygraph nodes: {len(nodes)}")
-        print(list(sorted(list(nodes))[:10]))
-        return PyGraph(list(nodes), edges)
+        return PyGraph(nodes, edges)
 
 @dataclass
 class IntangibleSubgraph:
