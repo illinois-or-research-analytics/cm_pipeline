@@ -14,7 +14,8 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - `python39-devel` or higher should be installed
 - `openmpi` and `gcc` of any version
      - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used.
-### EngrIT Systems
+### UIUC EngrIT Systems
+- These instructions are specific for users on an EngrIT cluster (such as Valhalla or the Campus Cluster) under the University of Illinois at Urbana-Champaign
 - You can get all the needed packages to run the pipeline via the following commands
 ```bash
 module load python3/3.10.0
