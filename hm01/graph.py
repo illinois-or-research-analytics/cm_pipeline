@@ -13,6 +13,12 @@ from structlog import get_logger
 from functools import cache, cached_property
 from typing import Protocol
 
+from sys import path
+path.append('tools/python-mincut/build')
+path.append('tools/python-mincut/src')
+from mincut_wrapper import MincutResult
+from pygraph import PyGraph
+
 log = get_logger()
 
 # TODO: AbstractGraph type should incorporate all duplicate code of all the Graph classes
@@ -88,7 +94,7 @@ class Graph(AbstractGraph):
     @staticmethod
     def from_edgelist(path):
         """ (VR) Read a graph from an edgelist file """
-        edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
+        edgelist_reader = nk.graphio.EdgeListReader("\t", 0, continuous = False)
         nk_graph = edgelist_reader.read(path)
         return Graph.from_nk(nk_graph)
 
@@ -113,7 +119,7 @@ class Graph(AbstractGraph):
             return 0
         return min(self._data.degree(n) for n in self._data.iterNodes())
 
-    def find_mincut(self) -> mincut.MincutResult:
+    def find_mincut(self) -> MincutResult:
         """ Find a mincut wrapped over Viecut """
         return mincut.viecut(self)
 
@@ -124,11 +130,11 @@ class Graph(AbstractGraph):
         self._data.removeNode(u)
 
     def cut_by_mincut(
-        self, mincut_res: mincut.MincutResult
+        self, mincut_res: MincutResult
     ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
         """ (VR) Cut the graph by the mincut result """
-        light = self.induced_subgraph(mincut_res.light_partition, "a")
-        heavy = self.induced_subgraph(mincut_res.heavy_partition, "b")
+        light = self.induced_subgraph(mincut_res.get_light_partition(), "a")
+        heavy = self.induced_subgraph(mincut_res.get_heavy_partition(), "b")
         return light, heavy
 
     @cached_property
@@ -222,7 +228,6 @@ class Graph(AbstractGraph):
         compact_graph = nk.graphtools.getCompactedGraph(self._data, cont_ids)
         edges = [(u, v) for u, v in compact_graph.iterEdges()]
         return ig.Graph(self.n(), edges)
-
 
 class RealizedSubgraph(AbstractGraph):
     hydrator: List[int]  # mapping from compact id to original id
@@ -342,15 +347,15 @@ class RealizedSubgraph(AbstractGraph):
                         f.write(f"{u}\t{v}\n")
         return p
 
-    def find_mincut(self) -> mincut.MincutResult:
+    def find_mincut(self) -> MincutResult:
         return mincut.viecut(self)
 
     def cut_by_mincut(
-        self, mincut_res: mincut.MincutResult
+        self, mincut_res: MincutResult
     ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
         """Cut the graph by the mincut result"""
-        light = RealizedSubgraph(IntangibleSubgraph(mincut_res.light_partition, self.index + "a"), self._graph)
-        heavy = RealizedSubgraph(IntangibleSubgraph(mincut_res.heavy_partition, self.index + "b"), self._graph)
+        light = RealizedSubgraph(IntangibleSubgraph(mincut_res.get_light_partition(), self.index + "a"), self._graph)
+        heavy = RealizedSubgraph(IntangibleSubgraph(mincut_res.get_heavy_partition(), self.index + "b"), self._graph)
         return light, heavy
 
     @property
@@ -358,6 +363,14 @@ class RealizedSubgraph(AbstractGraph):
         if self._dirty:
             self.recompact()
         return self.inv
+    
+    def as_pygraph(self) -> CGraph:
+        edges = []
+        nodes = list(self.nodeset)
+        for u in nodes:
+            for v in self.adj[u]:
+                edges.append((u, v))
+        return PyGraph(nodes, edges)
 
 @dataclass
 class IntangibleSubgraph:
