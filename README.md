@@ -10,7 +10,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Requirements [WIP]
 - Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
-- `cmake` version `3.19.0` and above should be installed..
+- `cmake` version `3.9.0` and above should be installed..
 - `openmpi/4.0.1` and `gcc/9.2.0`
 
 ## Setup 
