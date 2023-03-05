@@ -59,7 +59,7 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
 
-## Bibtex
+## Citation
 ```
 @misc{cm_pipe2023,
   author = {Vidya Kamath and Vikram Ramavarapu and Fabio Ayres, and George Chacko},
