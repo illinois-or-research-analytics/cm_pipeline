@@ -6,39 +6,39 @@ Modular pipeline for testing and using an improved version of CM for generating 
 
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
-- Description of the config file keys can be found here [param_template.config](param_template.config) 
+- Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
 
 ## Requirements [WIP]
 - Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
-
-## Setup 
-- Clone the cm_pipeline repository
-- Set up `python-mincut` by running the following commands from the root of the repository
+- `cmake` version `3.2.0` and above should be installed.
+- `python39-devel` or higher should be installed
+- `openmpi` and `gcc` of any version
+     - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used.
+### UIUC EngrIT Systems
+- These instructions are specific for users on an EngrIT cluster (such as Valhalla or the Campus Cluster) under the University of Illinois at Urbana-Champaign
+- You can get all the needed packages to run the pipeline via the following commands
 ```bash
 module load python3/3.10.0
 module load cmake/3.25.1
 module load openmpi/4.0.1
 module load gcc/9.2.0
-
-git submodule update --init --recursive
-cd hm01/tools/python-mincut
-mkdir build
-cd build
-cmake .. && make
-cd ../../../..
 ```
+
+## Setup and Running Instructions
+- Clone the cm_pipeline repository
+- Activate the venv which has the necessary packages 
+- Set up `python-mincut`:
+     - Initiate the submodules via the following commands being run from the root of this repository
+     ```bash
+     git submodule update --init --recursive
+     cd hm01/tools/python-mincut
+     mkdir build
+     cd build
+     cmake .. && make
+     cd ../../../..
+     ```
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
-- Edit [start_cm_pp.sh](start_cm_pp.sh) to point to the right venv and the cloned repository path of the cm_pipeline by giving the full path from user home or any other directory.)
-- Any of the below methods can be used to start the pipeline
-
-  ### Method 1
-  1. edit the venv path and the cloned repository path for this repository in [start_cm_pp.sh](start_cm_pp.sh)
-  2. Run `source start_cm_pp.sh` 
-
-  ### Method 2
-  1. Activate the venv which has the necessary packages 
-  2. Run `python -m main param.config`
-
+- Run `python -m main param.config`
 
 ## Setting the levels for logging
 - cm pipeline logs the data on to console and file.
@@ -59,9 +59,19 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
 
+## Citation
+```
+@misc{cm_pipe2023,
+  author = {Vidya Kamath and Vikram Ramavarapu and Fabio Ayres, and George Chacko},
+  title = {Connectivity Modifier Pipeline},
+  howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
+  year={2023},
+}
+```
+
 ## TODOs:
-- Support to run the workflow with individual stages (as opposed to end to end)
-- Integrate `leiden_alg` script.
+- Support to run the workflow with individual stages (as opposed to "end to end")
+- Integrate `leiden_alg` script by GC. [DONE]
 - Add edge_coverage in the analysis file for `*treestar_counts.tsv`
 - Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
 - Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline. [DONE]
