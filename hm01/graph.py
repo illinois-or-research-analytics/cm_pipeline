@@ -1,17 +1,14 @@
 from __future__ import annotations
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing_extensions import Self
 import networkit as nk
-from collections import defaultdict
-from typing import Dict, Iterator, List, Sequence, Tuple, Union
+from typing import Dict, Iterator, List, Tuple, Union
 
 from clusterers.abstract_clusterer import AbstractClusterer
 import mincut
 from context import context
 from structlog import get_logger
 from functools import cache, cached_property
-from typing import Protocol
 
 from sys import path
 path.append('tools/python-mincut/build')

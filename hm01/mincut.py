@@ -1,15 +1,10 @@
-from dataclasses import dataclass
-import coloredlogs, logging
-from typing import List, Tuple, Union
+import logging
 
-# from hm01.graph import Graph, RealizedSubgraph
+from os import path, chdir
 
-from context import context
-import os
-
-script_path = os.path.abspath(__file__)
-dir_name = os.path.dirname(script_path)
-os.chdir(dir_name)
+script_path = path.abspath(__file__)
+dir_name = path.dirname(script_path)
+chdir(dir_name)
 
 from sys import path
 path.append('tools/python-mincut/build')

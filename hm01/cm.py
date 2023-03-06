@@ -1,33 +1,25 @@
 """The main CLI logic, containing also the main algorithm"""
 from __future__ import annotations
 
-from typing import List, Optional, Tuple, Union, Dict, Deque, cast
-from dataclasses import dataclass
-from collections import deque
+from typing import List, Optional, Tuple, Union, Dict, cast
 from enum import Enum
-from itertools import chain
 from structlog import get_logger
 
 import typer
-import math
 import time
 import treeswift as ts
 import networkit as nk
 import jsonpickle
 
-from clusterers.abstract_clusterer import AbstractClusterer
 from clusterers.ikc_wrapper import IkcClusterer
 from clusterers.leiden_wrapper import LeidenClusterer, Quality
-from context import context
 from mincut_requirement import MincutRequirement
 from graph import Graph, IntangibleSubgraph, RealizedSubgraph
 from pruner import prune_graph
 from to_universal import cm2universal
 from cluster_tree import ClusterTreeNode
 
-import sys
-import sqlite3
-import pickle as pkl
+from sys import setrecursionlimit
 
 class ClustererSpec(str, Enum):
     """ (VR) Container for Clusterer Specification """  
@@ -235,7 +227,6 @@ def main(
     input: str = typer.Option(..., "--input", "-i"),
     existing_clustering: str = typer.Option(..., "--existing-clustering", "-e"),
     quiet: Optional[bool] = typer.Option(False, "--quiet", "-q"),
-    working_dir: Optional[str] = typer.Option("", "--working-dir", "-d"),
     clusterer_spec: ClustererSpec = typer.Option(..., "--clusterer", "-c"),
     k: int = typer.Option(-1, "--k", "-k"),
     resolution: float = typer.Option(-1, "--resolution", "-g"),
@@ -248,7 +239,6 @@ def main(
         input (str)                     : filename of input graph
         existing_clustering (str)       : filename of existing clustering
         quiet (bool)                    : silence output messages
-        working_dir (str)               : name of temporary directory to store mid-stage data (optional)
         clusterer_spec (ClusterSpec)    : clusterering algorithm
         k (int)                         : k param (for IKC only)
         resolution (float)              : resolution param (for Leiden only)
@@ -256,7 +246,7 @@ def main(
         output (str)                    : filename to store output
     """
     # (VR) Setting a really high recursion limit to prevent stack overflow errors
-    sys.setrecursionlimit(1231231234)
+    setrecursionlimit(1231231234)
 
     # (VR) Check -g and -k parameters for Leiden and IKC respectively
     if clusterer_spec == ClustererSpec.leiden:
@@ -272,11 +262,9 @@ def main(
     # (VR) Start hm01
     if not quiet:
         log = get_logger()
-        context.with_working_dir(input + "_working_dir" if not working_dir else working_dir)
         log.info(
             f"starting hm01",
             input=input,
-            working_dir=context.working_dir,
             clusterer=clusterer,
         )
 
