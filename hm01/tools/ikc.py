@@ -5,7 +5,6 @@ import heapq as hq
 
 
 def main(args):
-
     edge_list = args.edgeList
     out_dir = args.outDir
     k = args.kvalue

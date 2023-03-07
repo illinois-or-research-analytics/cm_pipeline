@@ -9,6 +9,7 @@ import mincut
 from context import context
 from structlog import get_logger
 from functools import cache, cached_property
+import igraph as ig
 
 from sys import path
 path.append('tools/python-mincut/build')
@@ -48,6 +49,11 @@ class AbstractGraph:
 
     def degree_sequence(self) -> List[int]:
         return sorted([self.degree(u) for u in self.nodes()])
+
+    def intangible_subgraph_from_compact(self, ids: List[int], suffix: str):
+        """ Create an intangible subgraph from a list of ids that represent nodes in the compacted (i.e., made continuous) graph
+        """
+        return self.intangible_subgraph(ids, suffix)
 
     def find_clusters(
         self, clusterer: AbstractClusterer, with_singletons: bool = True
@@ -185,6 +191,12 @@ class Graph(AbstractGraph):
     def to_intangible(self, graph):
         return IntangibleSubgraph(list(self.nodes()), self.index)
 
+    def to_igraph(self):
+        cont_ids = nk.graphtools.getContinuousNodeIds(self._data)
+        compact_graph = nk.graphtools.getCompactedGraph(self._data, cont_ids)
+        edges = [(u, v) for u, v in compact_graph.iterEdges()]
+        return ig.Graph(self.n(), edges)
+
 class RealizedSubgraph(AbstractGraph):
     _graph: Graph
 
@@ -256,6 +268,15 @@ class RealizedSubgraph(AbstractGraph):
             for v in self.adj[u]:
                 edges.append((u, v))
         return PyGraph(nodes, edges)
+
+    def to_igraph(self):
+        edges = []
+        for u in self.nodes():
+            for v in self.adj[u]:
+                if u > v:
+                    continue
+                edges.append((u, v))
+        return ig.Graph(self.n(), edges)
 
 @dataclass
 class IntangibleSubgraph:
