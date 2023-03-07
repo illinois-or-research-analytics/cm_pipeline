@@ -7,3 +7,5 @@ __pycache__/
 hm01/clustereres/__pycache__
 .DS_Store
 .idea/*
+sandbox/
+data/
