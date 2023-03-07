@@ -46,8 +46,10 @@ def main():
     workers = []
     for _ in range(num_workers):
         worker = mp.Process(target=task, args=(queue, print_lock))
-        worker.start()
         workers.append(worker)
+
+    for worker in workers:
+        worker.start()
 
     queue.join()
 
