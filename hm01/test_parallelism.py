@@ -18,6 +18,7 @@ def task(queue, print_lock):
     print_msg = functools.partial(print_msg_with_lock, print_lock)
     my_pid = os.getpid()
     print_msg(f'Hi, I\'m process {my_pid}, ready to work')
+
     while True:
         print_msg(f'I\'m pid {my_pid}, waiting for a task')
         item = queue.get()
@@ -30,6 +31,11 @@ def task(queue, print_lock):
         if random.random() < SPLIT_PROB:
             queue.put((my_pid, item[1] + 1))
         queue.task_done()
+
+    # Simulate some post-processing here.
+    time.sleep(1)
+
+    print_msg(f'Hi, I\'m process {my_pid}, I will finally rest.')
 
 
 def main():
@@ -64,10 +70,12 @@ def main():
     # Wait for all workers to be free.
     queue.join()
 
-    # Close all workers.
+    # Wait for all workers to be really done.
     for worker in workers:
         worker.join()
 
+    # Do any post-processing here.
+    print('All is well.')
 
 if __name__ == '__main__':
     main()
