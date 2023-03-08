@@ -67,13 +67,13 @@ class Workflow:
             )
         self.stages[section_name] = stage_class_obj
 
-    def _get_analysis_file(self, resolution):
+    def _get_analysis_file(self, resolution, n_iter):
         op_folder_name = "analysis"
         op_folder = os.path.join(
             self.default_config.output_dir, op_folder_name
             )
         os.makedirs(op_folder, exist_ok=True)
-        op_file_name = f"{self.default_config.network_name}_{resolution}_{op_folder_name}.csv"
+        op_file_name = f"{self.default_config.network_name}_{resolution}_n{n_iter}_{op_folder_name}.csv"
         op_file_name = os.path.join(op_folder, op_file_name)
         return op_file_name
 
@@ -84,7 +84,7 @@ class Workflow:
             for n_iter in Stage.files_to_analyse[RESOLUTION_KEY][resolution]:
                 res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
                     resolution][n_iter]
-                analysis_csv_file = self._get_analysis_file(resolution)
+                analysis_csv_file = self._get_analysis_file(resolution, n_iter)
                 cmd = ['Rscript',
                        "./scripts/analysis.R",
                        Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY],
