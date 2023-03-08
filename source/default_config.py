@@ -13,6 +13,9 @@ class DefaultConfig(object):
             self.algorithm = default_section[ALGORITHM_KEY]
             self.resolutions = [resolution.strip() for resolution in
                                 default_section[RESOLUTION_KEY].split(',')]
+            self.n_iterations = [n_iteration.strip() for n_iteration in
+                                 default_section[
+                                     NUMBER_OF_ITERATIONS_KEY].split(',')]
             self.cm_version = default_section[CM_VERSION_KEY]
             self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
             self.output_dir = self._create_output_dir_with_time_stamp()
