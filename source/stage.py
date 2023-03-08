@@ -16,7 +16,7 @@ class Stage(object):
     """
     files_to_analyse = {
             CLEANED_INPUT_FILE_KEY: "",
-            RESOLUTION_KEY: defaultdict(list)
+            RESOLUTION_KEY: defaultdict(lambda: defaultdict(list))
         }
 
     def __init__(
@@ -38,13 +38,15 @@ class Stage(object):
             "Implement the execute function in each subclass"
             )
 
-    def _get_output_file_name_from_template(self, template_str, resolution):
+    def _get_output_file_name_from_template(self, template_str, resolution,
+                                            n_iter):
         template = Template(template_str)
         output_file_name = template.substitute(
             network_name=self.default_config.network_name,
             algorithm=self.default_config.algorithm,
             resolution=resolution,
-            stage_num=self.stage_num
+            stage_num=self.stage_num,
+            n_iter=n_iter
             )
         return output_file_name
 
@@ -93,8 +95,8 @@ class Stage(object):
             if key in self.config:
                 self.config[key] = os.path.expanduser(self.config[key])
 
-    def _get_op_file_path_for_resolution(self, resolution, op_file_name):
-        op_folder_name = f'res-{resolution}'
+    def _get_op_file_path_for_resolution(self, resolution, op_file_name, n_iter):
+        op_folder_name = f'res-{resolution}-n-{n_iter}'
         op_folder = os.path.join(
             self.default_config.output_dir, op_folder_name
             )

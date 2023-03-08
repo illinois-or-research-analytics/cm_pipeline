@@ -81,16 +81,17 @@ class Workflow:
     def generate_analysis_report(self):
         host_logger.info("******** GENERATING ANALYSIS REPORTS ********")
         for resolution in Stage.files_to_analyse[RESOLUTION_KEY]:
-            res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
-                resolution]
-            analysis_csv_file = self._get_analysis_file(resolution)
-            cmd = ['Rscript',
-                   "./scripts/analysis.R",
-                   Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY],
-                   analysis_csv_file,
-                   ]
-            cmd.extend(res_files_to_analyse)
-            self.cmd_obj.run(cmd)
+            for n_iter in Stage.files_to_analyse[RESOLUTION_KEY][resolution]:
+                res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
+                    resolution][n_iter]
+                analysis_csv_file = self._get_analysis_file(resolution)
+                cmd = ['Rscript',
+                       "./scripts/analysis.R",
+                       Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY],
+                       analysis_csv_file,
+                       ]
+                cmd.extend(res_files_to_analyse)
+                self.cmd_obj.run(cmd)
         host_logger.info(
             "******** FINISHED GENERATING ANALYSIS REPORTS ******"
             )
