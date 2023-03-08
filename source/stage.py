@@ -96,9 +96,9 @@ class Stage(object):
                 self.config[key] = os.path.expanduser(self.config[key])
 
     def _get_op_file_path_for_resolution(self, resolution, op_file_name, n_iter):
-        op_folder_path = os.path.join(f'res-{resolution}', f'n{n_iter}')
+        op_folder_name = f'res-{resolution}-n{n_iter}'
         op_folder = os.path.join(
-            self.default_config.output_dir, op_folder_path
+            self.default_config.output_dir, op_folder_name
             )
         os.makedirs(op_folder, exist_ok=True)
         op_file_name = os.path.join(op_folder, op_file_name)
