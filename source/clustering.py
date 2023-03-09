@@ -7,7 +7,7 @@ from source.constants import *
 logger = logging.getLogger(__name__)
 
 OUTPUT_FILE_NAME = "S${stage_num}_${network_name}_${algorithm}.${" \
-                   "resolution}_n${n_iter}.tsv"
+                   "resolution}_i${n_iter}.tsv"
 
 
 class Clustering(Stage):

@@ -9,13 +9,13 @@ from source.constants import *
 logger = logging.getLogger(__name__)
 
 CM_PREPROCESS_OP_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
-                             "algorithm}.${resolution}_n${n_iter}_" \
+                             "algorithm}.${resolution}_i${n_iter}_" \
                              "preprocessed_cm.tsv"
 CM_UNI_PREPROCESS_OP_FILE_NAME = "S${stage_num}.2_${network_name}_${" \
-                                 "algorithm}.${resolution}_n${n_iter}_" \
+                                 "algorithm}.${resolution}_i${n_iter}_" \
                                  "preprocessed_cm_uni.tsv"
 CM_FINAL_OP_FILE_NAME = "S${stage_num}.3_${network_name}_${algorithm}.${" \
-                        "resolution}_n${n_iter}_after_cm.tsv"
+                        "resolution}_i${n_iter}_after_cm.tsv"
 
 
 class ConnectivityModifierOld(Stage):

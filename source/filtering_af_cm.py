@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 FILTERING_AF_CM_OP_FILE_NAME = "S${stage_num}_${network_name}_${" \
                                "algorithm}.${resolution}_" \
-                               "n${n_iter}_filtered_final.tsv"
+                               "i${n_iter}_filtered_final.tsv"
 
 
 class FilteringAfCm(Stage):

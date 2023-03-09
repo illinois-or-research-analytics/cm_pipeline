@@ -9,9 +9,9 @@ from source.constants import *
 logger = logging.getLogger(__name__)
 
 CM_NEW_PREPROCESS_OP_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
-                                 "algorithm}.${resolution}_n${n_iter}_preprocessed_cm.tsv"
+                                 "algorithm}.${resolution}_i${n_iter}_preprocessed_cm.tsv"
 CM_NEW_FINAL_OP_FILE_NAME = "S${stage_num}.3_${network_name}_${algorithm}.${" \
-                            "resolution}_n${n_iter}_after_cm.tsv"
+                            "resolution}_i${n_iter}_after_cm.tsv"
 
 
 # Todo: Create a parent ConnectivityModifier class to combine the common
