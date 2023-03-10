@@ -1,7 +1,7 @@
 import logging
 import os
 import json
-from collections import OrderedDict
+from collections import defaultdict
 from source.stage import Stage
 from source.timeit import timeit
 from source.constants import *
@@ -9,9 +9,9 @@ from source.constants import *
 logger = logging.getLogger(__name__)
 
 CM_NEW_PREPROCESS_OP_FILE_NAME = "S${stage_num}.1_${network_name}_${" \
-                                 "algorithm}.${resolution}_preprocessed_cm.tsv"
+                                 "algorithm}.${resolution}_i${n_iter}_preprocessed_cm.tsv"
 CM_NEW_FINAL_OP_FILE_NAME = "S${stage_num}.3_${network_name}_${algorithm}.${" \
-                            "resolution}_after_cm.tsv"
+                            "resolution}_i${n_iter}_after_cm.tsv"
 
 
 # Todo: Create a parent ConnectivityModifier class to combine the common
@@ -19,7 +19,7 @@ CM_NEW_FINAL_OP_FILE_NAME = "S${stage_num}.3_${network_name}_${algorithm}.${" \
 class ConnectivityModifierNew(Stage):
     def __init__(self, config, default_config, stage_num, prev_stages):
         super().__init__(config, default_config, stage_num, prev_stages)
-        self.cm_output_files = OrderedDict()
+        self.cm_output_files = defaultdict(lambda: defaultdict(str))
 
     def _get_cm_ready_input_files(self):
         try:
@@ -68,65 +68,74 @@ class ConnectivityModifierNew(Stage):
         cleaned_input_file = self._get_cleaned_input_file()
 
         for resolution in self.default_config.resolutions:
-            # Step 1: CM & CM Universal combined
-            logger.info(
-                "Running CM with %s for resolution %s",
-                self.default_config.algorithm, resolution
-                )
-            cm_ready_input_file = cm_ready_input_files.get(resolution)
-            cm_nw_preprocess_op_file_name = self._get_output_file_name_from_template(
-                CM_NEW_PREPROCESS_OP_FILE_NAME, resolution
-                )
-            cm_nw_preprocess_output_file = self._get_op_file_path_for_resolution(
-                resolution, cm_nw_preprocess_op_file_name
-                )
-            # Todo: Comment the --quiet argument to run cm in verbose mode
-            cmd = [
-                "python",
-                "./hm01/cm.py",
-                "--quiet",
-                "-i",
-                cleaned_input_file,
-                "-c",
-                self.default_config.algorithm,
-                "-g",
-                resolution,
-                "-t",
-                self.config[THRESHOLD_KEY],
-                "-e",
-                cm_ready_input_file,
-                "-o",
-                cm_nw_preprocess_output_file
-                ]
+            for n_iter in self.default_config.n_iterations:
+                # Step 1: CM & CM Universal combined
+                logger.info(
+                    "Running CM with %s for resolution=%s, n=%s",
+                    self.default_config.algorithm, resolution, n_iter
+                    )
+                cm_ready_input_file = cm_ready_input_files.get(resolution).get(n_iter)
+                cm_nw_preprocess_op_file_name = self._get_output_file_name_from_template(
+                    template_str=CM_NEW_PREPROCESS_OP_FILE_NAME,
+                    resolution=resolution,
+                    n_iter=n_iter
+                    )
+                cm_nw_preprocess_output_file = self._get_op_file_path_for_resolution(
+                    resolution=resolution,
+                    op_file_name=cm_nw_preprocess_op_file_name,
+                    n_iter=n_iter
+                    )
+                # Todo: Comment the --quiet argument to run cm in verbose mode:wq
+                cmd = [
+                    "python",
+                    "./hm01/cm.py",
+                    "--quiet",
+                    "-i",
+                    cleaned_input_file,
+                    "-c",
+                    self.default_config.algorithm,
+                    "-g",
+                    resolution,
+                    "-t",
+                    self.config[THRESHOLD_KEY],
+                    "-e",
+                    cm_ready_input_file,
+                    "-o",
+                    cm_nw_preprocess_output_file
+                    ]
 
-            self.cmd_obj.run(cmd)
+                self.cmd_obj.run(cmd)
 
-            # Step 2: json2membership
-            cm_nw_preprocessed_op_json_file_name = f"{cm_nw_preprocess_output_file}.after.json"
-            cm_nw_preprocessed_op_json_file = self._get_op_file_path_for_resolution(
-                resolution, cm_nw_preprocessed_op_json_file_name
-                )
+                # Step 2: json2membership
+                cm_nw_preprocessed_op_json_file_name = f"{cm_nw_preprocess_output_file}.after.json"
+                cm_nw_preprocessed_op_json_file = self._get_op_file_path_for_resolution(
+                    resolution=resolution,
+                    op_file_name=cm_nw_preprocessed_op_json_file_name,
+                    n_iter=n_iter
+                    )
 
-            cm_final_op_file_name = self._get_output_file_name_from_template(
-                CM_NEW_FINAL_OP_FILE_NAME, resolution
-                )
-            cm_nw_final_op_file = self._get_op_file_path_for_resolution(
-                resolution, cm_final_op_file_name
-                )
+                cm_final_op_file_name = self._get_output_file_name_from_template(
+                    template_str=CM_NEW_FINAL_OP_FILE_NAME,
+                    resolution=resolution,
+                    n_iter=n_iter
+                    )
+                cm_nw_final_op_file = self._get_op_file_path_for_resolution(
+                    resolution=resolution,
+                    op_file_name=cm_final_op_file_name,
+                    n_iter=n_iter
+                    )
 
-            logger.info("Converting Json to tsv for resolution %s", resolution)
-            self.cm_output_files[resolution] = cm_nw_final_op_file
+                logger.info("Converting Json to tsv for resolution %s", resolution)
+                self.cm_output_files[resolution][n_iter] = cm_nw_final_op_file
 
-            # Comment the below line for quick testing of workflow paths
-            self._gen_cm_final_tsv_from_json(
-                cm_nw_preprocessed_op_json_file, cm_nw_final_op_file
-                )
+                # Comment the below line for quick testing of workflow paths
+                self._gen_cm_final_tsv_from_json(
+                    cm_nw_preprocessed_op_json_file, cm_nw_final_op_file
+                    )
 
-            # add the cm final output file to files_to_analyse dict
-            ConnectivityModifierNew.files_to_analyse[RESOLUTION_KEY][
-                resolution].append(
-                cm_nw_final_op_file
-                )
+                # add the cm final output file to files_to_analyse dict
+                ConnectivityModifierNew.files_to_analyse[RESOLUTION_KEY][
+                    resolution][n_iter].append(cm_nw_final_op_file)
 
         logging.info(
             "******** FINISHED NEW CONNECTIVITY MODIFIER STAGE ********"
