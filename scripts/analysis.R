@@ -12,8 +12,18 @@ if (length(args)==0) {
 }
 
 # read parent_network_cleaned.tsv
-source <- fread(args[1])
-nc_denom <- length(union(source$V1,source$V2))
+# read parent_network_cleaned.tsv
+dt_workaround <- function(edgelist) {
+x <- fread(edgelist)
+dt1 <- x[,.(V1)]
+dt2 <- x[,.(V2)]
+dt1 <- unique(dt1)
+dt2 <- unique(dt2)
+dt3 <- rbind(dt1,dt2,use.names=FALSE)
+nc_denom <-  dt3[,uniqueN(V1)]
+return(nc_denom)
+}
+nc_denom <- dt_workaround(args[1])
 
 # list of all tsv files to analyse
 algo_res <- tail(args, -2)
