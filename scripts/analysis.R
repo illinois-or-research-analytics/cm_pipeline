@@ -12,7 +12,6 @@ if (length(args)==0) {
 }
 
 # read parent_network_cleaned.tsv
-# read parent_network_cleaned.tsv
 dt_workaround <- function(edgelist) {
 x <- fread(edgelist)
 dt1 <- x[,.(V1)]
