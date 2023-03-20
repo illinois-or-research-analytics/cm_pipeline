@@ -35,7 +35,6 @@ class ClustererSpec(str, Enum):
     ikc = "ikc"
     leiden_mod = "leiden_mod"
 
-'''
 def annotate_tree_node(
     node: ClusterTreeNode, graph: Union[Graph, IntangibleSubgraph, RealizedSubgraph]
 ):
@@ -44,7 +43,6 @@ def annotate_tree_node(
     node.graph_index = graph.index
     node.num_nodes = graph.n()
     node.extant = False
-'''
 
 def update_cid_membership(
     subgraph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
@@ -180,9 +178,10 @@ def algorithm_g(
                 cut_size=mincut_res.get_cut_size(),
             )
         
-        # (VR) Set the current cluster's cut size
-        tree_node.cut_size = mincut_res.get_cut_size()
-        tree_node.validity_threshold = valid_threshold
+        if nodes:
+            # (VR) Set the current cluster's cut size
+            tree_node.cut_size = mincut_res.get_cut_size()
+            tree_node.validity_threshold = valid_threshold
 
         # (VR) If the cut size is below validity, split!
         if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
@@ -331,11 +330,11 @@ def main(
     if nodes:
         # (VR) Call the main CM algorithm
         new_clusters, labels, tree = algorithm_g(
-            root_graph, clusters, clusterer, requirement, quiet
+            root_graph, clusters, clusterer, requirement, quiet, nodes
         )
     else:
         new_clusters, labels = algorithm_g(
-            root_graph, clusters, clusterer, requirement, quiet
+            root_graph, clusters, clusterer, requirement, quiet, nodes
         )
         tree = None
 
@@ -348,7 +347,7 @@ def main(
         with open(output + ".tree.json", "w+") as f:
             f.write(cast(str, jsonpickle.encode(tree)))
 
-    cm2universal(quiet, root_graph, tree, labels, output)
+        cm2universal(quiet, root_graph, tree, labels, output)
 
 def entry_point():
     typer.run(main)
