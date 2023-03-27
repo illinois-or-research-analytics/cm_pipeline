@@ -8,12 +8,15 @@ from enum import Enum
 from itertools import chain
 from structlog import get_logger
 
+import os
 import typer
 import math
 import time
 import treeswift as ts
 import networkit as nk
+import multiprocessing as mp
 import jsonpickle
+import functools
 
 from clusterers.abstract_clusterer import AbstractClusterer
 from clusterers.ikc_wrapper import IkcClusterer
@@ -61,13 +64,101 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
     else:
         return f"[{', '.join([g.index for g in graphs])}]({len(graphs)})"
 
+def print_msg_with_lock(print_lock, msg):
+    print_lock.acquire()
+    print(msg)
+    print_lock.release()
+
+def par_task(
+    queue, 
+    node2cids, 
+    requirement, 
+    clusterer,
+    global_graph,
+    ans,
+    print_lock=None):
+    print_msg = functools.partial(print_msg_with_lock, print_lock)
+    my_pid = os.getpid()
+    print_msg(f'Hi, I\'m process {my_pid}, ready to work')
+
+    while True:
+        # print_msg(f'I\'m pid {my_pid}, the queuelength is {queue.qsize()}')
+        intangible_subgraph = queue.get()
+        if intangible_subgraph is None:
+            print_msg(f'I\'m pid {my_pid}, I have been set free!')
+            queue.task_done()
+            break
+
+        # (VR) Mark nodes in popped cluster with their respective cluster ID
+        update_cid_membership(intangible_subgraph, node2cids)
+
+        # (VR) If the current cluster is a singleton or empty, move on
+        if intangible_subgraph.n() <= 1:
+            queue.task_done()
+            continue
+        
+        # (VR) Realize the set of nodes contained by the graph (i.e. construct its adjacency list)
+        subgraph = intangible_subgraph.realize(global_graph)
+
+        # (VR) Get minimum node degree in current cluster
+        original_mcd = subgraph.mcd()
+
+        # (VR) Pruning: Remove singletons with node degree under threshold until there exists none
+        num_pruned = prune_graph(subgraph, requirement, clusterer)
+        if num_pruned > 0:
+            subgraph.index = f"{subgraph.index}δ"
+            update_cid_membership(subgraph, node2cids)
+        
+        # (VR) If the current cluster post pruning is a singleton or empty, move on
+        if subgraph.n() <= 1:
+            queue.task_done()
+            continue
+
+        # (VR) Compute the mincut of the cluster
+        # print_msg(f'{my_pid}: pre-mincut')
+        mincut_res = subgraph.find_mincut()
+
+        # print_msg(f'{my_pid}: getting validity threshold')
+        # is a cluster "cut-valid" -- having good connectivity?
+        valid_threshold = requirement.validity_threshold(clusterer, subgraph)
+
+        # (VR) If the cut size is below validity, split!
+        if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
+            print_msg(f'{my_pid}: splitting graph')
+            # (VR) Split partitions and set them as children nodes
+            p1, p2 = subgraph.cut_by_mincut(mincut_res)
+            print_msg(f'{my_pid}: splitting done')
+            # (VR) Cluster both partitions
+            subp1 = list(clusterer.cluster_without_singletons(p1))
+            subp2 = list(clusterer.cluster_without_singletons(p2))
+
+            # (VR) Add the new clusters to the stack
+            print_msg(f'{my_pid}: subp1 len: {len(subp1)}, subp2 len: {len(subp2)}')
+            for g in subp1 + subp2:
+                queue.put(g)
+        else:
+            # print_msg(f"{my_pid}: mincut_res: {mincut_res.get_cut_size()}, thresh: {valid_threshold}")
+            # (VR) Compute the modularity of the cluster
+            candidate = subgraph.to_intangible(global_graph)
+            mod = global_graph.modularity_of(candidate)
+
+            # (VR) Check if the modularity value is valid so that the answer can include the modified cluster
+            if not isinstance(clusterer, IkcClusterer) or mod > 0:
+                ans.append(candidate)
+        queue.task_done()
+    
+    time.sleep(1)
+
 def algorithm_g(
     global_graph: Graph,
     graphs: List[IntangibleSubgraph],
     clusterer: Union[IkcClusterer, LeidenClusterer],
     requirement: MincutRequirement,
     quiet: bool,
-    nodes: bool
+    nodes: bool,
+    ans,
+    node2cids,
+    num_cores: int = 4,
 ) -> Tuple[List[IntangibleSubgraph], Dict[int, str], ts.Tree]:
     """ (VR) Main algorithm in hm01 
     
@@ -88,164 +179,40 @@ def algorithm_g(
             tree.root.add_child(n)
             node_mapping[g.index] = n
 
-    stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
-    ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
+    stack: List[IntangibleSubgraph] = mp.JoinableQueue()  # (VR) stack: the stack for cluster processing
+
+    # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
    
-    node2cids: Dict[int, str] = {}                  # (VR) node2cids: Mapping between nodes and cluster ID
+    # node2cids: Dict[int, str] = {}                  # (VR) node2cids: Mapping between nodes and cluster ID
     
     if not quiet:
         log = get_logger()
-        log.info("starting algorithm-g", queue_size=len(stack))
+        log.info("starting algorithm-g", queue_size=len(graphs))
 
-    # (VR) Main algorithm loop: Recursively cut clusters in stack until they have mincut above threshold
-    while stack:
-        if not quiet:
-            log = get_logger()
-            log.debug("entered next iteration of loop", queue_size=len(stack))
-        
-        intangible_subgraph = stack.pop()
+    print_lock = mp.Lock()
+    workers = []
+    for _ in range(num_cores):
+        worker = mp.Process(target=par_task, args=(stack,node2cids,requirement,clusterer,global_graph,ans,print_lock))
+        workers.append(worker)
+    
+    for worker in workers:
+        worker.start()
+    
+    for g in graphs:
+        stack.put(g)
 
-        if not quiet:
-            log.debug(
-                "popped graph",
-                graph_n=intangible_subgraph.n(),
-                graph_index=intangible_subgraph.index,
-            )
+    stack.join()
 
-        # (VR) Mark nodes in popped cluster with their respective cluster ID
-        update_cid_membership(intangible_subgraph, node2cids)
+    for _ in range(len(workers)):
+        stack.put(None)
+    
+    stack.join()
 
-        # (VR) If the current cluster is a singleton or empty, move on
-        if intangible_subgraph.n() <= 1:
-            continue
-        
-        # (VR) Realize the set of nodes contained by the graph (i.e. construct its adjacency list)
-        subgraph = intangible_subgraph.realize(global_graph)
+    for worker in workers:
+        worker.join()
 
-        if nodes:
-            # (VR) Get the current cluster tree node
-            tree_node = node_mapping[subgraph.index]
-            if not quiet:
-                log = log.bind(
-                    g_id=subgraph.index,
-                    g_n=subgraph.n(),
-                    g_m=subgraph.m(),
-                    g_mcd=subgraph.mcd(),
-                )
-        
-        # (VR) Get minimum node degree in current cluster
-        original_mcd = subgraph.mcd()
-
-        # (VR) Pruning: Remove singletons with node degree under threshold until there exists none
-        num_pruned = prune_graph(subgraph, requirement, clusterer)
-        if num_pruned > 0:
-            if nodes:
-                # (VR) Set the cluster cut size to the degree of the removed node
-                tree_node.cut_size = original_mcd
-            if not quiet:
-                log = log.bind(
-                    g_id=subgraph.index,
-                    g_n=subgraph.n(),
-                    g_m=subgraph.m(),
-                    g_mcd=subgraph.mcd(),
-                )
-                log.info("pruned graph", num_pruned=num_pruned)
-
-            subgraph.index = f"{subgraph.index}δ"
-            if nodes:
-                # (VR) Create a TreeNodeCluster for the pruned cluster and set it as the current node's child
-                new_child = ClusterTreeNode()
-                annotate_tree_node(new_child, subgraph)
-                tree_node.add_child(new_child)
-                node_mapping[subgraph.index] = new_child
-
-                # (VR) Iterate to the new node
-                tree_node = new_child
-            
-            update_cid_membership(subgraph, node2cids)
-        
-        # (VR) Compute the mincut of the cluster
-        mincut_res = subgraph.find_mincut()
-
-        # is a cluster "cut-valid" -- having good connectivity?
-        valid_threshold = requirement.validity_threshold(clusterer, subgraph)
-        if not quiet:
-            log.debug("calculated validity threshold", validity_threshold=valid_threshold)
-            log.debug(
-                "mincut computed",
-                a_side_size=len(mincut_res.get_light_partition()),
-                b_side_size=len(mincut_res.get_heavy_partition()),
-                cut_size=mincut_res.get_cut_size(),
-            )
-        
-        if nodes:
-            # (VR) Set the current cluster's cut size
-            tree_node.cut_size = mincut_res.get_cut_size()
-            tree_node.validity_threshold = valid_threshold
-
-        # (VR) If the cut size is below validity, split!
-        if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
-            # (VR) Split partitions and set them as children nodes
-            p1, p2 = subgraph.cut_by_mincut(mincut_res)
-            if nodes:
-                node_a = ClusterTreeNode()
-                node_b = ClusterTreeNode()
-                annotate_tree_node(node_a, p1)
-                annotate_tree_node(node_b, p2)
-                tree_node.add_child(node_a)
-                tree_node.add_child(node_b)
-                node_mapping[p1.index] = node_a
-                node_mapping[p2.index] = node_b
-
-            # (VR) Cluster both partitions
-            subp1 = list(clusterer.cluster_without_singletons(p1))
-            subp2 = list(clusterer.cluster_without_singletons(p2))
-
-            if nodes:
-                # (VR) Set clusters as children of the partitions
-                for p, np in [(subp1, node_a), (subp2, node_b)]:
-                    for sg in p:
-                        n = ClusterTreeNode()
-                        annotate_tree_node(n, sg)
-                        node_mapping[sg.index] = n
-                        np.add_child(n)
-
-            # (VR) Add the new clusters to the stack
-            stack.extend(subp1)
-            stack.extend(subp2)
-
-            if not quiet:
-                log.info(
-                    "cluster split",
-                    num_a_side=len(subp1),
-                    num_b_side=len(subp2),
-                    summary_a_side=summarize_graphs(subp1),
-                    summary_b_side=summarize_graphs(subp2),
-                )
-        else:
-            # (VR) Compute the modularity of the cluster
-            candidate = subgraph.to_intangible(global_graph)
-            mod = global_graph.modularity_of(candidate)
-
-            # (VR) Check if the modularity value is valid so that the answer can include the modified cluster
-            if not isinstance(clusterer, IkcClusterer) or mod > 0:
-                ans.append(candidate)
-                if nodes:
-                    node_mapping[subgraph.index].extant = True
-                if not quiet:
-                    log.info("cut valid, not splitting anymore")
-            else:
-                if nodes:
-                    node_mapping[subgraph.index].extant = False
-                if not quiet:
-                    log.info(
-                        "cut valid, but modularity non-positive, thrown away",
-                        modularity=mod,
-                    )
     if nodes:
         return ans, node2cids, tree
-    else:
-        return ans, node2cids
 
 def main(
     input: str = typer.Option(..., "--input", "-i"),
@@ -327,27 +294,34 @@ def main(
             summary=summarize_graphs(clusters),
         )
 
-    if nodes:
-        # (VR) Call the main CM algorithm
-        new_clusters, labels, tree = algorithm_g(
-            root_graph, clusters, clusterer, requirement, quiet, nodes
-        )
-    else:
-        new_clusters, labels = algorithm_g(
-            root_graph, clusters, clusterer, requirement, quiet, nodes
-        )
-        tree = None
+    # Initialize return values
+    with mp.Manager() as manager:
+        new_clusters = manager.list()
+        labels = manager.dict()
 
-    # (VR) Retrieve output
-    with open(output, "w+") as f:
-        for n, cid in labels.items():
-            f.write(f"{n} {cid}\n")
+        if nodes:
+            # (VR) Call the main CM algorithm
+            new_clusters, labels, tree = algorithm_g(
+                root_graph, clusters, clusterer, requirement, quiet, nodes
+            )
+        else:
+            algorithm_g(
+                root_graph, clusters, clusterer, requirement, quiet, nodes, new_clusters, labels, 8
+            )
+            tree = None
 
-    if nodes:
-        with open(output + ".tree.json", "w+") as f:
-            f.write(cast(str, jsonpickle.encode(tree)))
+        time.sleep(2)
 
-        cm2universal(quiet, root_graph, tree, labels, output)
+        # (VR) Retrieve output
+        with open(output, "w+") as f:
+            for n, cid in labels.items():
+                f.write(f"{n} {cid}\n")
+
+        if nodes:
+            with open(output + ".tree.json", "w+") as f:
+                f.write(cast(str, jsonpickle.encode(tree)))
+
+            cm2universal(quiet, root_graph, tree, labels, output)
 
 def entry_point():
     typer.run(main)
