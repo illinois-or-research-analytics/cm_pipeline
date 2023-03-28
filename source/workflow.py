@@ -113,7 +113,7 @@ class Workflow:
                 ) as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow([STAGE_KEY, TIME_TAKEN_KEY])
-            for i in range(len(execution_info)):
+            for i in range(len(execution_info[STAGE_KEY])):
                 writer.writerow(
                     [execution_info[STAGE_KEY][i],
                      execution_info[TIME_TAKEN_KEY][i]]
