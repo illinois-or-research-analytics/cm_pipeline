@@ -19,7 +19,8 @@ class DefaultConfig(object):
             self.cm_version = default_section[CM_VERSION_KEY]
             self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
             self.output_dir = self._create_output_dir_with_time_stamp()
-
+            self.execution_info_csv = os.path.join(
+                self.output_dir, 'executin_time.csv')
         except KeyError:
             raise Exception(
                 "default section with network name "

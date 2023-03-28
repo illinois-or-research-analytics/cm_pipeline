@@ -49,6 +49,7 @@ if __name__ == "__main__":
         cm_workflow = Workflow(config)
         cm_workflow.start()
         cm_workflow.generate_analysis_report()
+        cm_workflow.generate_execution_time_report()
         logger.debug("Program finished")
         # Copy the log file and executed-cmds file to the target folder
         shutil.copy(log_file, cm_workflow.default_config.output_dir)

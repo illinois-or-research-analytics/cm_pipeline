@@ -104,3 +104,18 @@ class Workflow:
         # Todo:
         list(self.stages.values())[-1].cmd_obj.write_placeholder()
         host_logger.info("******** FINISHED CM WORKFLOW ********")
+
+    def generate_execution_time_report(self):
+        import csv
+        from source.timeit import execution_info, STAGE_KEY, TIME_TAKEN_KEY
+        with open(
+                self.default_config.execution_info_csv, 'w', newline=''
+                ) as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([STAGE_KEY, TIME_TAKEN_KEY])
+            for i in range(len(execution_info)):
+                writer.writerow(
+                    [execution_info[STAGE_KEY][i],
+                     execution_info[TIME_TAKEN_KEY][i]]
+                    )
+        csvfile.close()
