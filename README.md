@@ -9,7 +9,8 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
 
 ## Requirements [WIP]
-- Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
+- Create a python venv with 3.9 or above version. We are using python3.9
+     - pip install -r requirements.txt
 - `cmake` version `3.2.0` and above should be installed.
 - `python39-devel` or higher should be installed
 - `openmpi` and `gcc` of any version
