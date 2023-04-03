@@ -95,7 +95,11 @@ def bookkeeping_task(info_queue, quiet, root_graph, output):
             log = get_logger()
             log.debug("bookkeeping: next iteration", queue_size=info_queue.qsize(), pid=my_pid)
 
-        item = info_queue.get()
+        try:
+            item = info_queue.get_nowait()
+        except:
+            item = info_queue.get()
+
         if item is None:
             if not quiet:
                 log = get_logger()
@@ -105,6 +109,7 @@ def bookkeeping_task(info_queue, quiet, root_graph, output):
         
         info_type = item[0]
         tasks_dict[info_type] += 1
+
         if info_type == 'add_tree_node':
             _, parent_index, child_index, num_nodes = item
 
@@ -354,13 +359,14 @@ def algorithm_g(
         log.info("starting algorithm-g", queue_size=len(graphs))
 
     # Initialize queues of tasks
-    tree_tasks = mp.JoinableQueue() # (VR) tree_tasks: list of logging tasks for CM + CM2Universal
+    m = mp.Manager()
+    tree_tasks = m.Queue() # (VR) tree_tasks: list of logging tasks for CM + CM2Universal
     stack = mp.JoinableQueue()  # (VR) stack: the stack for cluster processing
 
     # Fill said queues
     tree_tasks.put(('add_tree_node', None, global_graph.index, global_graph.n()))
     for g in graphs:
-        tree_tasks.put(('add_tree_node', global_graph.index, g.index, g.n()))
+        tree_tasks.put_nowait(('add_tree_node', global_graph.index, g.index, g.n()))
         stack.put(g)
 
     if not quiet:
@@ -383,7 +389,6 @@ def algorithm_g(
     ]
 
     tree_logging_worker.start()
-    tree_tasks.join()
 
     for worker in workers:
         worker.start()
@@ -500,7 +505,7 @@ def main(
         )
 
     algorithm_g(
-        root_graph, clusters, clusterer, requirement, quiet, True, output, 8
+        root_graph, clusters, clusterer, requirement, quiet, True, output, 16
     )
 
 
