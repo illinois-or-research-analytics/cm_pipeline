@@ -1,4 +1,5 @@
 import os
+import json
 from source.constants import *
 from datetime import datetime
 
@@ -20,13 +21,21 @@ class DefaultConfig(object):
             self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
             self.output_dir = self._create_output_dir_with_time_stamp()
             self.execution_info_csv = os.path.join(
-                self.output_dir, 'executin_time.csv')
+                self.output_dir, 'execution_time.csv'
+                )
+            self.existing_ip_json = default_section[EXISTING_OP_JSON]
+            self.existing_ip_dict = self.get_existing_op_file_paths()
         except KeyError:
             raise Exception(
                 "default section with network name "
                 "output directory/ algorithm /resolutions "
                 "is missing / misspelled in the config file."
                 )
+
+    def get_existing_op_file_paths(self):
+        with open(self.existing_ip_json, 'r') as fp:
+            existing_ip_dict = json.load(fp)
+        return existing_ip_dict
 
     def _create_output_dir_with_time_stamp(self):
         output_dir_name = f'{self.network_name}-cm-{self.cm_version}-pp-output-{self.timestamp}'

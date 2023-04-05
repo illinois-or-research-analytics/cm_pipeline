@@ -56,8 +56,8 @@ class Stage(object):
         the previous stage unless specified in the param.config file.
         """
 
-        if CLEANED_INPUT_FILE_KEY in self.config:
-            cleaned_input_file = self.config[CLEANED_INPUT_FILE_KEY]
+        if CLEANED_NW_KEY in self.default_config.existing_ip_dict:
+            cleaned_input_file = self.default_config.existing_ip_dict[CLEANED_NW_KEY]
         elif CLEANUP_SECTION in self.prev_stages:
             cleanup_stage = self.prev_stages.get(CLEANUP_SECTION)
             cleaned_input_file = cleanup_stage.cleaned_output_file

@@ -1,0 +1,20 @@
+{
+    "cleaned_nw": "~/sample_data/cit_patents_cleaned.tsv",
+    "clustered_nw_files": {
+        "0.5": {
+            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i2/S2_cit_patents_leiden.0.5_i2.tsv",
+            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i3/S2_cit_patents_leiden.0.5_i3.tsv",
+            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i5/S2_cit_patents_leiden.0.5_i5.tsv"
+        },
+        "0.01": {
+            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i2/S2_cit_patents_leiden.0.01_i2.tsv",
+            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i3/S2_cit_patents_leiden.0.01_i3.tsv",
+            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i5/S2_cit_patents_leiden.0.01_i5.tsv"
+        },
+        "0.1": {
+            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i2/S2_cit_patents_leiden.0.1_i2.tsv",
+            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i3/S2_cit_patents_leiden.0.1_i3.tsv",
+            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i5/S2_cit_patents_leiden.0.1_i5.tsv"
+        }
+    }
+}
