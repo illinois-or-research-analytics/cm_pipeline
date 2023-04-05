@@ -77,9 +77,24 @@ class Workflow:
         op_file_name = os.path.join(op_folder, op_file_name)
         return op_file_name
 
+    def _fetch_files_to_analyse(self):
+        if not self.config.has_section(CLEANUP_SECTION):
+            cleaned_input_file = self.default_config.existing_ip_dict[
+                CLEANED_NW_KEY]
+            Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY] = cleaned_input_file
+
+        if not self.config.has_section(CLEANUP_SECTION):
+            clustering_input_files = self.default_config.existing_ip_dict[
+                CLUSTERED_NW_FILES]
+            for res in clustering_input_files:
+                for n_iter in clustering_input_files[res]:
+                    FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
+                        n_iter].append(clustering_input_files[res][n_iter])
+
     @timeit
     def generate_analysis_report(self):
         host_logger.info("******** GENERATING ANALYSIS REPORTS ********")
+        self._fetch_files_to_analyse()
         for resolution in Stage.files_to_analyse[RESOLUTION_KEY]:
             for n_iter in Stage.files_to_analyse[RESOLUTION_KEY][resolution]:
                 res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
