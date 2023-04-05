@@ -1,20 +1,27 @@
+/*
+1. Specify the path to the cleaned network file a
+For all the resolution values mention in the `skip_stages_param.config` file i.e  0.5,0.01,0.1
+and number_of_iterations i.e 2,3,5 specify the clustering file paths below.
+ 
+*/
+
 {
-    "cleaned_nw": "~/sample_data/cit_patents_cleaned.tsv",
+    "cleaned_nw": // mention the full path to cleaned network file,
     "clustered_nw_files": {
         "0.5": {
-            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i2/S2_cit_patents_leiden.0.5_i2.tsv",
-            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i3/S2_cit_patents_leiden.0.5_i3.tsv",
-            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.5-i5/S2_cit_patents_leiden.0.5_i5.tsv"
+            "2": "",    // mention the full path to clustering file for resolution 0.5 and leiden #of iterations 2
+            "3": "",    
+            "5": ""
         },
         "0.01": {
-            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i2/S2_cit_patents_leiden.0.01_i2.tsv",
-            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i3/S2_cit_patents_leiden.0.01_i3.tsv",
-            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.01-i5/S2_cit_patents_leiden.0.01_i5.tsv"
+            "2": "",
+            "3": "",
+            "5": ""
         },
         "0.1": {
-            "2": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i2/S2_cit_patents_leiden.0.1_i2.tsv",
-            "3": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i3/S2_cit_patents_leiden.0.1_i3.tsv",
-            "5": "/Users/vkpailodi/sample_data/cit_patents-cm-new-pp-output-20230404-20:19:32/res-0.1-i5/S2_cit_patents_leiden.0.1_i5.tsv"
+            "2": "",
+            "3": "",
+            "5": ""
         }
     }
 }
