@@ -22,18 +22,15 @@ class FilteringBfCm(Stage):
 
     def get_clustering_input_files(self):
         try:
-            if INPUT_CLUSTERING_FILE_DIR_KEY in self.config:
-                # Todo: make sure to get the resolution values for each
-                #  specified file. Define the syntax in config file
-                clustering_input_files = os.listdir(
-                    self.config[INPUT_CLUSTERING_FILE_DIR_KEY]
-                    )
+            if CLUSTERED_NW_FILES in self.default_config.existing_ip_dict:
+                clustering_input_files = self.default_config.existing_ip_dict[
+                    CLUSTERED_NW_FILES]
             elif CLUSTERING_SECTION in self.prev_stages:
                 clustering_stage = self.prev_stages.get(CLUSTERING_SECTION)
                 clustering_input_files = clustering_stage.clustering_output_files
             else:
                 raise Exception(
-                    f"{INPUT_CLUSTERING_FILE_DIR_KEY} not specified in config "
+                    f"{CLUSTERED_NW_FILES} not specified in {self.default_config.existing_ip_json}.json  "
                     f"file or Clustering stage failed to generate the files"
                     )
         except FileNotFoundError as e:

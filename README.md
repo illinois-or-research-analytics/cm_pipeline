@@ -9,11 +9,12 @@ Modular pipeline for testing and using an improved version of CM for generating 
 - Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
 
 ## Requirements [WIP]
-- Create a python venv with necessary packages (runleiden, [CM](https://www.notion.so/Lab-Journal-2fcb00b0f77543fa932ff3cec650125f))
+- Create a python venv with 3.9 or above version. We are using python3.9
+     - Activate the venv and run "pip install -r requirements.txt"
 - `cmake` version `3.2.0` and above should be installed.
-- `python39-devel` or higher should be installed
+- `python39-devel` or higher should be installed, e.g., dnf install python39-devel 
 - `openmpi` and `gcc` of any version
-     - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used.
+     - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used. The code works with gcc 8.5 too in an Oracle Linux 8 environment.
 ### UIUC EngrIT Systems
 - These instructions are specific for users on an EngrIT cluster (such as Valhalla or the Campus Cluster) under the University of Illinois at Urbana-Champaign
 - You can get all the needed packages to run the pipeline via the following commands
@@ -28,7 +29,7 @@ module load gcc/9.2.0
 - Clone the cm_pipeline repository
 - Activate the venv which has the necessary packages 
 - Set up `python-mincut`:
-     - Initiate the submodules via the following commands being run from the root of this repository
+     - Initiate the submodules via the following commands being run from the root of this (cm_pipeline) repository
      ```bash
      git submodule update --init --recursive
      cd hm01/tools/python-mincut
@@ -77,4 +78,5 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 - Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline. [DONE]
 - Mechanism to sync the scripts used within cm_pipeline with the latest changes.
 - Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 
+
 

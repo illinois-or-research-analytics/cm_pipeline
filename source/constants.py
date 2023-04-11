@@ -11,6 +11,7 @@ FILTERING_BF_CM_SECTION = 'filtering_bf_cm'
 CONNECTIVITY_MODIFIER_SECTION = 'connectivity_modifier'
 FILTERING_AF_CM_SECTION = 'filtering_af_cm'
 
+
 # Keys used in param.config
 NETWORK_NAME_KEY = 'network_name'
 INPUT_FILE_KEY = 'input_file'
@@ -34,3 +35,8 @@ CM_VERSION_OLD_VAL = 'old'
 RUNLEIDEN_SCRIPT_VALUE = 'runleiden'
 LEIDEN_ALG_SCRIPT_VALUE = 'leidenalg'
 NUMBER_OF_ITERATIONS_KEY = 'number_of_iterations'
+
+EXISTING_OP_JSON = 'existing_op_json'
+# KEYS used in existing_ip_files.json
+CLEANED_NW_KEY = 'cleaned_nw'
+CLUSTERED_NW_FILES = 'clustered_nw_files'
