@@ -25,6 +25,8 @@ from pruner import prune_graph
 from to_universal import cm2universal
 from cluster_tree import ClusterTreeNode
 
+import multiprocessing as mp
+
 import sys
 import sqlite3
 import pickle as pkl
@@ -61,56 +63,17 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
     else:
         return f"[{', '.join([g.index for g in graphs])}]({len(graphs)})"
 
-def algorithm_g(
-    global_graph: Graph,
-    graphs: List[IntangibleSubgraph],
-    clusterer: Union[IkcClusterer, LeidenClusterer],
-    requirement: MincutRequirement,
-    quiet: bool,
-    cores: int
-) -> Tuple[List[IntangibleSubgraph], Dict[int, str], ts.Tree]:
-    """ (VR) Main algorithm in hm01 
-    
-    Params:
-        global_graph (Graph)                                : full graph from input
-        graph (List[IntangibleSubgraph])                    : list of clusters
-        clusterer (Union[IkcClusterer, LeidenClusterer])    : clustering algorithm
-        requirement (MincutRequirement)                     : mincut connectivity requirement
-    """
-    tree = ts.Tree()                                # (VR) tree: Recursion tree that keeps track of clusters created by serial mincut/reclusters
-    tree.root = ClusterTreeNode()
-    annotate_tree_node(tree.root, global_graph)
-    node_mapping: Dict[str, ClusterTreeNode] = {}   # (VR) node_mapping: maps cluster id to cluster tree node     
-
-    mapping_split = [{} for _ in range(cores)]
-    stacks = [[] for _ in range(cores)]
-
-    for i, g in enumerate(graphs):
-        n = ClusterTreeNode()
-        annotate_tree_node(n, g)
-        tree.root.add_child(n)
-        node_mapping[g.index] = n
-
-        mapping_split[i % cores][g.index] = n
-        stacks[i % cores].append(g)
-
-    stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
-    ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
-    node2cids: Dict[int, str] = {}                  # (VR) node2cids: Mapping between nodes and cluster ID
-    
-    if not quiet:
-        log = get_logger()
-        log.info("starting algorithm-g", queue_size=len(stack))
-
+def par_task(entry):
     # (VR) Main algorithm loop: Recursively cut clusters in stack until they have mincut above threshold
+    stack, node_mapping, node2cids = entry
     while stack:
-        if not quiet:
+        if not quiet_g:
             log = get_logger()
             log.debug("entered next iteration of loop", queue_size=len(stack))
         
         intangible_subgraph = stack.pop()
 
-        if not quiet:
+        if not quiet_g:
             log.debug(
                 "popped graph",
                 graph_n=intangible_subgraph.n(),
@@ -129,7 +92,7 @@ def algorithm_g(
 
         # (VR) Get the current cluster tree node
         tree_node = node_mapping[subgraph.index]
-        if not quiet:
+        if not quiet_g:
             log = log.bind(
                 g_id=subgraph.index,
                 g_n=subgraph.n(),
@@ -145,7 +108,7 @@ def algorithm_g(
         if num_pruned > 0:
             # (VR) Set the cluster cut size to the degree of the removed node
             tree_node.cut_size = original_mcd
-            if not quiet:
+            if not quiet_g:
                 log = log.bind(
                     g_id=subgraph.index,
                     g_n=subgraph.n(),
@@ -170,7 +133,7 @@ def algorithm_g(
 
         # is a cluster "cut-valid" -- having good connectivity?
         valid_threshold = requirement.validity_threshold(clusterer, subgraph)
-        if not quiet:
+        if not quiet_g:
             log.debug("calculated validity threshold", validity_threshold=valid_threshold)
             log.debug(
                 "mincut computed",
@@ -212,7 +175,7 @@ def algorithm_g(
             stack.extend(subp1)
             stack.extend(subp2)
 
-            if not quiet:
+            if not quiet_g:
                 log.info(
                     "cluster split",
                     num_a_side=len(subp1),
@@ -227,18 +190,71 @@ def algorithm_g(
 
             # (VR) Check if the modularity value is valid so that the answer can include the modified cluster
             if not isinstance(clusterer, IkcClusterer) or mod > 0:
-                ans.append(candidate)
+                # ans.append(candidate)
                 node_mapping[subgraph.index].extant = True
-                if not quiet:
+                if not quiet_g:
                     log.info("cut valid, not splitting anymore")
             else:
                 node_mapping[subgraph.index].extant = False
-                if not quiet:
+                if not quiet_g:
                     log.info(
                         "cut valid, but modularity non-positive, thrown away",
                         modularity=mod,
                     )
-    return ans, node2cids, tree
+    return (node_mapping, node2cids)
+
+def algorithm_g(
+    graphs: List[IntangibleSubgraph],
+    quiet: bool,
+    cores: int
+) -> Tuple[List[IntangibleSubgraph], Dict[int, str], ts.Tree]:
+    """ (VR) Main algorithm in hm01 
+    
+    Params:
+        global_graph (Graph)                                : full graph from input
+        graph (List[IntangibleSubgraph])                    : list of clusters
+        clusterer (Union[IkcClusterer, LeidenClusterer])    : clustering algorithm
+        requirement (MincutRequirement)                     : mincut connectivity requirement
+    """
+    if not quiet:
+        log = get_logger()
+        log.info("starting algorithm-g", queue_size=len(stack))
+
+    tree = ts.Tree()                                # (VR) tree: Recursion tree that keeps track of clusters created by serial mincut/reclusters
+    tree.root = ClusterTreeNode()
+    annotate_tree_node(tree.root, global_graph)
+    node_mapping: Dict[str, ClusterTreeNode] = {}   # (VR) node_mapping: maps cluster id to cluster tree node   
+    node2cids: Dict[int, str] = {}                  # (VR) node2cids: Mapping between nodes and cluster ID  
+
+    mapping_split = [{} for _ in range(cores)]
+    stacks = [[] for _ in range(cores)]
+    labeling_split = [{} for _ in range(cores)]
+
+    for i, g in enumerate(graphs):
+        n = ClusterTreeNode()
+        annotate_tree_node(n, g)
+        node_mapping[g.index] = n
+
+        mapping_split[i % cores][g.index] = n
+        stacks[i % cores].append(g)
+
+    global quiet_g
+    quiet_g = quiet
+
+    with mp.Pool(cores) as p:
+        out = p.map(par_task, list(zip(stacks, mapping_split, labeling_split)))
+
+    # stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
+    # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
+    for mapping, label_part in out:
+        node_mapping.update(mapping)
+        node2cids.update(label_part)
+
+    for g in graphs:
+        n = node_mapping[g.index]
+        tree.root.add_child(n)
+
+    return node2cids, tree
 
 def main(
     input: str = typer.Option(..., "--input", "-i"),
@@ -269,9 +285,10 @@ def main(
     sys.setrecursionlimit(1231231234)
 
     # (VR) Check -g and -k parameters for Leiden and IKC respectively
+    global clusterer
     if clusterer_spec == ClustererSpec.leiden:
         assert resolution != -1, "Leiden requires resolution"
-        clusterer: Union[LeidenClusterer, IkcClusterer] = LeidenClusterer(resolution)
+        clusterer = LeidenClusterer(resolution)
     elif clusterer_spec == ClustererSpec.leiden_mod:
         assert resolution == -1, "Leiden with modularity does not support resolution"
         clusterer = LeidenClusterer(resolution, quality=Quality.modularity)
@@ -291,6 +308,7 @@ def main(
         )
 
     # (VR) Parse mincut threshold specification
+    global requirement
     requirement = MincutRequirement.try_from_str(threshold)
     if not quiet:
         log.info(f"parsed connectivity requirement", requirement=requirement)
@@ -307,7 +325,9 @@ def main(
             m=nk_graph.numberOfEdges(),
             elapsed=time.time() - time1,
         )
-    root_graph = Graph(nk_graph, "")
+
+    global global_graph
+    global_graph = Graph(nk_graph, "")
 
     # (VR) Load clustering
     if not quiet:
@@ -321,9 +341,11 @@ def main(
         )
 
     # (VR) Call the main CM algorithm
-    new_clusters, labels, tree = algorithm_g(
-        root_graph, clusters, clusterer, requirement, quiet, cores
+    time1 = time.perf_counter()
+    labels, tree = algorithm_g(
+        clusters, quiet, cores
     )
+    print(time.perf_counter() - time1)
 
     # (VR) Retrieve output
     with open(output, "w+") as f:
@@ -332,7 +354,7 @@ def main(
     with open(output + ".tree.json", "w+") as f:
         f.write(cast(str, jsonpickle.encode(tree)))
 
-    cm2universal(quiet, root_graph, tree, labels, output)
+    cm2universal(quiet, global_graph, tree, labels, output)
 
 def entry_point():
     typer.run(main)
