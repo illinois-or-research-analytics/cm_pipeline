@@ -311,9 +311,11 @@ def main(
         )
 
     # (VR) Call the main CM algorithm
+    time1 = time.perf_counter()
     new_clusters, labels, tree = algorithm_g(
         root_graph, clusters, clusterer, requirement, quiet
     )
+    print(time.perf_counter() - time1)
 
     # (VR) Retrieve output
     with open(output, "w+") as f:
