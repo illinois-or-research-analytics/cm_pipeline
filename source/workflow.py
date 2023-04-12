@@ -83,13 +83,21 @@ class Workflow:
                 CLEANED_NW_KEY]
             Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY] = cleaned_input_file
 
-        if not self.config.has_section(CLEANUP_SECTION):
+        if not self.config.has_section(CLUSTERING_SECTION):
             clustering_input_files = self.default_config.existing_ip_dict[
                 CLUSTERED_NW_FILES]
             for res in clustering_input_files:
                 for n_iter in clustering_input_files[res]:
                     FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
                         n_iter].append(clustering_input_files[res][n_iter])
+
+        if not self.config.has_section(FILTERING_BF_CM_SECTION):
+            cm_ready_input_files = self.default_config.existing_ip_dict[
+                CM_READY_FILES]
+            for res in cm_ready_input_files:
+                for n_iter in cm_ready_input_files[res]:
+                    FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
+                        n_iter].append(cm_ready_input_files[res][n_iter])
 
     @timeit
     def generate_analysis_report(self):
