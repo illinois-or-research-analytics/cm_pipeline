@@ -40,3 +40,4 @@ EXISTING_OP_JSON = 'existing_op_json'
 # KEYS used in existing_ip_files.json
 CLEANED_NW_KEY = 'cleaned_nw'
 CLUSTERED_NW_FILES = 'clustered_nw_files'
+CM_READY_FILES = "cm_ready_files"

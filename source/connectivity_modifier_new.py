@@ -23,22 +23,20 @@ class ConnectivityModifierNew(Stage):
 
     def _get_cm_ready_input_files(self):
         try:
-            if INPUT_CM_READY_FILE_DIR_KEY in self.config:
-                cm_ready_input_files = os.listdir(
-                    self.config[INPUT_CM_READY_FILE_DIR_KEY]
-                    )
+            if CM_READY_FILES in self.default_config.existing_ip_dict:
+                cm_ready_input_files = self.default_config.existing_ip_dict[
+                    CM_READY_FILES]
             elif FILTERING_BF_CM_SECTION in self.prev_stages:
                 filtering_stage = self.prev_stages.get(FILTERING_BF_CM_SECTION)
                 cm_ready_input_files = filtering_stage.cm_ready_filtered_files
             else:
                 raise Exception(
-                    f"{INPUT_CM_READY_FILE_DIR_KEY} not specified in config "
+                    f"{CM_READY_FILES} not specified in {self.default_config.existing_ip_json}.json "
                     f"file or Filtering stage failed to generate the files"
                     )
-
-        except FileNotFoundError as e:
-            error_msg = f"{INPUT_CM_READY_FILE_DIR_KEY} does not exist"
-            raise FileNotFoundError(error_msg, e)
+        except KeyError as e:
+            error_msg = f"{CM_READY_FILES} does not exist in json file"
+            raise KeyError(error_msg, e)
         return cm_ready_input_files
 
     @staticmethod

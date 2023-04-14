@@ -33,9 +33,9 @@ class FilteringBfCm(Stage):
                     f"{CLUSTERED_NW_FILES} not specified in {self.default_config.existing_ip_json}.json  "
                     f"file or Clustering stage failed to generate the files"
                     )
-        except FileNotFoundError as e:
-            error_msg = f"{INPUT_CLUSTERING_FILE_DIR_KEY} does not exist"
-            raise FileNotFoundError(error_msg, e)
+        except KeyError as e:
+            error_msg = f"{CLUSTERED_NW_FILES} does not exist in json file"
+            raise KeyError(error_msg, e)
         return clustering_input_files
 
     @timeit
