@@ -41,11 +41,15 @@ class DefaultConfig(object):
         return existing_ip_dict
 
     def _validate_config(self, existing_ip_dict):
+        key = None
+        res_vals = []
         if CLUSTERED_NW_FILES in existing_ip_dict.keys():
             res_vals = existing_ip_dict[CLUSTERED_NW_FILES].keys()
+            key = CLUSTERED_NW_FILES
 
         elif CM_READY_FILES in existing_ip_dict.keys():
             res_vals = existing_ip_dict[CM_READY_FILES].keys()
+            key = CM_READY_FILES
 
         res_diff = set(res_vals).symmetric_difference(set(self.resolutions))
 
@@ -54,9 +58,9 @@ class DefaultConfig(object):
                       f"do not match. config file: {self.resolutions}, " \
                       f"json file: {list(res_vals)}"
             raise Exception(message)
-        else:
+        elif key and res_vals:
             for res in res_vals:
-                n_iters = existing_ip_dict[CLUSTERED_NW_FILES][res].keys()
+                n_iters = existing_ip_dict[key][res].keys()
                 n_iter_diff = set(n_iters).symmetric_difference(
                     set(self.n_iterations)
                     )
@@ -67,6 +71,9 @@ class DefaultConfig(object):
                               f" config file: {self.n_iterations}," \
                               f" json file:  {list(n_iters)}"
                     raise Exception(message)
+        else:
+            raise Exception(f"Missing {CLUSTERED_NW_FILES} or {CM_READY_FILES} "
+                            f"info in the {self.existing_ip_json}")
 
     def _create_output_dir_with_time_stamp(self):
         output_dir_name = f'{self.network_name}-cm-{self.cm_version}-pp-output-{self.timestamp}'
