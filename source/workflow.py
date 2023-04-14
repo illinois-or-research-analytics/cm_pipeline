@@ -83,7 +83,8 @@ class Workflow:
                 CLEANED_NW_KEY]
             Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY] = cleaned_input_file
 
-        if not self.config.has_section(CLUSTERING_SECTION):
+        if not self.config.has_section(CLUSTERING_SECTION) and \
+                CLUSTERED_NW_FILES in self.default_config.existing_ip_dict.keys():
             clustering_input_files = self.default_config.existing_ip_dict[
                 CLUSTERED_NW_FILES]
             for res in clustering_input_files:
@@ -91,7 +92,8 @@ class Workflow:
                     FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
                         n_iter].append(clustering_input_files[res][n_iter])
 
-        if not self.config.has_section(FILTERING_BF_CM_SECTION):
+        if not self.config.has_section(FILTERING_BF_CM_SECTION) and \
+                CM_READY_FILES in self.default_config.existing_ip_dict.keys():
             cm_ready_input_files = self.default_config.existing_ip_dict[
                 CM_READY_FILES]
             for res in cm_ready_input_files:
