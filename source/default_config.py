@@ -41,8 +41,14 @@ class DefaultConfig(object):
         return existing_ip_dict
 
     def _validate_config(self, existing_ip_dict):
-        res_vals = existing_ip_dict[CLUSTERED_NW_FILES].keys()
+        if CLUSTERED_NW_FILES in existing_ip_dict.keys():
+            res_vals = existing_ip_dict[CLUSTERED_NW_FILES].keys()
+
+        elif CM_READY_FILES in existing_ip_dict.keys():
+            res_vals = existing_ip_dict[CM_READY_FILES].keys()
+
         res_diff = set(res_vals).symmetric_difference(set(self.resolutions))
+
         if res_diff:
             message = f"The resolution values in the config file and json file " \
                       f"do not match. config file: {self.resolutions}, " \
