@@ -1,6 +1,7 @@
-python3 ../cm_par2.py \
+python3 ../cm.py \
         --quiet \
-        -n 128 \
+        --labelonly \
+        -n 32 \
         -i /shared/rsquared/cen_cleaned.tsv  \
         -c leiden \
         -d working_dir_test_simple2 \

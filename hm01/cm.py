@@ -65,7 +65,11 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
 
 def par_task(entry):
     # (VR) Main algorithm loop: Recursively cut clusters in stack until they have mincut above threshold
-    stack, node_mapping, node2cids = entry
+    if label_only:
+        stack, node2cids = entry
+    else:
+        stack, node_mapping, node2cids = entry
+
     while stack:
         if not quiet_g:
             log = get_logger()
@@ -91,7 +95,9 @@ def par_task(entry):
         subgraph = intangible_subgraph.realize(global_graph)
 
         # (VR) Get the current cluster tree node
-        tree_node = node_mapping[subgraph.index]
+        if not label_only:
+            tree_node = node_mapping[subgraph.index]
+
         if not quiet_g:
             log = log.bind(
                 g_id=subgraph.index,
@@ -107,7 +113,9 @@ def par_task(entry):
         num_pruned = prune_graph(subgraph, requirement, clusterer)
         if num_pruned > 0:
             # (VR) Set the cluster cut size to the degree of the removed node
-            tree_node.cut_size = original_mcd
+            if not label_only:
+                tree_node.cut_size = original_mcd
+
             if not quiet_g:
                 log = log.bind(
                     g_id=subgraph.index,
@@ -118,14 +126,19 @@ def par_task(entry):
                 log.info("pruned graph", num_pruned=num_pruned)
 
             # (VR) Create a TreeNodeCluster for the pruned cluster and set it as the current node's child
-            new_child = ClusterTreeNode()
-            subgraph.index = f"{subgraph.index}δ"
-            annotate_tree_node(new_child, subgraph)
-            tree_node.add_child(new_child)
-            node_mapping[subgraph.index] = new_child
+            if not label_only:
+                new_child = ClusterTreeNode()
+                subgraph.index = f"{subgraph.index}δ"
 
-            # (VR) Iterate to the new node
-            tree_node = new_child
+                annotate_tree_node(new_child, subgraph)
+
+            if not label_only:
+                tree_node.add_child(new_child)
+                node_mapping[subgraph.index] = new_child
+
+                # (VR) Iterate to the new node
+                tree_node = new_child
+
             update_cid_membership(subgraph, node2cids)
         
         # (VR) Compute the mincut of the cluster
@@ -142,34 +155,41 @@ def par_task(entry):
                 cut_size=mincut_res.get_cut_size(),
             )
         
-        # (VR) Set the current cluster's cut size
-        tree_node.cut_size = mincut_res.get_cut_size()
-        tree_node.validity_threshold = valid_threshold
+        if not label_only:
+            # (VR) Set the current cluster's cut size
+            tree_node.cut_size = mincut_res.get_cut_size()
+            tree_node.validity_threshold = valid_threshold
 
         # (VR) If the cut size is below validity, split!
         if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
             # (VR) Split partitions and set them as children nodes
             p1, p2 = subgraph.cut_by_mincut(mincut_res)
-            node_a = ClusterTreeNode()
-            node_b = ClusterTreeNode()
-            annotate_tree_node(node_a, p1)
-            annotate_tree_node(node_b, p2)
-            tree_node.add_child(node_a)
-            tree_node.add_child(node_b)
-            node_mapping[p1.index] = node_a
-            node_mapping[p2.index] = node_b
+
+            if not label_only:
+                node_a = ClusterTreeNode()
+                node_b = ClusterTreeNode()
+
+                annotate_tree_node(node_a, p1)
+                annotate_tree_node(node_b, p2)
+
+                tree_node.add_child(node_a)
+                tree_node.add_child(node_b)
+                
+                node_mapping[p1.index] = node_a
+                node_mapping[p2.index] = node_b
 
             # (VR) Cluster both partitions
             subp1 = list(clusterer.cluster_without_singletons(p1))
             subp2 = list(clusterer.cluster_without_singletons(p2))
 
             # (VR) Set clusters as children of the partitions
-            for p, np in [(subp1, node_a), (subp2, node_b)]:
-                for sg in p:
-                    n = ClusterTreeNode()
-                    annotate_tree_node(n, sg)
-                    node_mapping[sg.index] = n
-                    np.add_child(n)
+            if not label_only:
+                for p, np in [(subp1, node_a), (subp2, node_b)]:
+                    for sg in p:
+                        n = ClusterTreeNode()
+                        annotate_tree_node(n, sg)
+                        node_mapping[sg.index] = n
+                        np.add_child(n)
 
             # (VR) Add the new clusters to the stack
             stack.extend(subp1)
@@ -191,17 +211,22 @@ def par_task(entry):
             # (VR) Check if the modularity value is valid so that the answer can include the modified cluster
             if not isinstance(clusterer, IkcClusterer) or mod > 0:
                 # ans.append(candidate)
-                node_mapping[subgraph.index].extant = True
+                if not label_only:
+                    node_mapping[subgraph.index].extant = True
                 if not quiet_g:
                     log.info("cut valid, not splitting anymore")
             else:
-                node_mapping[subgraph.index].extant = False
+                if not label_only:
+                    node_mapping[subgraph.index].extant = False
                 if not quiet_g:
                     log.info(
                         "cut valid, but modularity non-positive, thrown away",
                         modularity=mod,
                     )
-    return (node_mapping, node2cids)
+    if label_only:
+        return (None, node2cids)
+    else:     
+        return (node_mapping, node2cids)
 
 def algorithm_g(
     graphs: List[IntangibleSubgraph],
@@ -220,41 +245,52 @@ def algorithm_g(
         log = get_logger()
         log.info("starting algorithm-g", queue_size=len(stack))
 
-    tree = ts.Tree()                                # (VR) tree: Recursion tree that keeps track of clusters created by serial mincut/reclusters
-    tree.root = ClusterTreeNode()
-    annotate_tree_node(tree.root, global_graph)
-    node_mapping: Dict[str, ClusterTreeNode] = {}   # (VR) node_mapping: maps cluster id to cluster tree node   
-    node2cids: Dict[int, str] = {}                  # (VR) node2cids: Mapping between nodes and cluster ID  
+    if not label_only:
+        tree = ts.Tree()                                # (VR) tree: Recursion tree that keeps track of clusters created by serial mincut/reclusters
+        tree.root = ClusterTreeNode()
+        annotate_tree_node(tree.root, global_graph)
+        node_mapping: Dict[str, ClusterTreeNode] = {}   # (VR) node_mapping: maps cluster id to cluster tree node  
+
+    node2cids: Dict[int, str] = {}                      # (VR) node2cids: Mapping between nodes and cluster ID  
 
     mapping_split = [{} for _ in range(cores)]
     stacks = [[] for _ in range(cores)]
     labeling_split = [{} for _ in range(cores)]
 
     for i, g in enumerate(graphs):
-        n = ClusterTreeNode()
-        annotate_tree_node(n, g)
-        node_mapping[g.index] = n
+        if not label_only:
+            n = ClusterTreeNode()
+            annotate_tree_node(n, g)
+            node_mapping[g.index] = n
+            mapping_split[i % cores][g.index] = n
 
-        mapping_split[i % cores][g.index] = n
         stacks[i % cores].append(g)
 
     global quiet_g
     quiet_g = quiet
 
     with mp.Pool(cores) as p:
-        out = p.map(par_task, list(zip(stacks, mapping_split, labeling_split)))
+        if not label_only:
+            out = p.map(par_task, list(zip(stacks, mapping_split, labeling_split)))
+        else:
+            out = p.map(par_task, list(zip(stacks, labeling_split)))
 
     # stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
     # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
     for mapping, label_part in out:
-        node_mapping.update(mapping)
+        if mapping is not None:
+            node_mapping.update(mapping)
+
         node2cids.update(label_part)
 
-    for g in graphs:
-        n = node_mapping[g.index]
-        tree.root.add_child(n)
+    if not label_only:
+        for g in graphs:
+            n = node_mapping[g.index]
+            tree.root.add_child(n)
 
-    return node2cids, tree
+        return node2cids, tree
+    else:
+        return node2cids
 
 def main(
     input: str = typer.Option(..., "--input", "-i"),
@@ -266,7 +302,8 @@ def main(
     resolution: float = typer.Option(-1, "--resolution", "-g"),
     threshold: str = typer.Option("", "--threshold", "-t"),
     output: str = typer.Option("", "--output", "-o"),
-    cores: int = typer.Option(4, "--nprocs", "-n")
+    cores: int = typer.Option(4, "--nprocs", "-n"),
+    labelonly: bool = typer.Option(False, "--labelonly", "-l")
 ):
     """ (VR) Connectivity-Modifier (CM). Take a network and cluster it ensuring cut validity
 
@@ -340,21 +377,31 @@ def main(
             summary=summarize_graphs(clusters),
         )
 
+    global label_only
+    label_only = labelonly
+
     # (VR) Call the main CM algorithm
     time1 = time.perf_counter()
-    labels, tree = algorithm_g(
-        clusters, quiet, cores
-    )
+    if not labelonly:
+        labels, tree = algorithm_g(
+            clusters, quiet, cores
+        )
+    else:
+        labels = algorithm_g(
+            clusters, quiet, cores
+        )
     print(time.perf_counter() - time1)
 
     # (VR) Retrieve output
     with open(output, "w+") as f:
         for n, cid in labels.items():
             f.write(f"{n} {cid}\n")
-    with open(output + ".tree.json", "w+") as f:
-        f.write(cast(str, jsonpickle.encode(tree)))
+    
+    if not labelonly:
+        with open(output + ".tree.json", "w+") as f:
+            f.write(cast(str, jsonpickle.encode(tree)))
 
-    cm2universal(quiet, global_graph, tree, labels, output)
+        cm2universal(quiet, global_graph, tree, labels, output)
 
 def entry_point():
     typer.run(main)
