@@ -1,7 +1,7 @@
 python3 ../cm.py \
         --quiet \
         --labelonly \
-        -n 32 \
+        -n 4 \
         -i /shared/rsquared/cen_cleaned.tsv  \
         -c leiden \
         -d working_dir_test_simple2 \

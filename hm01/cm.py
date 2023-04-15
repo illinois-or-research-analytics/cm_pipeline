@@ -14,6 +14,8 @@ import time
 import treeswift as ts
 import networkit as nk
 import jsonpickle
+import psutil
+import os
 
 from clusterers.abstract_clusterer import AbstractClusterer
 from clusterers.ikc_wrapper import IkcClusterer
@@ -26,6 +28,7 @@ from to_universal import cm2universal
 from cluster_tree import ClusterTreeNode
 
 import multiprocessing as mp
+from multiprocessing.pool import ThreadPool
 
 import sys
 import sqlite3
@@ -223,6 +226,7 @@ def par_task(entry):
                         "cut valid, but modularity non-positive, thrown away",
                         modularity=mod,
                     )
+    print(f"{os.getpid()}: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2}")
     if label_only:
         return (None, node2cids)
     else:     
