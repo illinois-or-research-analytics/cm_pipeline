@@ -28,7 +28,7 @@ from to_universal import cm2universal
 from cluster_tree import ClusterTreeNode
 
 import multiprocessing as mp
-from multiprocessing.pool import ThreadPool
+from multiprocessing.managers import BaseProxy
 
 import sys
 import sqlite3
@@ -66,12 +66,14 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
     else:
         return f"[{', '.join([g.index for g in graphs])}]({len(graphs)})"
 
-def par_task(entry):
+def par_task(stack, node_mapping, node2cids):
     # (VR) Main algorithm loop: Recursively cut clusters in stack until they have mincut above threshold
+    '''
     if label_only:
         stack, node2cids = entry
     else:
         stack, node_mapping, node2cids = entry
+    '''
 
     while stack:
         if not quiet_g:
@@ -257,7 +259,7 @@ def algorithm_g(
 
     node2cids: Dict[int, str] = {}                      # (VR) node2cids: Mapping between nodes and cluster ID  
 
-    mapping_split = [{} for _ in range(cores)]
+    mapping_split = [{} for _ in range(cores)] if not label_only else [None]*cores
     stacks = [[] for _ in range(cores)]
     labeling_split = [{} for _ in range(cores)]
 
@@ -275,9 +277,9 @@ def algorithm_g(
 
     with mp.Pool(cores) as p:
         if not label_only:
-            out = p.map(par_task, list(zip(stacks, mapping_split, labeling_split)))
+            out = p.starmap(par_task, list(zip(stacks, mapping_split, labeling_split)))
         else:
-            out = p.map(par_task, list(zip(stacks, labeling_split)))
+            out = p.starmap(par_task, list(zip(stacks, mapping_split, labeling_split)))
 
     # stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
     # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
