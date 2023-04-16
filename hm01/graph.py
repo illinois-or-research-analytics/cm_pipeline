@@ -236,7 +236,7 @@ class RealizedSubgraph(AbstractGraph):
     _dirty: bool
     _graph: Graph
 
-    def __init__(self, intangible: IntangibleSubgraph, graph: Graph):
+    def __init__(self, intangible: IntangibleSubgraph, graph: Union[Graph, RealizedSubgraph]):
         """ (VR) Convert nodelist into adjacency list """
         self.index = intangible.index
         self.nodeset = intangible.nodeset

@@ -16,6 +16,7 @@ import networkit as nk
 import jsonpickle
 import psutil
 import os
+import tracemalloc
 
 from clusterers.abstract_clusterer import AbstractClusterer
 from clusterers.ikc_wrapper import IkcClusterer
@@ -74,7 +75,9 @@ def par_task(stack, node_mapping, node2cids):
     else:
         stack, node_mapping, node2cids = entry
     '''
-
+    tracemalloc.clear_traces()
+    tracemalloc.reset_peak()
+    tracemalloc.start()
     while stack:
         if not quiet_g:
             log = get_logger()
@@ -97,7 +100,10 @@ def par_task(stack, node_mapping, node2cids):
             continue
         
         # (VR) Realize the set of nodes contained by the graph (i.e. construct its adjacency list)
-        subgraph = intangible_subgraph.realize(global_graph)
+        if isinstance(intangible_subgraph, IntangibleSubgraph):
+            subgraph = intangible_subgraph.realize(global_graph)
+        else:
+            subgraph = intangible_subgraph
 
         # (VR) Get the current cluster tree node
         if not label_only:
@@ -186,6 +192,8 @@ def par_task(stack, node_mapping, node2cids):
             # (VR) Cluster both partitions
             subp1 = list(clusterer.cluster_without_singletons(p1))
             subp2 = list(clusterer.cluster_without_singletons(p2))
+            subp1 = [s.realize(p1) for s in subp1]
+            subp2 = [s.realize(p2) for s in subp2]
 
             # (VR) Set clusters as children of the partitions
             if not label_only:
@@ -228,11 +236,14 @@ def par_task(stack, node_mapping, node2cids):
                         "cut valid, but modularity non-positive, thrown away",
                         modularity=mod,
                     )
-    print(f"{os.getpid()}: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2}")
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"{os.getpid()}: Current memory usage is {current / 10**3}KB; Peak was {peak / 10**3}KB; Diff = {(peak - current) / 10**3}KB")
+    snapshot = tracemalloc.take_snapshot()
+    tracemalloc.stop()
     if label_only:
-        return (None, node2cids)
+        return (None, node2cids, snapshot)
     else:     
-        return (node_mapping, node2cids)
+        return (node_mapping, node2cids, snapshot)
 
 def algorithm_g(
     graphs: List[IntangibleSubgraph],
@@ -283,11 +294,21 @@ def algorithm_g(
 
     # stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
     # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
-    for mapping, label_part in out:
+    snapshots = []
+    for mapping, label_part, snapshot in out:
         if mapping is not None:
             node_mapping.update(mapping)
+        snapshots.append(snapshot)
 
         node2cids.update(label_part)
+
+    combined_snapshot = snapshots[1]
+
+    # Print the top 10 memory-consuming lines of code
+    top_stats = combined_snapshot.statistics('lineno')
+    print("[ Top 10 ]")
+    for stat in top_stats[:10]:
+        print(stat)
 
     if not label_only:
         for g in graphs:
