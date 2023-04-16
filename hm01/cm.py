@@ -262,6 +262,7 @@ def algorithm_g(
     """
     # Share quiet variable with processes
     global quiet_g
+    quiet_g = quiet
 
     if not quiet:
         log = get_logger()
@@ -275,34 +276,35 @@ def algorithm_g(
 
     node2cids: Dict[int, str] = {}                      # (VR) node2cids: Mapping between nodes and cluster ID  
 
+    # Split data into parititions such that each core handles one partition
     mapping_split = [{} for _ in range(cores)] if not label_only else [None]*cores
     stacks = [[] for _ in range(cores)]
     labeling_split = [{} for _ in range(cores)]
 
+    # Fill each partition
     for i, g in enumerate(graphs):
         if not label_only:
             n = ClusterTreeNode()
             annotate_tree_node(n, g)
             node_mapping[g.index] = n
             mapping_split[i % cores][g.index] = n
-
         stacks[i % cores].append(g)
 
-    quiet_g = quiet
-
+    # Map the algorithm to each partition
     with mp.Pool(cores) as p:
         if not label_only:
             out = p.starmap(par_task, list(zip(stacks, mapping_split, labeling_split)))
         else:
             out = p.starmap(par_task, list(zip(stacks, mapping_split, labeling_split)))
 
+    # Merge partitions into single return data
     for mapping, label_part in out:
         if mapping is not None:
             node_mapping.update(mapping)
-
         node2cids.update(label_part)
 
     if not label_only:
+        # Add each initial clustering node as children of the tree root
         for g in graphs:
             n = node_mapping[g.index]
             tree.root.add_child(n)
