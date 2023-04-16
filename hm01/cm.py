@@ -14,9 +14,11 @@ import time
 import treeswift as ts
 import networkit as nk
 import jsonpickle
-import psutil
-import os
-import tracemalloc
+
+# UNCOMMENT IF INTERESTED IN SEEING PER-PROCESS MEM USAGE
+# import psutil
+# import os
+# import tracemalloc
 
 from clusterers.abstract_clusterer import AbstractClusterer
 from clusterers.ikc_wrapper import IkcClusterer
@@ -75,9 +77,10 @@ def par_task(stack, node_mapping, node2cids):
     else:
         stack, node_mapping, node2cids = entry
     '''
-    tracemalloc.clear_traces()
-    tracemalloc.reset_peak()
-    tracemalloc.start()
+    # UNCOMMENT TO PRINT MEMORY USAGE
+    # tracemalloc.clear_traces()
+    # tracemalloc.reset_peak()
+    # tracemalloc.start()
     while stack:
         if not quiet_g:
             log = get_logger()
@@ -236,14 +239,13 @@ def par_task(stack, node_mapping, node2cids):
                         "cut valid, but modularity non-positive, thrown away",
                         modularity=mod,
                     )
-    current, peak = tracemalloc.get_traced_memory()
-    print(f"{os.getpid()}: Current memory usage is {current / 10**3}KB; Peak was {peak / 10**3}KB; Diff = {(peak - current) / 10**3}KB")
-    snapshot = tracemalloc.take_snapshot()
-    tracemalloc.stop()
+    # current, peak = tracemalloc.get_traced_memory()
+    # print(f"{os.getpid()}: Current memory usage is {current / 10**3}KB; Peak was {peak / 10**6}MB; Diff = {(peak - current) / 10**6}MB; USS={psutil.Process(os.getpid()).memory_full_info().uss / 1024 ** 2}MB")
+    # tracemalloc.stop()
     if label_only:
-        return (None, node2cids, snapshot)
+        return (None, node2cids)
     else:     
-        return (node_mapping, node2cids, snapshot)
+        return (node_mapping, node2cids)
 
 def algorithm_g(
     graphs: List[IntangibleSubgraph],
@@ -258,9 +260,12 @@ def algorithm_g(
         clusterer (Union[IkcClusterer, LeidenClusterer])    : clustering algorithm
         requirement (MincutRequirement)                     : mincut connectivity requirement
     """
+    # Share quiet variable with processes
+    global quiet_g
+
     if not quiet:
         log = get_logger()
-        log.info("starting algorithm-g", queue_size=len(stack))
+        log.info("starting algorithm-g", queue_size=len(graphs))
 
     if not label_only:
         tree = ts.Tree()                                # (VR) tree: Recursion tree that keeps track of clusters created by serial mincut/reclusters
@@ -283,7 +288,6 @@ def algorithm_g(
 
         stacks[i % cores].append(g)
 
-    global quiet_g
     quiet_g = quiet
 
     with mp.Pool(cores) as p:
@@ -292,23 +296,11 @@ def algorithm_g(
         else:
             out = p.starmap(par_task, list(zip(stacks, mapping_split, labeling_split)))
 
-    # stack: List[IntangibleSubgraph] = list(graphs)  # (VR) stack: (TODO: Change to queue), the stack for cluster processing
-    # ans: List[IntangibleSubgraph] = []              # (VR) ans: Reclustered output
-    snapshots = []
-    for mapping, label_part, snapshot in out:
+    for mapping, label_part in out:
         if mapping is not None:
             node_mapping.update(mapping)
-        snapshots.append(snapshot)
 
         node2cids.update(label_part)
-
-    combined_snapshot = snapshots[1]
-
-    # Print the top 10 memory-consuming lines of code
-    top_stats = combined_snapshot.statistics('lineno')
-    print("[ Top 10 ]")
-    for stat in top_stats[:10]:
-        print(stat)
 
     if not label_only:
         for g in graphs:
@@ -345,11 +337,16 @@ def main(
         threshold (str)                 : connectivity requiremen, can be in terms of log(N)
         output (str)                    : filename to store output
     """
+    # Initialize shared global variables (TODO: Find alternative for people running on Windows)
+    global clusterer
+    global requirement
+    global global_graph
+    global label_only
+
     # (VR) Setting a really high recursion limit to prevent stack overflow errors
     sys.setrecursionlimit(1231231234)
 
     # (VR) Check -g and -k parameters for Leiden and IKC respectively
-    global clusterer
     if clusterer_spec == ClustererSpec.leiden:
         assert resolution != -1, "Leiden requires resolution"
         clusterer = LeidenClusterer(resolution)
@@ -372,7 +369,6 @@ def main(
         )
 
     # (VR) Parse mincut threshold specification
-    global requirement
     requirement = MincutRequirement.try_from_str(threshold)
     if not quiet:
         log.info(f"parsed connectivity requirement", requirement=requirement)
@@ -390,7 +386,6 @@ def main(
             elapsed=time.time() - time1,
         )
 
-    global global_graph
     global_graph = Graph(nk_graph, "")
 
     # (VR) Load clustering
@@ -404,11 +399,13 @@ def main(
             summary=summarize_graphs(clusters),
         )
 
-    global label_only
     label_only = labelonly
 
     # (VR) Call the main CM algorithm
-    time1 = time.perf_counter()
+
+    # UNCOMMENT TO TIME JUST THE CM ALGO
+    # time1 = time.perf_counter()
+
     if not labelonly:
         labels, tree = algorithm_g(
             clusters, quiet, cores
@@ -417,7 +414,8 @@ def main(
         labels = algorithm_g(
             clusters, quiet, cores
         )
-    print(time.perf_counter() - time1)
+
+    # print(time.perf_counter() - time1)
 
     # (VR) Retrieve output
     with open(output, "w+") as f:
