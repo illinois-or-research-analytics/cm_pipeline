@@ -20,6 +20,7 @@ class ConnectivityModifierNew(Stage):
     def __init__(self, config, default_config, stage_num, prev_stages):
         super().__init__(config, default_config, stage_num, prev_stages)
         self.cm_output_files = defaultdict(lambda: defaultdict(str))
+        self.labelonly = False
 
     def _get_cm_ready_input_files(self):
         try:
@@ -65,6 +66,7 @@ class ConnectivityModifierNew(Stage):
         if quiet == "1":
             cmd_args.append(DOUBLE_HYP + QUIET)
         if labelonly == "1":
+            self.labelonly = True
             cmd_args.append(DOUBLE_HYP + LABELONLY)
         if nprocs:
             cmd_args.extend([DOUBLE_HYP + NPROCS, nprocs])
@@ -118,35 +120,40 @@ class ConnectivityModifierNew(Stage):
                 # quiet, nprocs, logtree node
                 cmd.extend(self._get_additional_args())
                 self.cmd_obj.run(cmd)
-                # Step 2: json2membership
-                cm_nw_preprocessed_op_json_file_name = f"{cm_nw_preprocess_output_file}.after.json"
-                cm_nw_preprocessed_op_json_file = self._get_op_file_path_for_resolution(
-                    resolution=resolution,
-                    op_file_name=cm_nw_preprocessed_op_json_file_name,
-                    n_iter=n_iter
-                    )
 
-                cm_final_op_file_name = self._get_output_file_name_from_template(
-                    template_str=CM_NEW_FINAL_OP_FILE_NAME,
-                    resolution=resolution,
-                    n_iter=n_iter
-                    )
-                cm_nw_final_op_file = self._get_op_file_path_for_resolution(
-                    resolution=resolution,
-                    op_file_name=cm_final_op_file_name,
-                    n_iter=n_iter
-                    )
+                # if tree logging is enabled (cm2universal is enabled)
+                if not self.labelonly:
+                    # Step 2: json2membership
+                    cm_nw_preprocessed_op_json_file_name = f"{cm_nw_preprocess_output_file}.after.json"
+                    cm_nw_preprocessed_op_json_file = self._get_op_file_path_for_resolution(
+                        resolution=resolution,
+                        op_file_name=cm_nw_preprocessed_op_json_file_name,
+                        n_iter=n_iter
+                        )
 
-                logger.info(
-                    "Converting Json to tsv for resolution %s", resolution
-                    )
+                    cm_final_op_file_name = self._get_output_file_name_from_template(
+                        template_str=CM_NEW_FINAL_OP_FILE_NAME,
+                        resolution=resolution,
+                        n_iter=n_iter
+                        )
+                    cm_nw_final_op_file = self._get_op_file_path_for_resolution(
+                        resolution=resolution,
+                        op_file_name=cm_final_op_file_name,
+                        n_iter=n_iter
+                        )
+
+                    logger.info(
+                        "Converting Json to tsv for resolution %s", resolution
+                        )
+
+                    # Comment the below line for quick testing of workflow paths
+                    self._gen_cm_final_tsv_from_json(
+                        cm_nw_preprocessed_op_json_file, cm_nw_final_op_file
+                        )
+                else:
+                    cm_nw_final_op_file = cm_nw_preprocess_output_file
+
                 self.cm_output_files[resolution][n_iter] = cm_nw_final_op_file
-
-                # Comment the below line for quick testing of workflow paths
-                self._gen_cm_final_tsv_from_json(
-                    cm_nw_preprocessed_op_json_file, cm_nw_final_op_file
-                    )
-
                 # add the cm final output file to files_to_analyse dict
                 ConnectivityModifierNew.files_to_analyse[RESOLUTION_KEY][
                     resolution][n_iter].append(cm_nw_final_op_file)
