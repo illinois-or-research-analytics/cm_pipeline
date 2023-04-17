@@ -22,6 +22,13 @@ Commands from v2.0 stay consistent, except now you can add the following options
      - Added Python wrapper for VieCut to avoid overhead in fork-exec-wait paradigm
      - Replaced MincutResult object with python-mincut C++ object
      - Shortened mincut computation in CM
+### CM (Pipeline) (v1.2)
+- Introduction of modular pipeline
+- Post cm filtering to remove clusters of size 10
+- Set the filtering of clusters size to `N>1` in analysis scripts
+- Introduced `--quiet` or `-q` param
+### CM (Base)
+- Refer to [this link](https://github.com/RuneBlaze/connectivity-modifier)
 
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
