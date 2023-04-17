@@ -41,13 +41,19 @@ module load gcc/9.2.0
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 - Run `python -m main param.config`
 
+### How to Clone CM for any particular version
+Simply run the following
+```
+git clone -b v<version #> [<repository>](https://github.com/illinois-or-research-analytics/cm_pipeline.git) .
+```
+
 ## Setting the levels for logging
 - cm pipeline logs the data on to console and file.
 - Log levels for each of these can be modified in [log.config](./log.config)
 - Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)
 - Log files are created in `./logs` directory.
 
-## Output Files [WIP]
+## Output Files
 - The commands executed during the workflow are captured in `./logs/executed-cmds/executed-cmds-timestamp.txt`
 - The Output files generated during the workflow are stored in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/`
 - The descriptive analysis files can be found in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/analysis` with the `*.csv` file for each of the resolution values.
@@ -72,10 +78,8 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 
 ## TODOs:
 - Support to run the workflow with individual stages (as opposed to "end to end")
-- Integrate `leiden_alg` script by GC. [DONE]
 - Add edge_coverage in the analysis file for `*treestar_counts.tsv`
 - Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
-- Copy the log file to `user-defined-output-dir/network_name-cm-pp-output-timestamp/` at the end of the pipeline. [DONE]
 - Mechanism to sync the scripts used within cm_pipeline with the latest changes.
 - Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 
 
