@@ -4,14 +4,24 @@ Modular pipeline for testing and using an improved version of CM for generating 
 ## Overview 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
-## Release Notes
-### v3.0
+## Major Release Notes
+### CM++ (v3.0)
 Parallelism introduced in this version.
 
 Commands from v2.0 stay consistent, except now you can add the following options
 
 - `-n <number of parallel processes>` or `--nprocs <number of parallel processes>`: Specify number of processes to create to run CM++ in parallel. _Default_ 4
 - `-l` or `--labelonly`: Don't output a tree and don't run CM2Universal. _Default_ without this tag, CM will automatically output a tree and run CM2Universal
+### CM+ (v2.1)
+- Enabled the option to run the clustering for multiple n values
+- Removed the support for runleiden
+- Integrated the leidenalg wrapper
+- Users can choose between runleiden and leidenalg with number_of_iterations
+- If `clustering_script` is not specified in. the `param.config` then by default `leidenalg` is used with default `number_of_iterations` equals to 2.
+- _CM_
+     - Added Python wrapper for VieCut to avoid overhead in fork-exec-wait paradigm
+     - Replaced MincutResult object with python-mincut C++ object
+     - Shortened mincut computation in CM
 
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
