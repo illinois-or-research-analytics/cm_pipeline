@@ -4,6 +4,15 @@ Modular pipeline for testing and using an improved version of CM for generating 
 ## Overview 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
+## Release Notes
+### v3.0
+Parallelism introduced in this version.
+
+Commands from v2.0 stay consistent, except now you can add the following options
+
+- `-n <number of parallel processes>` or `--nprocs <number of parallel processes>`: Specify number of processes to create to run CM++ in parallel. _Default_ 4
+- `-l` or `--labelonly`: Don't output a tree and don't run CM2Universal. _Default_ without this tag, CM will automatically output a tree and run CM2Universal
+
 ## Input
 - The input to the pipeline script is a [param.config](param.config) file.
 - Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
@@ -44,7 +53,7 @@ module load gcc/9.2.0
 ### How to Clone CM for any particular version
 Simply run the following
 ```
-git clone -b v<version #> [<repository>](https://github.com/illinois-or-research-analytics/cm_pipeline.git) .
+git clone -b v<version #> https://github.com/illinois-or-research-analytics/cm_pipeline.git .
 ```
 
 ## Setting the levels for logging
