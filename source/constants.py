@@ -35,9 +35,15 @@ CM_VERSION_OLD_VAL = 'old'
 RUNLEIDEN_SCRIPT_VALUE = 'runleiden'
 LEIDEN_ALG_SCRIPT_VALUE = 'leidenalg'
 NUMBER_OF_ITERATIONS_KEY = 'number_of_iterations'
+# below config keys are used only for new version of CM
+NPROCS = 'nprocs'
+LABELONLY = 'labelonly'
+QUIET = 'quiet'
 
 EXISTING_OP_JSON = 'existing_op_json'
 # KEYS used in existing_ip_files.json
 CLEANED_NW_KEY = 'cleaned_nw'
 CLUSTERED_NW_FILES = 'clustered_nw_files'
 CM_READY_FILES = "cm_ready_files"
+DOUBLE_HYP = "--"
+SINGLE_HYP = "-"

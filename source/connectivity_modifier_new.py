@@ -57,6 +57,19 @@ class ConnectivityModifierNew(Stage):
                 cm_uni_preprocessed_op_json_file
                 )
 
+    def _get_additional_args(self):
+        cmd_args = []
+        quiet = self.config.get(QUIET, "1")
+        labelonly = self.config.get(LABELONLY, "1")
+        nprocs = self.config.get(NPROCS, None)
+        if quiet == "1":
+            cmd_args.append(DOUBLE_HYP + QUIET)
+        if labelonly == "1":
+            cmd_args.append(DOUBLE_HYP + LABELONLY)
+        if nprocs:
+            cmd_args.extend([DOUBLE_HYP + NPROCS, nprocs])
+        return cmd_args
+
     @timeit
     def execute(self):
         logging.info(
@@ -72,7 +85,9 @@ class ConnectivityModifierNew(Stage):
                     "Running CM with %s for resolution=%s, n=%s",
                     self.default_config.algorithm, resolution, n_iter
                     )
-                cm_ready_input_file = cm_ready_input_files.get(resolution).get(n_iter)
+                cm_ready_input_file = cm_ready_input_files.get(resolution).get(
+                    n_iter
+                    )
                 cm_nw_preprocess_op_file_name = self._get_output_file_name_from_template(
                     template_str=CM_NEW_PREPROCESS_OP_FILE_NAME,
                     resolution=resolution,
@@ -87,7 +102,6 @@ class ConnectivityModifierNew(Stage):
                 cmd = [
                     "python",
                     "./hm01/cm.py",
-                    "--quiet",
                     "-i",
                     cleaned_input_file,
                     "-c",
@@ -101,9 +115,9 @@ class ConnectivityModifierNew(Stage):
                     "-o",
                     cm_nw_preprocess_output_file
                     ]
-
+                # quiet, nprocs, logtree node
+                cmd.extend(self._get_additional_args())
                 self.cmd_obj.run(cmd)
-
                 # Step 2: json2membership
                 cm_nw_preprocessed_op_json_file_name = f"{cm_nw_preprocess_output_file}.after.json"
                 cm_nw_preprocessed_op_json_file = self._get_op_file_path_for_resolution(
@@ -123,7 +137,9 @@ class ConnectivityModifierNew(Stage):
                     n_iter=n_iter
                     )
 
-                logger.info("Converting Json to tsv for resolution %s", resolution)
+                logger.info(
+                    "Converting Json to tsv for resolution %s", resolution
+                    )
                 self.cm_output_files[resolution][n_iter] = cm_nw_final_op_file
 
                 # Comment the below line for quick testing of workflow paths
