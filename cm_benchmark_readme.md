@@ -272,7 +272,7 @@ Refer the example existing_op_files.json: `cen_existing_op.json`
 2. Modify the values for the key `cm_ready_files` by adding the complete file paths that point to the existing files that contain clusters filtered for tree, star and N>10.
 
 ##### How to choose different number of processes for cm++?
-Add the `nprocs` in the config file under the `connectivity_modifier` section. If this key is not added then by default 4 processes will be used. Seting `nprocs` to 1 is same as running `cm+`.
+Add the `nprocs` in the config file under the `connectivity_modifier` section. If this key is not added then by default 4 processes will be used. Setting `nprocs` to 1 is same as running `cm+`.
 ```
 [connectivity_modifier]
 threshold = 1log10
