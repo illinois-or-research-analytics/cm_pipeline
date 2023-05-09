@@ -213,7 +213,7 @@ CM benchmark results are located on valhalla and odesa in the below root directo
 - `cit_cm++_nproc2_tl_3r_cm_stage_multitime.csv` - multitime results for 3 runs of cm_pipeline rexecuted with cm stage only on cit network using cm++ using 2 parallel processes with tree logging enabled.
 
 ## FAQs 
-#### Example config file with all stages
+### Example config file with all stages
 Refer `cen_cm+_1r_all_stage.config`
 ```
 [default]
@@ -242,7 +242,7 @@ threshold = 1log10
 filtering_script=./scripts/post_cm_filter.R
 ```
 
-##### How to choose between different versions of cm in the config file?
+### How to choose between different versions of cm in the config file?
 1. To run the cm pipeline with the legacy `cm` set `cm_version = old` and to run `cm+` or `cm++` set `cm_version = new` in the default section of config file. Refer the example config file: `cen_cm_1r_all_stage.config` 
     ```
     [default]
@@ -253,7 +253,7 @@ filtering_script=./scripts/post_cm_filter.R
     number_of_iterations = 2
     cm_version = old
     ```
-##### How to run CM pipleine with existing clusterings?
+### How to run CM pipleine with existing clusterings?
 Refer the example config file: `cen_cm+_3r_filter_cm_stage_filter.config`
 1. Create copy of the example config file
 2. Modify the value for the key `network_name` and `existing_op_json`.
@@ -262,7 +262,7 @@ Refer the example existing_op_files.json: `cen_existing_clusters.json`
 1. Create copy of the example json file
 2. Modify the values for the key `clustered_nw_files` by adding the complete file paths that point to the existing clustering files.
 
-##### How to run CM pipeline with existing clusterings filterd for N>10 ?
+### How to run CM pipeline with existing clusterings filterd for N>10 ?
 Refer the example config file: `cen_cm+_3r_cm_stage.config`
 1. Create copy of the example config file
 2. Modify the value for the key `network_name` and `existing_op_json`.
@@ -271,7 +271,7 @@ Refer the example existing_op_files.json: `cen_existing_op.json`
 1. Create a copy of the example json file
 2. Modify the values for the key `cm_ready_files` by adding the complete file paths that point to the existing files that contain clusters filtered for tree, star and N>10.
 
-##### How to choose different number of processes for cm++?
+### How to choose different number of processes for cm++?
 Add the `nprocs` in the config file under the `connectivity_modifier` section. If this key is not added then by default 4 processes will be used. Setting `nprocs` to 1 is same as running `cm+`.
 ```
 [connectivity_modifier]
@@ -279,7 +279,7 @@ threshold = 1log10
 nprocs = 4
 ```
 example config file: `cen_cm++_nproc4_tl_3r_cm_stage.config `
-##### How to use quiet mode in cm++?
+### How to use quiet mode in cm++?
 Set `quiet=1` in the config file under the `connectivity_modifier` section. If this key is not added then by default quiet mode is enabled. Set `quiet=0` to enable the console logging of connectivity modifier.
 ```
 [connectivity_modifier]
@@ -288,7 +288,7 @@ nprocs = 4
 quiet = 1
 ```
 example config file `cen_cm++_nproc4_tl_3r_cm_stage.config`
-##### How to enable tree logging (run cm2universal) in cm++?
+### How to enable tree logging (run cm2universal) in cm++?
 Set the `labelonly=0` in the config file under the `connectivity_modifier` section. If this key is not added then by default, the tree logging is disabled (labelonly=1)
 ```
 [connectivity_modifier]
