@@ -6,7 +6,7 @@ from source.cmd import Cmd
 from source.filtering_bf_cm import FilteringBfCm
 from source.filtering_af_cm import FilteringAfCm
 from source.stats_af_filtering import StatsAfFiltering
-from source.stats_stage import Stats
+from source.stats_bf_filtering import StatsBfFiltering
 from source.connectivity_modifier_new import ConnectivityModifierNew
 from source.connectivity_modifier_old import ConnectivityModifierOld
 from source.stage import Stage
@@ -38,9 +38,9 @@ class Workflow:
             stage_num = stage_num + 1
             self._add_stage(Clustering, CLUSTERING_SECTION, stage_num)
 
-        if config.has_section(STATS):
+        if config.has_section(STATS_BF_FILTERING):
             stage_num = stage_num + 1
-            self._add_stage(Stats, STATS, stage_num)
+            self._add_stage(StatsBfFiltering, STATS_BF_FILTERING, stage_num)
 
         if config.has_section(FILTERING_BF_CM_SECTION):
             stage_num = stage_num + 1
@@ -64,9 +64,9 @@ class Workflow:
             stage_num = stage_num + 1
             self._add_stage(FilteringAfCm, FILTERING_AF_CM_SECTION, stage_num)
 
-        if config.has_section(STATS):
+        if config.has_section(STATS_AF_FILTERING):
             stage_num = stage_num + 1
-            self._add_stage(Stats, STATS, stage_num)
+            self._add_stage(StatsAfFiltering, STATS_AF_FILTERING, stage_num)
 
     def _add_stage(self, StageClass, section_name, stage_num):
         stage_class_obj = StageClass(
