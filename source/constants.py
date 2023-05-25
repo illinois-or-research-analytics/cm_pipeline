@@ -10,6 +10,8 @@ CLUSTERING_SECTION = 'clustering'
 FILTERING_BF_CM_SECTION = 'filtering_bf_cm'
 CONNECTIVITY_MODIFIER_SECTION = 'connectivity_modifier'
 FILTERING_AF_CM_SECTION = 'filtering_af_cm'
+STATS_AF_FILTERING = 'stats_af_filtering'
+STATS_BF_FILTERING = 'stats_bf_filtering'
 
 
 # Keys used in param.config
@@ -47,3 +49,8 @@ CLUSTERED_NW_FILES = 'clustered_nw_files'
 CM_READY_FILES = "cm_ready_files"
 DOUBLE_HYP = "--"
 SINGLE_HYP = "-"
+
+# Stats script
+STATS_SCRIPT = "stats_script"
+TEMPLATE_STR = "template_str"
+NOKTRUSS = "noktruss"

@@ -50,6 +50,18 @@ class Stage(object):
             )
         return output_file_name
 
+    def _get_output_file_name_from_template_prev(self, template_str, resolution,
+                                            n_iter):
+        template = Template(template_str)
+        output_file_name = template.substitute(
+            network_name=self.default_config.network_name,
+            algorithm=self.default_config.algorithm,
+            resolution=resolution,
+            stage_num=int(self.stage_num)-1,
+            n_iter=n_iter
+            )
+        return output_file_name
+
     def _get_cleaned_input_file(self):
         """
         This function checks if the input file should be the output files from
