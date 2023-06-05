@@ -50,8 +50,8 @@ def annotate_tree_node(
     node.label = graph.index
     node.graph_index = graph.index
     node.num_nodes = graph.n()
-    node.extant = False
-    node.cm_valid = True
+    node.extant = False     # Def Extant: An input cluster that has remained untouched by CM (unpruned and uncut)
+    node.cm_valid = True    # Def CM_Valid: A cluster that is in the final result, must have connectivity that fits the threshold
 
 def update_cid_membership(
     subgraph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
