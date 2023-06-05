@@ -71,7 +71,8 @@ class ClusteringSkeleton:
                 ClusteringSkeleton(
                     g.index,
                     list(g.subset),
-                    (info.cut_size or 1) if info else 1,
+                    info.cut_size, # We should allow json outputs to show connectivities of 0
+                    #(info.cut_size or 1) if info else 1,
                     descendants,
                     info.cm_valid,
                     info.extant
