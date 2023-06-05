@@ -130,7 +130,7 @@ def par_task(stack, node_mapping, node2cids):
             # (VR) Set the cluster cut size to the degree of the removed node
             if not label_only:
                 tree_node.cut_size = original_mcd
-                tree_node.extant = False
+                tree_node.extant = False    # The current cluster has been changed, so its not extant or CM valid anymore
                 tree_node.cm_valid = False
 
             if not quiet_g:
@@ -180,7 +180,7 @@ def par_task(stack, node_mapping, node2cids):
         # (VR) If the cut size is below validity, split!
         if mincut_res.get_cut_size() <= valid_threshold: # and mincut_res.get_cut_size >= 0: -> Commented this out to handle disconnected clusters
             if not label_only:
-                tree_node.cm_valid = False
+                tree_node.cm_valid = False  # The current cluster has been changed, so its not extant or CM valid anymore
                 tree_node.extant = False
             
             # (VR) Split partitions and set them as children nodes
@@ -197,7 +197,7 @@ def par_task(stack, node_mapping, node2cids):
                 annotate_tree_node(node_a, p1)
                 annotate_tree_node(node_b, p2)
 
-                node_a.cm_valid = False
+                node_a.cm_valid = False     # These partitions are to be clustered, so they cannot be marked extant or CM valid
                 node_b.cm_valid = False
 
                 tree_node.add_child(node_a)
@@ -217,7 +217,7 @@ def par_task(stack, node_mapping, node2cids):
                 for p, np in [(subp1, node_a), (subp2, node_b)]:
                     for sg in p:
                         n = ClusterTreeNode()
-                        annotate_tree_node(n, sg)
+                        annotate_tree_node(n, sg)   # Each cluster from the partiiton can be marked cm-valid but not extant
                         node_mapping[sg.index] = n
                         np.add_child(n)
 
@@ -302,7 +302,7 @@ def algorithm_g(
         if not label_only:
             n = ClusterTreeNode()
             annotate_tree_node(n, g)
-            n.extant = True
+            n.extant = True     # Input clusters are marked extant by default until they are changed
             node_mapping[g.index] = n
             mapping_split[i % cores][g.index] = n
         stacks[i % cores].append(g)

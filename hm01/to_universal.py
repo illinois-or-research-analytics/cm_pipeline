@@ -49,7 +49,7 @@ class ClusteringSkeleton:
     nodes: List[int]
     connectivity: int
     descendants: List[str]
-    cm_valid: bool
+    cm_valid: bool  # Add cm validity as a parameter in the json
     extant : bool
 
     @staticmethod
@@ -125,7 +125,7 @@ def cm2universal(
         IntangibleSubgraph(n.nodes, n.label) for n in tree.root.children
     ]
     valid_clusters = [
-        IntangibleSubgraph(n.nodes, n.label) for n in tree.traverse_leaves() if n.cm_valid
+        IntangibleSubgraph(n.nodes, n.label) for n in tree.traverse_leaves() if n.cm_valid # We dont want filtration by extant clusters, rather by cm valid clusters
     ]
     original_skeletons = ClusteringSkeleton.from_graphs(
         graph, original_clusters, metadata
