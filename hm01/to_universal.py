@@ -49,6 +49,7 @@ class ClusteringSkeleton:
     nodes: List[int]
     connectivity: int
     descendants: List[str]
+    cm_valid: bool
     extant : bool
 
     @staticmethod
@@ -72,6 +73,7 @@ class ClusteringSkeleton:
                     list(g.subset),
                     (info.cut_size or 1) if info else 1,
                     descendants,
+                    info.cm_valid,
                     info.extant
                 )
             )
@@ -117,12 +119,12 @@ def cm2universal(
     original_clusters = [
         IntangibleSubgraph(n.nodes, n.label) for n in tree.root.children
     ]
-    extant_clusters = [
-        IntangibleSubgraph(n.nodes, n.label) for n in tree.traverse_leaves() if n.extant
+    valid_clusters = [
+        IntangibleSubgraph(n.nodes, n.label) for n in tree.traverse_leaves() if n.cm_valid
     ]
     original_skeletons = ClusteringSkeleton.from_graphs(
         graph, original_clusters, metadata
     )
-    extant_skeletons = ClusteringSkeleton.from_graphs(graph, extant_clusters, metadata)
+    valid_skeletons = ClusteringSkeleton.from_graphs(graph, valid_clusters, metadata)
     ClusteringSkeleton.write_ndjson(original_skeletons, output + ".before.json")
-    ClusteringSkeleton.write_ndjson(extant_skeletons, output + ".after.json")
+    ClusteringSkeleton.write_ndjson(valid_skeletons, output + ".after.json")

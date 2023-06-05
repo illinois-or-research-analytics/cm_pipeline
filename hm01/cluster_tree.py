@@ -12,3 +12,4 @@ class ClusterTreeNode(Node):
     num_nodes: int
     cut_size: Optional[int]
     validity_threshold: Optional[float]
+    cm_valid: bool

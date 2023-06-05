@@ -51,6 +51,7 @@ def annotate_tree_node(
     node.graph_index = graph.index
     node.num_nodes = graph.n()
     node.extant = False
+    node.cm_valid = True
 
 def update_cid_membership(
     subgraph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
@@ -129,6 +130,8 @@ def par_task(stack, node_mapping, node2cids):
             # (VR) Set the cluster cut size to the degree of the removed node
             if not label_only:
                 tree_node.cut_size = original_mcd
+                tree_node.extant = False
+                tree_node.cm_valid = False
 
             if not quiet_g:
                 log = log.bind(
@@ -175,9 +178,17 @@ def par_task(stack, node_mapping, node2cids):
             tree_node.validity_threshold = valid_threshold
 
         # (VR) If the cut size is below validity, split!
-        if mincut_res.get_cut_size() <= valid_threshold and mincut_res.get_cut_size() > 0:
+        if mincut_res.get_cut_size() <= valid_threshold: # and mincut_res.get_cut_size >= 0: -> Commented this out to handle disconnected clusters
+            if not label_only:
+                tree_node.cm_valid = False
+                tree_node.extant = False
+            
             # (VR) Split partitions and set them as children nodes
+            print(mincut_res.get_cut_size())
+            print(mincut_res.get_light_partition())
+            print(mincut_res.get_heavy_partition())
             p1, p2 = subgraph.cut_by_mincut(mincut_res)
+            print(list(p1.nodes()), list(p2.nodes()))
 
             if not label_only:
                 node_a = ClusterTreeNode()
@@ -185,6 +196,9 @@ def par_task(stack, node_mapping, node2cids):
 
                 annotate_tree_node(node_a, p1)
                 annotate_tree_node(node_b, p2)
+
+                node_a.cm_valid = False
+                node_b.cm_valid = False
 
                 tree_node.add_child(node_a)
                 tree_node.add_child(node_b)
@@ -219,26 +233,26 @@ def par_task(stack, node_mapping, node2cids):
                     summary_a_side=summarize_graphs(subp1),
                     summary_b_side=summarize_graphs(subp2),
                 )
-        else:
+        # else:
             # (VR) Compute the modularity of the cluster
-            candidate = subgraph.to_intangible(global_graph)
-            mod = global_graph.modularity_of(candidate)
+            # candidate = subgraph.to_intangible(global_graph)
+            # mod = global_graph.modularity_of(candidate)
 
             # (VR) Check if the modularity value is valid so that the answer can include the modified cluster
-            if not isinstance(clusterer, IkcClusterer) or mod > 0:
+            # if (not isinstance(clusterer, IkcClusterer)) or mod > 0:
                 # ans.append(candidate)
-                if not label_only:
-                    node_mapping[subgraph.index].extant = True
-                if not quiet_g:
-                    log.info("cut valid, not splitting anymore")
-            else:
-                if not label_only:
-                    node_mapping[subgraph.index].extant = False
-                if not quiet_g:
-                    log.info(
-                        "cut valid, but modularity non-positive, thrown away",
-                        modularity=mod,
-                    )
+            #     if not label_only:
+            #         node_mapping[subgraph.index].extant = True
+            #     if not quiet_g:
+            #         log.info("cut valid, not splitting anymore")
+            # else:
+            #     if not label_only:
+            #         node_mapping[subgraph.index].extant = False
+            #     if not quiet_g:
+            #         log.info(
+            #             "cut valid, but modularity non-positive, thrown away",
+            #             modularity=mod,
+            #         )
     # current, peak = tracemalloc.get_traced_memory()
     # print(f"{os.getpid()}: Current memory usage is {current / 10**3}KB; Peak was {peak / 10**6}MB; Diff = {(peak - current) / 10**6}MB; USS={psutil.Process(os.getpid()).memory_full_info().uss / 1024 ** 2}MB")
     # tracemalloc.stop()
@@ -286,6 +300,7 @@ def algorithm_g(
         if not label_only:
             n = ClusterTreeNode()
             annotate_tree_node(n, g)
+            n.extant = True
             node_mapping[g.index] = n
             mapping_split[i % cores][g.index] = n
         stacks[i % cores].append(g)

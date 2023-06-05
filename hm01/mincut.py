@@ -37,7 +37,7 @@ def run_viecut_command(pygraph, hydrator=None):
 
     light_partition, heavy_partition, cut_size = pygraph.mincut(algorithm, queue_implementation, balanced)
 
-    if cut_size == 0:
-        return MincutResult([], [], 0)
+    # if cut_size == 0:
+    #     return MincutResult([], [], 0) -> we still want to split 0-connectivity clusters
 
     return MincutResult(light_partition, heavy_partition, cut_size)
