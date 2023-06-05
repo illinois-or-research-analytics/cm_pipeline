@@ -184,11 +184,11 @@ def par_task(stack, node_mapping, node2cids):
                 tree_node.extant = False
             
             # (VR) Split partitions and set them as children nodes
-            print(mincut_res.get_cut_size())
-            print(mincut_res.get_light_partition())
-            print(mincut_res.get_heavy_partition())
+            # print(mincut_res.get_cut_size())
+            # print(mincut_res.get_light_partition())
+            # print(mincut_res.get_heavy_partition())
             p1, p2 = subgraph.cut_by_mincut(mincut_res)
-            print(list(p1.nodes()), list(p2.nodes()))
+            # print(list(p1.nodes()), list(p2.nodes()))
 
             if not label_only:
                 node_a = ClusterTreeNode()

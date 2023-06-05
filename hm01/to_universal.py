@@ -86,11 +86,16 @@ class ClusteringSkeleton:
         if any(g.descendants for g in graphs):
             use_descendants = True
         with open(filepath, "w+") as f:
-            for g in graphs:
+            f.write("[\n")
+            for i, g in enumerate(graphs):
                 d = asdict(g)
                 if not use_descendants:
                     del d["descendants"]
-                f.write(json.dumps(d) + "\n")
+                if i < len(graphs) - 1:
+                    f.write("\t" + json.dumps(d) + ",\n")
+                else:
+                    f.write("\t" + json.dumps(d) + "\n")
+            f.write("]")
 
 # TODO: arguments below should eventually be converted to Path types
 def cm2universal(
