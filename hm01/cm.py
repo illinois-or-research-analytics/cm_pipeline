@@ -233,7 +233,9 @@ def par_task(stack, node_mapping, node2cids):
                     summary_a_side=summarize_graphs(subp1),
                     summary_b_side=summarize_graphs(subp2),
                 )
-        # else:
+        else:
+            if not quiet_g:
+                log.info("cut valid, not splitting anymore")
             # (VR) Compute the modularity of the cluster
             # candidate = subgraph.to_intangible(global_graph)
             # mod = global_graph.modularity_of(candidate)
@@ -332,7 +334,7 @@ def main(
     input: str = typer.Option(..., "--input", "-i"),
     existing_clustering: str = typer.Option(..., "--existing-clustering", "-e"),
     quiet: Optional[bool] = typer.Option(False, "--quiet", "-q"),
-    working_dir: Optional[str] = typer.Option("", "--working-dir", "-d"),
+    # working_dir: Optional[str] = typer.Option("", "--working-dir", "-d"),
     clusterer_spec: ClustererSpec = typer.Option(..., "--clusterer", "-c"),
     k: int = typer.Option(-1, "--k", "-k"),
     resolution: float = typer.Option(-1, "--resolution", "-g"),
