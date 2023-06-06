@@ -146,8 +146,8 @@ def par_task(stack, node_mapping, node2cids):
         tree_node.validity_threshold = valid_threshold
 
         # (VR) If the cut size is below validity, split!
-        if mincut_res.get_cut_size() <= valid_threshold:    # and mincut_res.get_cut_size >= 0: -> Change: Commented this out to handle disconnected clusters
-            tree_node.cm_valid = False                      # Change: The current cluster has been changed, so its not extant or CM valid anymore
+        if mincut_res.get_cut_size() <= valid_threshold:    # and mincut_res.get_cut_size >= 0: -> (VR) Change: Commented this out to handle disconnected clusters
+            tree_node.cm_valid = False                      # (VR) Change: The current cluster has been changed, so its not extant or CM valid anymore
             tree_node.extant = False
             
             # (VR) Split partitions and set them as children nodes
