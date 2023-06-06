@@ -1,35 +1,35 @@
 from __future__ import annotations
+
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing_extensions import Self
+from typing import Dict, Iterator, List, Tuple, Union
+from sys import path
+
 import networkit as nk
-from collections import defaultdict
-from typing import Dict, Iterator, List, Sequence, Tuple, Union
+
+import mincut
 
 from clusterers.abstract_clusterer import AbstractClusterer
-import mincut
 from context import context
-from structlog import get_logger
 from functools import cache, cached_property
-from typing import Protocol
 
-from sys import path
+# (VR) Importing the C++/Python wrapped modules requires appending paths via sys
 path.append('tools/python-mincut/build')
 path.append('tools/python-mincut/src')
 from mincut_wrapper import MincutResult
 from pygraph import PyGraph
 
-log = get_logger()
 
-# TODO: AbstractGraph type should incorporate all duplicate code of all the Graph classes
-# Also, AbstractGraph should replace most of the Union[RealizedSubgraph, Graph] types
 class AbstractGraph:
-    hydrator : List[int]
-    index : str
+    """ (VR) Inheritable abstract class for the different graph classes """ 
+    hydrator : List[int]    # (VR) Compress node ids into continuous ids
+    index : str             # (VR) Graph identifier
 
     def intangible_subgraph(self, nodes: List[int], suffix: str) -> IntangibleSubgraph:
+        """ (VR) Convert to intangible subgraph """
         return IntangibleSubgraph(nodes, self.index + suffix)
 
+    """ Basic properties for all the inherited graph types """
     @abstractmethod
     def n(self) -> int:
         pass
@@ -61,14 +61,7 @@ class AbstractGraph:
     def find_clusters(
         self, clusterer: AbstractClusterer, with_singletons: bool = True
     ) -> Iterator[IntangibleSubgraph]:
-        """ (VR) Find clusters using the given clusterer"""
-        log.info(
-            f"Finding clusters using clusterer",
-            id=self.index,
-            n=self.n(),
-            m=self.m(),
-            clusterer=clusterer,
-        )
+        """ (VR) Find clusters using the given clusterer """
         if with_singletons:
             return clusterer.cluster(self)
         else:
@@ -78,6 +71,7 @@ class Graph(AbstractGraph):
     """ Wrapped graph over a networkit graph with an ID label """
 
     def __init__(self, data, index):
+        # (VR) Create nk graph and remove self loops
         self._data = data  # nk graph
         self._data.removeSelfLoops()
         self.index = index
@@ -152,12 +146,14 @@ class Graph(AbstractGraph):
         self.hydrator = hydrator
 
     def induced_subgraph(self, ids: List[int], suffix: str):
+        """ (VR) Construct subgraph from a list of nodes """
         assert suffix != "", "Suffix cannot be empty"
         data = nk.graphtools.subgraphFromNodes(self._data, ids)
         index = self.index + suffix
         return Graph(data, index)
 
     def induced_subgraph_from_compact(self, ids: List[int], suffix: str):
+        """ (VR) Same as above but with 'hydrated' nodes """
         return self.induced_subgraph([self.hydrator[i] for i in ids], suffix)
 
     def as_compact_edgelist_filepath(self):
@@ -201,11 +197,14 @@ class Graph(AbstractGraph):
 
     @staticmethod
     def from_edges(edges: List[Tuple[int, int]], index=""):
+        """ Construct from a n*2 array edgelist """
         n = max(max(u, v) for u, v in edges) + 1
         g = nk.graph.Graph(n)
         for u, v in edges:
             g.addEdge(u, v)
         return Graph(g, index)
+
+    """ (VR) For testing: These just get shapes and construct graph objects from them """
 
     @staticmethod
     def from_straight_line(n: int, index=""):
@@ -218,7 +217,7 @@ class Graph(AbstractGraph):
             [(i, j) for i in range(n - 1) for j in range(i + 1, n)], index
         )
 
-    def to_intangible(self, graph):
+    def to_intangible(self):
         return IntangibleSubgraph(list(self.nodes()), self.index)
 
     def to_igraph(self):
@@ -230,16 +229,18 @@ class Graph(AbstractGraph):
         return ig.Graph(self.n(), edges)
 
 class RealizedSubgraph(AbstractGraph):
-    hydrator: List[int]  # mapping from compact id to original id
-    inv: Dict[int, int]  # mapping from original id to compact id
-    compacted: List[List[int]]
-    _dirty: bool
+    hydrator: List[int]         # (VR) mapping from compact id to original id
+    inv: Dict[int, int]         # (VR) mapping from original id to compact id
+    compacted: List[List[int]]  # (VR) compacted adjacency list that maps from index to nodes adjacent to index
+    _dirty: bool                # (VR) has the graph been compacted ?
     _graph: Graph
 
     def __init__(self, intangible: IntangibleSubgraph, graph: Union[Graph, RealizedSubgraph]):
         """ (VR) Convert nodelist into adjacency list """
         self.index = intangible.index
         self.nodeset = intangible.nodeset
+
+        # (VR) Construct adjacency list from the graph
         self.adj: Dict[int, set[int]] = {}
         self._graph = graph
         for n in self.nodeset:
@@ -251,19 +252,23 @@ class RealizedSubgraph(AbstractGraph):
                 if m not in self.adj:
                     self.adj[m] = set()
                 self.adj[n].add(m)
+        
+        # (VR) Store the graph metrics
         self._n = len(self.nodeset)
         self._m = sum(len(self.adj[n]) for n in self.nodeset) // 2
         self._dirty = True
         # self.recompact()
 
     def recompact(self):
+        """ (VR) When the graph is modified, reconstruct the compacted adjacency list """
         unallocated = 0
         hydrator: List[int] = []
         inv: Dict[int, int] = {}
         compacted: List[List[int]] = []
+
         for n in self.nodeset:
             if n not in inv:
-                hydrator.append(n)
+                hydrator.append(n)                  # (VR) Allocate new compacted id and reflect the changes in the adj list
                 inv[n] = unallocated
                 compacted.append([])
                 unallocated += 1
@@ -273,12 +278,12 @@ class RealizedSubgraph(AbstractGraph):
                     inv[m] = unallocated
                     compacted.append([])
                     unallocated += 1
-                compacted[inv[n]].append(inv[m])
+                compacted[inv[n]].append(inv[m])    # (VR) Add m to be adjacent to n in the compacted adj list
         assert len(hydrator) == len(inv)
         self.hydrator = hydrator
         self.inv = inv
         self.compacted = compacted
-        self._dirty = False
+        self._dirty = False                         # (VR) Set dirty to be false since the graph was compacted
 
     def degree(self, u) -> int:
         return len(self.adj[u])
@@ -290,13 +295,13 @@ class RealizedSubgraph(AbstractGraph):
         return IntangibleSubgraph(list(self.nodeset), self.index)
 
     def remove_node(self, u: int):
-        self._n -= 1
+        self._n -= 1                                # (VR) Adjust node count and adj list
         self._m -= len(self.adj[u])
         for v in self.adj[u]:
             self.adj[v].remove(u)
         del self.adj[u]
         self.nodeset.remove(u)
-        self._dirty = True
+        self._dirty = True                          # (VR) The graph needs to be recompacted so set dirty to true
 
     def n(self):
         return self._n
@@ -309,6 +314,7 @@ class RealizedSubgraph(AbstractGraph):
 
     @cache
     def mcd(self) -> int:
+        """ Get the minimum degree in the graph """
         if self.n() == 0:
             return 0
         return min(self.degree(n) for n in self.nodes())
@@ -327,7 +333,7 @@ class RealizedSubgraph(AbstractGraph):
         return ig.Graph(self.n(), edges)
 
     def as_metis_filepath(self):
-        if self._dirty:
+        if self._dirty:                                             # (VR) METIS requires compact node ids
             self.recompact()
         p = context.request_graph_related_path(self, "metis")
         with open(p, "w+") as f:
@@ -348,6 +354,7 @@ class RealizedSubgraph(AbstractGraph):
         return p
 
     def find_mincut(self) -> MincutResult:
+        """ (VR) Compute mincut via the wrapped VieCut """
         return mincut.viecut(self)
 
     def cut_by_mincut(
@@ -375,7 +382,6 @@ class RealizedSubgraph(AbstractGraph):
 @dataclass
 class IntangibleSubgraph:
     """ A yet to be realized subgraph, containing only the node ids """
-
     subset: List[int]
     index: str
 

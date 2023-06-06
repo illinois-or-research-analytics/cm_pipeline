@@ -354,7 +354,7 @@ def main(
     # (VR) Output the json data
     with open(output + ".tree.json", "w+") as f:
         f.write(cast(str, jsonpickle.encode(tree)))
-    cm2universal(quiet, global_graph, tree, labels, output)
+    cm2universal(quiet, tree, labels, output)
 
     # (VR) Convert the 'after' json into a tsv file with columns (node_id, cluster_id)
     json2membership(output + ".after.json", output + ".after.tsv")

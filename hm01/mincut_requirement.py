@@ -1,17 +1,28 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import Optional
+
 import math
+
 from clusterers.abstract_clusterer import AbstractClusterer
-from clusterers.leiden_wrapper import LeidenClusterer
 from clusterers.ikc_wrapper import IkcClusterer
-from typing import List, Optional, Tuple, Union, Dict, Deque
 
 
 @dataclass
 class MincutRequirement:
-    """A linear combination of the log10 cluster size, mcd of the cluster, and the k given in the input
-    """
+    """ A linear combination of the log10 cluster size, mcd of the cluster, and the k given in the input 
 
+    (VR) These store the coefficients of the terms of the mincut requirement
+
+    Ex.
+        log10 = 4
+        mcd = 2
+        k = 0.4
+        constant = 1
+
+        -> 4log10n + 2mcd(c) + 0.4k + 1
+    """
     log10: float
     mcd: float
     k: float
@@ -28,11 +39,11 @@ class MincutRequirement:
     def validity_threshold(
         self, clusterer: AbstractClusterer, cluster, mcd_override: Optional[int] = None
     ) -> float:
-        # TODO: mcd_override is kind of a hack
+        """ (VR) Compute the threshold of a given clusterer """
         log10 = math.log10(cluster.n()) if cluster.n() > 0 else 0
         mcd = cluster.mcd() if mcd_override is None else mcd_override
-        k = clusterer.k if isinstance(clusterer, IkcClusterer) else 0
-        return self.log10 * log10 + self.mcd * mcd + self.k * k + self.constant
+        k = clusterer.k if isinstance(clusterer, IkcClusterer) else 0           # (VR) k is dependent on the clusterer being IKC
+        return self.log10 * log10 + self.mcd * mcd + self.k * k + self.constant 
 
     @staticmethod
     def most_stringent() -> MincutRequirement:
@@ -45,9 +56,13 @@ class MincutRequirement:
     @staticmethod
     def try_from_str(s):
         """Parse a mincut requirement from a string (given in the CLI)"""
-        s = s.replace(" ", "")
+        s = s.replace(" ", "")                                                  # (VR) Remove spaces from the input string
 
         def take_num(st):
+            """ (VR) Split coefficient and term in linear combination
+            
+            Returns: coefficient and rest of the string (tuple[float, str])
+            """
             i = 0
             buf = []
             if not st or not st[i].isdigit():
@@ -58,28 +73,33 @@ class MincutRequirement:
             return float("".join(buf)), st[i:]
 
         def one_of(words, s):
+            """ (VR) Grab term from the string
+            
+            Returns: One of [log10, mcd, k] and the rest of the string (tuple[str, str])
+            """
             for word in words:
                 if s.startswith(word):
                     return word, s[len(word) :]
             raise ValueError(f"Expected one of {words}, got {s}")
 
+        # (VR) Initialize values and dictionary of unpacked terms and coefficients
         log10 = 0
         mcd = 0
         k = 0
         constant = 0
         vals = {}
         while s:
-            n, s = take_num(s)
-            if s and s[0] == "+":
+            n, s = take_num(s)                                  # (VR) Fetch the next number in the string
+            if s and s[0] == "+":                               # (VR) If there is a plus next then the number is a constant
                 constant += n
                 s = s[1:]
                 continue
-            if not s:
+            if not s:                                           # (VR) If we're at the end of the string, then we also have a constant
                 constant += n
                 break
-            key, s = one_of(["log10", "mcd", "k"], s)
-            vals[key] = float(n)
-            if s and s[0] == "+":
+            key, s = one_of(["log10", "mcd", "k"], s)           # (VR) Otherwise, the number is a coefficient of a term
+            vals[key] = float(n)                                
+            if s and s[0] == "+":                               # (VR) Move to the next term after the plus
                 s = s[1:]
         if "log10" in vals:
             log10 = vals["log10"]
