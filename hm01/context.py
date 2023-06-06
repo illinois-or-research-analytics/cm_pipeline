@@ -1,7 +1,6 @@
 from functools import cached_property
 import glob
 from typing import Optional
-from tomli import load
 import os
 import atexit
 import shutil
@@ -27,37 +26,7 @@ class Context:
     # (VR) External tool properites
     @property
     def ikc_path(self):
-        return self.config["tools"]["ikc_path"].format(project_root=PROJECT_ROOT)
-
-    @property
-    def leiden_path(self):
-        return self.config["tools"]["leiden_path"].format(project_root=PROJECT_ROOT)
-
-    @property
-    def viecut_path(self):
-        return self.config["tools"]["viecut_path"].format(project_root=PROJECT_ROOT)
-
-    @cached_property
-    def config(self):
-        """ (VR) Load configuration for hm01 """
-        # (VR) Locate toml file
-        lookup_paths = [
-            # "cm.toml",
-            # os.path.join(os.path.expanduser("~"), ".config", "cm", "config.toml"),
-            os.path.join(os.path.dirname(__file__), "config.toml"),
-        ]
-
-        # (VR) Load the toml file into config
-        for path in lookup_paths:
-            if os.path.exists(path):
-                with open(path, "rb") as f:
-                    return load(f)
-
-        # (VR) If the toml wasn't located, raise FileNotFoundError
-        raise FileNotFoundError(
-            "Config file not found in any of the following paths: "
-            + ", ".join(lookup_paths)
-        )
+        return "{project_root}/hm01/tools/ikc.py".format(project_root=PROJECT_ROOT)
 
     @cached_property
     def working_dir(self):
