@@ -54,16 +54,27 @@ module load gcc/9.2.0
 ## Setup and Running Instructions
 - Clone the cm_pipeline repository
 - Activate the venv which has the necessary packages 
-- Set up `python-mincut`:
-     - Initiate the submodules via the following commands being run from the root of this (cm_pipeline) repository
-     ```bash
-     git submodule update --init --recursive
-     cd hm01/tools/python-mincut
-     mkdir build
-     cd build
-     cmake .. && make
-     cd ../../../..
-     ```
+- Simply run `./setup.sh`
+- *Alternatively*
+     - Set up `python-mincut`:
+          - Initiate the submodules via the following commands being run from the root of this (cm_pipeline) repository
+          ```bash
+          git submodule update --init --recursive
+          cd hm01/tools/python-mincut
+          mkdir build
+          cd build
+          cmake .. && make
+          cd ../../../..
+          ```
+     - Set up `cluster-statistics` and the `python-mincut` within the `cluster-statistics` submodule:
+          - Run the following commands
+          ```bash
+          cd cluster-statistics/tools/python-mincut
+          mkdir build
+          cd build
+          cmake .. && make
+          cd ../..
+          ```
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 - Run `python -m main param.config`
 
