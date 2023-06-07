@@ -1,0 +1,43 @@
+{
+    "network_name": "cen",
+    "output_dir": "samples/",
+    "algorithm": "leiden",
+    "resolution": [0.5, 0.01],
+    "number of iterations": [2, 2],
+    "stages": [
+        {
+            "name": "cleanup",
+            "input_file": "/data3/chackoge/modularity_clustering/cen_cleaned.tsv"
+        },
+        {
+            "name": "clustering"
+        },
+        {
+            "name": "stats",
+            "noktruss": true
+        },
+        {
+            "name": "filtering",
+            "scripts": [
+                "./scripts/subset_graph_nonetworkit_treestar.R",
+                "./scripts/make_cm_ready.R"
+            ]
+        },
+        {
+            "name": "connectivity_modifier",
+            "threshold": "1log10",
+            "nprocs": 32,
+            "quiet": true
+        },
+        {
+            "name": "filtering",
+            "scripts": [
+                "./scripts/post_cm_filter.R"
+            ]
+        },
+        {
+            "name": "stats",
+            "noktruss": true
+        }
+    ]
+}
