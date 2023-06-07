@@ -1,13 +1,13 @@
 {
-    "network_name": "cen",
+    "title": "cen-new-pp-output",
+    "input_file": "/data3/chackoge/modularity_clustering/cen_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
     "resolution": [0.5, 0.01],
-    "number of iterations": [2, 2],
+    "iterations": 2,
     "stages": [
         {
-            "name": "cleanup",
-            "input_file": "/data3/chackoge/modularity_clustering/cen_cleaned.tsv"
+            "name": "cleanup"
         },
         {
             "name": "clustering"
