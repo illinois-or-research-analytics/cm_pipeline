@@ -1,5 +1,6 @@
 {
     "title": "cen-new-pp-output",
+    "name": "cen",
     "input_file": "/data3/chackoge/modularity_clustering/cen_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
@@ -25,6 +26,7 @@
         },
         {
             "name": "connectivity_modifier",
+            "memprof": true,
             "threshold": "1log10",
             "nprocs": 32,
             "quiet": true
