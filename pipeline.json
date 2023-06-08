@@ -1,7 +1,7 @@
 {
-    "title": "cen-new-pp-output",
-    "name": "cen",
-    "input_file": "/data3/chackoge/modularity_clustering/cen_cleaned.tsv",
+    "title": "cit-new-pp-output",
+    "name": "cit_patents",
+    "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
     "resolution": [0.5, 0.01],

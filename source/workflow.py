@@ -1,4 +1,5 @@
 from datetime import datetime
+from os import path
 import os
 
 from source.stage import Stage
@@ -44,6 +45,12 @@ class Workflow:
             'echo "*** DONE ***"'
         ]
 
+        # Get the absolute path of the current script
+        current_script = path.abspath(__file__)
+
+        # Get the project root directory
+        project_root = path.dirname(path.dirname(current_script))
+
         # Initialize and link stages
         self.stages = [Stage(
                 stage, 
@@ -52,6 +59,7 @@ class Workflow:
                 self.resolution, 
                 self.iterations,
                 self.algorithm,
+                f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}',
                 i+1
             ) for i, stage in enumerate(data['stages'])]
         for i, stage in enumerate(self.stages):
@@ -63,9 +71,7 @@ class Workflow:
 
         # Get commands for each stage
         for stage in self.stages:
-            for cmd in stage.get_command():
-                print(cmd)
-            #print(stage.get_command())
+            self.commands = self.commands + stage.get_command()
     
     def write_script(self):
         with open(f"{self.output_dir}/commands.sh", "w") as file:
