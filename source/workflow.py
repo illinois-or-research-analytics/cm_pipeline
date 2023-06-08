@@ -58,7 +58,14 @@ class Workflow:
             if i > 0:
                 stage.link_previous_stage(self.stages[i-1])
 
-        print([stage.get_previous_file() for stage in self.stages])
+        # TODO: For now, lets just require that the first stage is cleaning
+        assert self.stages[0].name == 'cleanup'
+
+        # Get commands for each stage
+        for stage in self.stages:
+            for cmd in stage.get_command():
+                print(cmd)
+            #print(stage.get_command())
     
     def write_script(self):
         with open(f"{self.output_dir}/commands.sh", "w") as file:
