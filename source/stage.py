@@ -24,6 +24,12 @@ class Stage:
                 self.scripts = data['scripts']
             except:
                 raise ValueError('Filtering stages need filtering scripts')
+            
+        # Check if this is a memprof stage
+        try:
+            self.memprof = data['memprof']
+        except:
+            self.memprof = False
         
         # Get extra arguments
         self.args = ''
@@ -85,9 +91,16 @@ class Stage:
         # Get the project root directory
         project_root = path.dirname(path.dirname(current_script))
 
-        cmd = [f'echo "*** Starting {self.name} STAGE ***"']
+        # Ouptut stage start and initialize stage time
+        cmd = [
+            f'echo "*** Starting {self.name} STAGE ***"',
+            'stage_start_time=$SECONDS',
+            ]
 
+        # Getting the previous file via linked list structure
         prev_file = self.get_previous_file()
+
+        # Get command depending on stage type
         if self.name == 'cleanup':
             cmd.append(f'Rscript {project_root}/scripts/cleanup_el.R {prev_file} {self.output_file}')
         elif self.name == 'clustering':
@@ -98,6 +111,8 @@ class Stage:
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
                     cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter}')
+            
+            # TODO: Get support for IKC
             else:
                 raise ValueError('Come back later for IKC support!')
         elif self.name == 'stats':
@@ -107,6 +122,8 @@ class Stage:
                 output_file = v
                 input_file = prev_file if type(prev_file) != dict else prev_file[k]
                 c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
+                
+                # Set leiden param, TODO: IKC support for -k
                 if self.algorithm == 'leiden':
                     c = c + f'-g {res} '
                 else:
@@ -117,6 +134,8 @@ class Stage:
             for k, v in self.output_file.items():
                 res, niter = list(sorted(list(k)))
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                
+                # Iterate through filtering scripts
                 output_file = v
                 input_file = prev_file if type(prev_file) != dict else prev_file[k]
                 input_files = [input_file]
@@ -138,9 +157,26 @@ class Stage:
                 res, niter = list(sorted(list(k)))
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                 output_file = v
-                cmd.append(f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} -g {res} {self.args}')
+
+                # Profile memory usage if the memprof param is true for cm
+                if self.memprof:
+                    cmd.append(f'{project_root}/hm01/tests/mp-memprofile/profiler.sh python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} -g {res} {self.args}')
+                    cmd.append(f'mv profile_* res-{res}-i{niter}')
+                else:
+                    cmd.append(f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} -g {res} {self.args}')
         
-        cmd.append('echo "*** DONE ***"')
+        # Output runtime and finish sage
+        cmd = cmd + [
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - stage_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Stage {self.index} Time Elapsed: $formatted_time"',
+            'echo "*** DONE ***"'
+        ]
+
         return cmd
 
 

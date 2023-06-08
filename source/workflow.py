@@ -36,7 +36,7 @@ class Workflow:
         # Output the initialization stage finished
         self.commands = self.commands + [
             'end_time=$SECONDS',
-            'elapsed_time=$((end_time - start_time))',
+            'elapsed_time=$((end_time - stage_start_time))',
             'hours=$(($elapsed_time / 3600))',
             'minutes=$(($elapsed_time % 3600 / 60))',
             'seconds=$(($elapsed_time % 60))',
@@ -72,6 +72,18 @@ class Workflow:
         # Get commands for each stage
         for stage in self.stages:
             self.commands = self.commands + stage.get_command()
+
+        # Get overall timing
+        self.commands = self.commands + [
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - global_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Overall Time Elapsed: $formatted_time"',
+            'echo "*** PIPELINE DONE ***"'
+        ]
     
     def write_script(self):
         with open(f"{self.output_dir}/commands.sh", "w") as file:
