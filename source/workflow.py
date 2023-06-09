@@ -129,8 +129,12 @@ class Workflow:
 
     def execute(self):
         try:
-            os.system(f'cd {self.output_dir}; chmod +x commands.sh; ./commands.sh | tee {self.title}-{self.timestamp}/pipeline_{self.timestamp}.log; mv ../commands.sh .')
-
+            os.system(f'''
+                cd {self.output_dir}; 
+                chmod +x commands.sh; 
+                ./commands.sh | tee {self.title}-{self.timestamp}/pipeline_{self.timestamp}.log; 
+                mv commands.sh {self.title}-{self.timestamp}/;
+            ''')
         except KeyboardInterrupt:
             print('Aborted!')
             return

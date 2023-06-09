@@ -128,8 +128,9 @@ class Stage:
                     c = c + f'-g {res} '
                 else:
                     raise ValueError('Come back later for IKC support!')
-                c = c + self.args
-                cmd.append(c)
+                c = c + self.args 
+                cmd.append(c + ' &')
+            cmd.append('wait')
         elif self.name == 'filtering':
             for k, v in self.output_file.items():
                 res, niter = list(sorted(list(k)))
