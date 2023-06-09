@@ -25,7 +25,8 @@ class Workflow:
             'echo "*** INITIALIZING OUTPUT DIRECTORIES ***"',
             'stage_start_time=$SECONDS',
             f'[ ! -d {self.title}-{self.timestamp} ] && mkdir -p {self.title}-{self.timestamp} > /dev/null',
-            f'cd {self.title}-{self.timestamp}'
+            f'cd {self.title}-{self.timestamp}',
+            'echo "Stage,Time (HH:MM:SS)" >> execution_times.csv'
         ]
 
         # Create directories for the resolutions and iterations
@@ -73,6 +74,43 @@ class Workflow:
         for stage in self.stages:
             self.commands = self.commands + stage.get_command()
 
+        # Analysis stage
+        self.commands.append('echo "*** ANALYSIS ***"')
+        self.commands.append('mkdir analysis')
+        self.commands.append('stage_start_time=$SECONDS')
+
+        # Fetch cleaned network
+        cleaned_file = None
+        for stage in self.stages:
+            if stage.name == 'cleanup':
+                cleaned_file = stage.output_file
+        cleaned_file = self.input_file
+
+        # Fetch other arguments and run commands
+        for res in self.resolution:
+            for iter in self.iterations:
+                other_files = []
+                k = frozenset([res, iter])
+                for stage in self.stages:
+                    if stage.name != 'cleanup' and stage.name != 'stats':
+                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
+                other_args = ' '.join(other_files)
+                self.commands.append(f'Rscript {project_root}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+
+        # Finish stage with timing
+        self.commands = self.commands + [
+            'wait',
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - stage_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Analysis Time Elapsed: $formatted_time"',
+            f'echo "Analysis,$formatted_time" >> execution_times.csv',
+            'echo "*** DONE ***"'
+        ]
+
         # Get overall timing
         self.commands = self.commands + [
             'end_time=$SECONDS',
@@ -90,5 +128,10 @@ class Workflow:
             file.writelines(line + "\n" for line in self.commands)
 
     def execute(self):
-        os.system(f'cd {self.output_dir}; chmod +x commands.sh; ./commands.sh')
+        try:
+            os.system(f'cd {self.output_dir}; chmod +x commands.sh; ./commands.sh | tee {self.title}-{self.timestamp}/pipeline_{self.timestamp}.log; mv ../commands.sh .')
+
+        except KeyboardInterrupt:
+            print('Aborted!')
+            return
 

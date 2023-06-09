@@ -110,8 +110,8 @@ class Stage:
                     cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter}')
-            
+                    cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
+                cmd.append('wait')
             # TODO: Get support for IKC
             else:
                 raise ValueError('Come back later for IKC support!')
@@ -174,6 +174,7 @@ class Stage:
             'seconds=$(($elapsed_time % 60))',
             'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
             f'echo "Stage {self.index} Time Elapsed: $formatted_time"',
+            f'echo "Stage {self.index} {self.name},$formatted_time" >> execution_times.csv',
             'echo "*** DONE ***"'
         ]
 
