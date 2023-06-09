@@ -1,4 +1,5 @@
 from os import path
+from math import inf
 
 class Stage:
     def __init__(
@@ -34,10 +35,16 @@ class Stage:
         # Get extra arguments
         self.args = ''
         for key, val in data.items():
-            if key != 'scripts' and key != 'memprof' and key != 'name':
+            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit':
                 self.args = self.args + '--' + key + ' '
                 if type(val) != bool:
                     self.args = self.args + str(val) + ' '
+
+        if self.name == 'stats' or self.name == 'clustering':
+            try:
+                self.parallel_limit = data['parallel_limit']
+            except:
+                self.parallel_limit = inf
 
         # Output file nomenclature
         if self.index == 1:
@@ -105,17 +112,21 @@ class Stage:
             cmd.append(f'Rscript {project_root}/scripts/cleanup_el.R {prev_file} {self.output_file}')
         elif self.name == 'clustering':
             if self.algorithm == 'leiden':
+                counter = 1
                 for k, v in self.output_file.items():
                     res, niter = list(sorted(list(k)))
                     cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
                     cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
+                    if counter % self.parallel_limit == 0:
+                        cmd.append('wait')
                 cmd.append('wait')
             # TODO: Get support for IKC
             else:
                 raise ValueError('Come back later for IKC support!')
         elif self.name == 'stats':
+            counter = 1
             for k, v in self.output_file.items():
                 res, niter = list(sorted(list(k)))
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
@@ -130,6 +141,9 @@ class Stage:
                     raise ValueError('Come back later for IKC support!')
                 c = c + self.args 
                 cmd.append(c + ' &')
+
+                if counter % self.parallel_limit == 0:
+                    cmd.append('wait')
             cmd.append('wait')
         elif self.name == 'filtering':
             for k, v in self.output_file.items():
