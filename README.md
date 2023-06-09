@@ -7,17 +7,18 @@ Modular pipeline for testing and using an improved version of CM for generating 
 ## Major Release Notes
 ### CM++ (v3.3)
 **JSON Pipeline**
-Introduction of a much cleaner JSON pipeline to run generalized clustering procedures. 
+Introduction of a much cleaner JSON pipeline to run generalized clustering procedures.  
 **Algorithmic fixes of CM**   
 - Correct handling of disconnected clusters (0-connectivity)
 - Fixed definition of `extant` parameter
     - `extant`: CM-valid clusters that were untouched by CM
-    - `cm_valid`: What `extant` was originally &mdash; a cluster that does not need to be operated on by CM anymore  
+    - `cm_valid`: What `extant` was originally &mdash; a cluster that does not need to be operated on by CM anymore   
+   
 **Functional changes in CM**   
 - Removed `--labelonly` parameter. CM2Universal is essential so there shouldn't be a parameter that silences it. Rather, we introduce a new parameter:
     - `-f` or `--firsttsv`: Include the original tsv, pre-CM2Universal. This tsv defaults to not being outputted when the tag is omitted
     - JSON2Membership is now integrated with CM++ and the default tsv being outputted comes from the `after.json` that results from CM2Universal. 
-### CM++ (v3.0)
+### CM++ (v3.0) 
 **Parallelism introduced in this version.**  
 
 Commands from v2.0 stay consistent, except now you can add the following options
