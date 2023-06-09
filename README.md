@@ -8,6 +8,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 ### CM++ (v3.3)
 **JSON Pipeline**  
 - Introduction of a much cleaner JSON pipeline to run generalized clustering procedures.  
+  
 **Algorithmic fixes of CM**   
 - Correct handling of disconnected clusters (0-connectivity)
 - Fixed definition of `extant` parameter
