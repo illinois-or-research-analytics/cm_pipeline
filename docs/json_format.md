@@ -7,6 +7,7 @@ The following document will go over the different parameters for each stage as w
     - [Clustering](#clustering)
     - [Filtering](#filtering)
     - [Connectivity Modifier](#connectivity-modifier)
+  - [Stats](#stats)
 ## Overall Parameters
 The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:
 ```json
@@ -96,3 +97,17 @@ This is the stage that applies CM++ to a clustering to ensure connectivity requi
 - **firsttsv**: Output the original clustering output before CM2Universal is run. If omitted, this defaults to false.
   
 **Limitations**: This must come after a stage that outputs a clustering.
+## Stats
+This stage reports statistics of a clustering that was outputted by a stage preceding it. For more information on the statistics reporting ans its outputs. Refer to the following [repository](https://github.com/vikramr2/cluster-statistics). The code for the stage is the following:
+```json
+{
+    "name": "stats",
+    "noktruss": true,
+    "parallel_limit": 2
+}
+```
+**Optional Parameters**
+- **parallel_limit**: This is the same as for the clustering stage
+- **noktruss**: Silence k-truss computations in the stats script. This is simply because k-truss computation uses a lot of runtime.
+  
+**Limitations**: This stage must come after a stage that outputs a clustering.
