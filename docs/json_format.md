@@ -4,6 +4,7 @@ The following document will go over the different parameters for each stage as w
   - [Overall Parameters](#overall-parameters)
   - [Stages](#stages)
     - [Cleanup](#cleanup)
+    - [Clustering](#clustering)
 ## Overall Parameters
 The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:
 ```json
@@ -36,3 +37,16 @@ This stage removes any self loops (i.e. edges $(u, u)$ ) and parallel edges (i.e
 }
 ```
 **Limitations**: The cleanup stage must be the first stage (**TODO** allow pipeline to start from any point). This stage cannot come after a stage that outputs a clustering (ex. filtering, connectivity_modifier).
+### Clustering
+This stage uses the clustering algorithm specified in the overall parameters to cluster a cleaned network. If resolutions and/or iterations are arrays, multiple clusterings are outputted. To add this stage, add the following to the stages array:
+```json
+{
+    "name": "clustering",
+    "parallel_limit": 2
+}
+```
+**Optional Parameter**:
+- **parallel_limit**: The number of clustering jobs that can be run in parallel. This is useful if resolutions or iterations are arrays. In the example above, clustering jobs will be run in pairs of twos.
+  - If the limit is 1, clustering jobs will be run sequentially.
+  - If no limit is specified, all clustering jobs will be run in parallel.
+**Limitations**: This stage cannot come after a stage that outputs a clustering.
