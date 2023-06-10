@@ -1,6 +1,25 @@
 # cm_pipeline
 Modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
 
+## Table of Contents
+- [cm\_pipeline](#cm_pipeline)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Major Release Notes](#major-release-notes)
+    - [CM++ (v3.3)](#cm-v33)
+    - [CM++ (v3.0)](#cm-v30)
+    - [CM+ (v2.1)](#cm-v21)
+    - [CM (Pipeline) (v1.2)](#cm-pipeline-v12)
+    - [CM (Base)](#cm-base)
+  - [Input](#input)
+  - [Requirements \[WIP\]](#requirements-wip)
+    - [UIUC EngrIT Systems](#uiuc-engrit-systems)
+  - [Setup and Running Instructions](#setup-and-running-instructions)
+    - [How to Clone CM for any particular version](#how-to-clone-cm-for-any-particular-version)
+  - [Output Files](#output-files)
+  - [Citation](#citation)
+  - [TODOs:](#todos)
+
 ## Overview 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
