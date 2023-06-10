@@ -67,7 +67,7 @@ Commands from v2.0 stay consistent, except now you can add the following options
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
 - Run `python -m main pipeline.json`
 ### JSON Input Documentation
-- Please refer to the [documentation](docs/pipeline_template.json) on how to write the `pipeline.json` file.
+- Please refer to the [documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
 ## Requirements
 - Create a python venv with 3.9 or above version. We are using python3.9
