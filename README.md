@@ -8,8 +8,9 @@ Modular pipeline for testing and using an improved version of CM for generating 
     - [CM+ (v2.1)](#cm-v21)
     - [CM (Pipeline) (v1.2)](#cm-pipeline-v12)
     - [CM (Base)](#cm-base)
-  - [Input](#input)
-  - [Requirements \[WIP\]](#requirements-wip)
+  - [Input and Usage Instructions](#input-and-usage-instructions)
+    - [JSON Input Documentation](#json-input-documentation)
+  - [Requirements](#requirements)
     - [UIUC EngrIT Systems](#uiuc-engrit-systems)
   - [Setup and Running Instructions](#setup-and-running-instructions)
     - [How to Clone CM for any particular version](#how-to-clone-cm-for-any-particular-version)
@@ -60,11 +61,15 @@ Commands from v2.0 stay consistent, except now you can add the following options
 ### CM (Base)
 - Refer to [this link](https://github.com/RuneBlaze/connectivity-modifier)
 
-## Input
-- The input to the pipeline script is a [param.config](param.config) file.
-- Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
+## Input and Usage Instructions
+- The input to the pipeline script is a [param.json](param.json) file. **NOTE** that you can use any other json file as input as long as it fit
+- Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
+- Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
+- Run `python -m main pipeline.json`
+### JSON Input Documentation
+- Please refer to the [documentation](docs/pipeline_template.json) on how to write the `pipeline.json` file.
 
-## Requirements [WIP]
+## Requirements
 - Create a python venv with 3.9 or above version. We are using python3.9
      - Activate the venv and run "pip install -r requirements.txt"
 - `cmake` version `3.2.0` and above should be installed.
@@ -109,7 +114,7 @@ module load gcc/9.2.0
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
 -->
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements. Please refer to the documentation on how to write the `pipeline.json` file.
-- Run `python -m main param.config`
+- Run `python -m main pipeline.json`
 
 ### How to Clone CM for any particular version
 Simply run the following
