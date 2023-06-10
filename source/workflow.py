@@ -136,8 +136,9 @@ class Workflow:
             os.system(f'''
                 cd {self.output_dir}; 
                 chmod +x commands.sh; 
-                ./commands.sh | tee {self.title}-{self.timestamp}/pipeline_{self.timestamp}.log; 
+                ./commands.sh | tee pipeline_{self.timestamp}.log; 
                 mv commands.sh {self.title}-{self.timestamp}/;
+                mv pipeline_{self.timestamp}.log {self.title}-{self.timestamp}/
             ''')
         except KeyboardInterrupt:
             print('Aborted!')
