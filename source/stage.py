@@ -91,6 +91,17 @@ class Stage:
                 return self.prev.prev.output_file
         return self.prev.output_file
     
+    def unpack(self, k):
+        try:
+            res, niter = list(sorted(list(k)))
+        except:
+            for val in list(k):
+                if type(val) == str:
+                    res = val
+                else:
+                    niter = val
+        return res, niter
+    
     def get_command(self):
         # Get the absolute path of the current script
         current_script = path.abspath(__file__)
@@ -122,13 +133,24 @@ class Stage:
                     if counter % self.parallel_limit == 0:
                         cmd.append('wait')
                 cmd.append('wait')
+            elif self.algorithm == 'leiden_mod':
+                counter = 1
+                for k, v in self.output_file.items():
+                    res, niter = self.unpack(k)
+                    cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                    output_file = v
+                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
+                    cmd.append(f'python {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
+                    if counter % self.parallel_limit == 0:
+                        cmd.append('wait')
+                cmd.append('wait')
             # TODO: Get support for IKC
             else:
                 raise ValueError('Come back later for IKC support!')
         elif self.name == 'stats':
             counter = 1
             for k, v in self.output_file.items():
-                res, niter = list(sorted(list(k)))
+                res, niter = self.unpack(k)
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                 output_file = v
                 input_file = prev_file if type(prev_file) != dict else prev_file[k]
@@ -137,7 +159,7 @@ class Stage:
                 # Set leiden param, TODO: IKC support for -k
                 if self.algorithm == 'leiden':
                     c = c + f'-g {res} '
-                else:
+                elif self.algorithm == 'ikc':
                     raise ValueError('Come back later for IKC support!')
                 c = c + self.args 
                 cmd.append(c + ' &')
@@ -147,7 +169,7 @@ class Stage:
             cmd.append('wait')
         elif self.name == 'filtering':
             for k, v in self.output_file.items():
-                res, niter = list(sorted(list(k)))
+                res, niter = self.unpack(k)
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                 
                 # Iterate through filtering scripts
@@ -169,16 +191,22 @@ class Stage:
                         cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
         elif self.name == 'connectivity_modifier':
             for k, v in self.output_file.items():
-                res, niter = list(sorted(list(k)))
+                res, niter = self.unpack(k)
                 cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
                 output_file = v
 
+                c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
+
+                c = c + f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
+
+                if self.algorithm == 'leiden':
+                    c = c + f'-g {res}'
+                
+                cmd.append(c)
+
                 # Profile memory usage if the memprof param is true for cm
                 if self.memprof:
-                    cmd.append(f'{project_root}/hm01/tests/mp-memprofile/profiler.sh python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} -g {res} {self.args}')
                     cmd.append(f'mv profile_* res-{res}-i{niter}')
-                else:
-                    cmd.append(f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} -g {res} {self.args}')
         
         # Output runtime and finish sage
         cmd = cmd + [

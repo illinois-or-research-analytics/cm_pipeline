@@ -12,8 +12,12 @@ class Workflow:
         self.network_name = data['name']
         self.output_dir = data['output_dir']
         self.input_file = data['input_file']
-        self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
         self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
+
+        if self.algorithm == 'leiden':
+            self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
+        else:
+            self.resolution = ['mod']
 
         # Get timestamp of algo run
         self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
