@@ -19,7 +19,8 @@ All of the following parameter values are required:
 - **output_dir**: The directory to store pipeline outputs. Must be an existing directory.
 - **algorithm**: The name of the algorithm. Can choose from `"leiden"`, `"leiden_mod"`, and `"ikc"`.
 - **iterations**: The number of iterations to run the clustering algorithm, Can either be an int or an array of ints. If it is an array, the pipeline will generate multiple clusterings for each iteration value.
-- - **stages**: An array of [stage](#stages) objects.
+- **stages**: An array of [stage](#stages) objects.
+  
 The following is only required if the algorithm is `"leiden"`:
 - **resolution**: The resolution parameters for Leiden. Can either be a single float or an array of floats. If it is an array, the pipeline will generate multiple clusterings for each resolution value. If iterations is also an array, the pipeline will generate a clustering for every iteration-resolution pair.
 ## Stages
