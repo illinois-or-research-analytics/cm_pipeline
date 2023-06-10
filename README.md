@@ -1,12 +1,43 @@
 # cm_pipeline
 Modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
+- [cm\_pipeline](#cm_pipeline)
+  - [Overview](#overview)
+  - [Major Release Notes](#major-release-notes)
+    - [CM++ (v3.3)](#cm-v33)
+    - [CM++ (v3.0)](#cm-v30)
+    - [CM+ (v2.1)](#cm-v21)
+    - [CM (Pipeline) (v1.2)](#cm-pipeline-v12)
+    - [CM (Base)](#cm-base)
+  - [Input and Usage Instructions](#input-and-usage-instructions)
+    - [JSON Input Documentation](#json-input-documentation)
+  - [Requirements](#requirements)
+    - [UIUC EngrIT Systems](#uiuc-engrit-systems)
+  - [Setup and Running Instructions](#setup-and-running-instructions)
+    - [How to Clone CM for any particular version](#how-to-clone-cm-for-any-particular-version)
+  - [Output Files](#output-files)
+  - [Citation](#citation)
+  - [TODOs:](#todos)
 
 ## Overview 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
 ## Major Release Notes
-### CM++ (v3.0)
-Parallelism introduced in this version.
+### CM++ (v3.3)
+**JSON Pipeline**  
+- Introduction of a much cleaner JSON pipeline to run generalized clustering procedures.  
+  
+**Algorithmic fixes of CM**   
+- Correct handling of disconnected clusters (0-connectivity)
+- Fixed definition of `extant` parameter
+    - `extant`: CM-valid clusters that were untouched by CM
+    - `cm_valid`: What `extant` was originally &mdash; a cluster that does not need to be operated on by CM anymore   
+   
+**Functional changes in CM**   
+- Removed `--labelonly` parameter. CM2Universal is essential so there shouldn't be a parameter that silences it. Rather, we introduce a new parameter:
+    - `-f` or `--firsttsv`: Include the original tsv, pre-CM2Universal. This tsv defaults to not being outputted when the tag is omitted
+    - JSON2Membership is now integrated with CM++ and the default tsv being outputted comes from the `after.json` that results from CM2Universal. 
+### CM++ (v3.0) 
+**Parallelism introduced in this version.**  
 
 Commands from v2.0 stay consistent, except now you can add the following options
 
@@ -23,18 +54,22 @@ Commands from v2.0 stay consistent, except now you can add the following options
      - Replaced MincutResult object with python-mincut C++ object
      - Shortened mincut computation in CM
 ### CM (Pipeline) (v1.2)
-- Introduction of modular pipeline
+- **Introduction of modular pipeline**
 - Post cm filtering to remove clusters of size 10
 - Set the filtering of clusters size to `N>1` in analysis scripts
 - Introduced `--quiet` or `-q` param
 ### CM (Base)
 - Refer to [this link](https://github.com/RuneBlaze/connectivity-modifier)
 
-## Input
-- The input to the pipeline script is a [param.config](param.config) file.
-- Description of the supported key-value pairs in the config file can be found here [param_template.config](param_template.config) 
+## Input and Usage Instructions
+- The input to the pipeline script is a [param.json](param.json) file. **NOTE** that you can use any other json file as input as long as it fit
+- Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
+- Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
+- Run `python -m main pipeline.json`
+### JSON Input Documentation
+- Please refer to the [documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
-## Requirements [WIP]
+## Requirements
 - Create a python venv with 3.9 or above version. We are using python3.9
      - Activate the venv and run "pip install -r requirements.txt"
 - `cmake` version `3.2.0` and above should be installed.
@@ -75,8 +110,11 @@ module load gcc/9.2.0
           cmake .. && make
           cd ../..
           ```
+<!--
 - Edit the `network_name`, `output_dir`  and `resolution` values in `[default]` section of [param.config](param.config); and `input_file` under `[cleanup]` section of the cloned repository (‘~’ is allowed for user home in the `output_dir` path and this directory need not exist)
-- Run `python -m main param.config`
+-->
+- Edit the fields of the `pipeline.json` file to reflect your inputs and requirements. Please refer to the documentation on how to write the `pipeline.json` file.
+- Run `python -m main pipeline.json`
 
 ### How to Clone CM for any particular version
 Simply run the following
@@ -84,13 +122,20 @@ Simply run the following
 git clone -b v<version #> https://github.com/illinois-or-research-analytics/cm_pipeline.git .
 ```
 
+<!--
 ## Setting the levels for logging
 - cm pipeline logs the data on to console and file.
 - Log levels for each of these can be modified in [log.config](./log.config)
 - Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL [logging levels](https://docs.python.org/3/library/logging.html#logging-levels)
 - Log files are created in `./logs` directory.
+-->
 
 ## Output Files
+- The commands executed during the workflow are captured in `{output_dir}/{run_name}-{timestamp}/commands.sh`. This is the shell script generated by the pipeline that is run to generate outputs. 
+- The output files generated during the workflow are stored in the folder `{output_dir}/{run_name}-{timestamp}/`
+- The descriptive analysis files can be found in the folder `{output_dir}/{run_name}-{timestamp}/analysis` with the `*.csv` file for each of the resolution values.
+
+<!--
 - The commands executed during the workflow are captured in `./logs/executed-cmds/executed-cmds-timestamp.txt`
 - The Output files generated during the workflow are stored in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/`
 - The descriptive analysis files can be found in the folder `user-defined-output-dir/network_name-cm-pp-output-timestamp/analysis` with the `*.csv` file for each of the resolution values.
@@ -102,6 +147,7 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 ## References
 - [https://engineeringfordatascience.com/posts/python_logging/](https://engineeringfordatascience.com/posts/python_logging/)
 - [https://docs.python.org/3/library/logging.config.html#logging-config-fileformat](https://docs.python.org/3/library/logging.config.html#logging-config-fileformat)
+-->
 
 ## Citation
 ```
@@ -115,7 +161,6 @@ comment out the [--quiet](https://github.com/illinois-or-research-analytics/cm_p
 
 ## TODOs:
 - Support to run the workflow with individual stages (as opposed to "end to end")
-- Add edge_coverage in the analysis file for `*treestar_counts.tsv`
 - Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
 - Mechanism to sync the scripts used within cm_pipeline with the latest changes.
 - Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 

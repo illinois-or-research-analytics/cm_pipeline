@@ -1,156 +1,146 @@
-from collections import OrderedDict
-from source.default_config import DefaultConfig
-from source.cleanup import Cleanup
-from source.clustering import Clustering
-from source.cmd import Cmd
-from source.filtering_bf_cm import FilteringBfCm
-from source.filtering_af_cm import FilteringAfCm
-from source.stats_af_filtering import StatsAfFiltering
-from source.stats_bf_filtering import StatsBfFiltering
-from source.connectivity_modifier_new import ConnectivityModifierNew
-from source.connectivity_modifier_old import ConnectivityModifierOld
-from source.stage import Stage
-from source.timeit import timeit
-from source.constants import *
-import logging
+from datetime import datetime
+from os import path
 import os
 
-# Create a custom logger
-host_logger = logging.getLogger(__name__)
-
+from source.stage import Stage
 
 class Workflow:
-    def __init__(self, config):
-        self.stages = OrderedDict()
-        self.config = config
+    def __init__(self, data):
+        # Load global parameters
+        self.title = data['title']
+        self.algorithm = data['algorithm']
+        self.network_name = data['name']
+        self.output_dir = data['output_dir']
+        self.input_file = data['input_file']
+        self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
 
-        # Read the default config.
-        self.default_config = DefaultConfig(dict(config[DEFAULT]))
-        self.cmd_obj = Cmd(self.default_config)
+        if self.algorithm == 'leiden':
+            self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
+        else:
+            self.resolution = ['mod']
 
-        stage_num = 0
-        # Note: maintain the order in which the sections are parsed
-        if config.has_section(CLEANUP_SECTION):
-            stage_num = stage_num + 1
-            self._add_stage(Cleanup, CLEANUP_SECTION, stage_num)
+        # Get timestamp of algo run
+        self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
 
-        if config.has_section(CLUSTERING_SECTION):
-            stage_num = stage_num + 1
-            self._add_stage(Clustering, CLUSTERING_SECTION, stage_num)
+        # Initialize first set of commands
+        self.commands = [
+            '#!/bin/bash',
+            'global_start_time=$SECONDS',
+            'echo "*** INITIALIZING OUTPUT DIRECTORIES ***"',
+            'stage_start_time=$SECONDS',
+            f'[ ! -d {self.title}-{self.timestamp} ] && mkdir -p {self.title}-{self.timestamp} > /dev/null',
+            f'cd {self.title}-{self.timestamp}',
+            'echo "Stage,Time (HH:MM:SS)" >> execution_times.csv'
+        ]
 
-        if config.has_section(STATS_BF_FILTERING):
-            stage_num = stage_num + 1
-            self._add_stage(StatsBfFiltering, STATS_BF_FILTERING, stage_num)
+        # Create directories for the resolutions and iterations
+        for res in self.resolution:
+            for niter in self.iterations:
+                self.commands.append(f'mkdir -p res-{res}-i{niter}')
 
-        if config.has_section(FILTERING_BF_CM_SECTION):
-            stage_num = stage_num + 1
-            self._add_stage(FilteringBfCm, FILTERING_BF_CM_SECTION, stage_num)
+        # Output the initialization stage finished
+        self.commands = self.commands + [
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - stage_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            'echo "Stage 0 Time Elapsed: $formatted_time"',
+            'echo "*** DONE ***"'
+        ]
 
-        if config.has_section(CONNECTIVITY_MODIFIER_SECTION):
-            stage_num = stage_num + 1
-            # Choose between new and old cm versions
-            if self.default_config.cm_version == CM_VERSION_OLD_VAL:
-                self._add_stage(
-                    ConnectivityModifierOld, CONNECTIVITY_MODIFIER_SECTION,
-                    stage_num
-                    )
-            if self.default_config.cm_version == CM_VERSION_NEW_VAL:
-                self._add_stage(
-                    ConnectivityModifierNew, CONNECTIVITY_MODIFIER_SECTION,
-                    stage_num
-                    )
+        # Get the absolute path of the current script
+        current_script = path.abspath(__file__)
 
-        if config.has_section(FILTERING_AF_CM_SECTION):
-            stage_num = stage_num + 1
-            self._add_stage(FilteringAfCm, FILTERING_AF_CM_SECTION, stage_num)
+        # Get the project root directory
+        project_root = path.dirname(path.dirname(current_script))
 
-        if config.has_section(STATS_AF_FILTERING):
-            stage_num = stage_num + 1
-            self._add_stage(StatsAfFiltering, STATS_AF_FILTERING, stage_num)
+        # Initialize and link stages
+        self.stages = [Stage(
+                stage, 
+                self.input_file, 
+                self.network_name, 
+                self.resolution, 
+                self.iterations,
+                self.algorithm,
+                f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}',
+                i+1
+            ) for i, stage in enumerate(data['stages'])]
+        for i, stage in enumerate(self.stages):
+            if i > 0:
+                stage.link_previous_stage(self.stages[i-1])
 
-    def _add_stage(self, StageClass, section_name, stage_num):
-        stage_class_obj = StageClass(
-            config=self.config.items(section_name),
-            default_config=self.default_config,
-            stage_num=stage_num,
-            prev_stages=self.stages
-            )
-        self.stages[section_name] = stage_class_obj
+        # TODO: For now, lets just require that the first stage is cleaning
+        assert self.stages[0].name == 'cleanup'
 
-    def _get_analysis_file(self, resolution, n_iter):
-        op_folder_name = "analysis"
-        op_folder = os.path.join(
-            self.default_config.output_dir, op_folder_name
-            )
-        os.makedirs(op_folder, exist_ok=True)
-        op_file_name = f"{self.default_config.network_name}_{resolution}_n{n_iter}_{op_folder_name}.csv"
-        op_file_name = os.path.join(op_folder, op_file_name)
-        return op_file_name
+        # Get commands for each stage
+        for stage in self.stages:
+            self.commands = self.commands + stage.get_command()
 
-    def _fetch_files_to_analyse(self):
-        if not self.config.has_section(CLEANUP_SECTION):
-            cleaned_input_file = self.default_config.existing_ip_dict[
-                CLEANED_NW_KEY]
-            Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY] = cleaned_input_file
+        # Analysis stage
+        self.commands.append('echo "*** ANALYSIS ***"')
+        self.commands.append('mkdir analysis')
+        self.commands.append('stage_start_time=$SECONDS')
 
-        if not self.config.has_section(CLUSTERING_SECTION) and \
-                CLUSTERED_NW_FILES in self.default_config.existing_ip_dict.keys():
-            clustering_input_files = self.default_config.existing_ip_dict[
-                CLUSTERED_NW_FILES]
-            for res in clustering_input_files:
-                for n_iter in clustering_input_files[res]:
-                    FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
-                        n_iter].append(clustering_input_files[res][n_iter])
+        # Fetch cleaned network
+        cleaned_file = None
+        for stage in self.stages:
+            if stage.name == 'cleanup':
+                cleaned_file = stage.output_file
+        cleaned_file = self.input_file
 
-        if not self.config.has_section(FILTERING_BF_CM_SECTION) and \
-                CM_READY_FILES in self.default_config.existing_ip_dict.keys():
-            cm_ready_input_files = self.default_config.existing_ip_dict[
-                CM_READY_FILES]
-            for res in cm_ready_input_files:
-                for n_iter in cm_ready_input_files[res]:
-                    FilteringBfCm.files_to_analyse[RESOLUTION_KEY][res][
-                        n_iter].append(cm_ready_input_files[res][n_iter])
+        # Fetch other arguments and run commands
+        for res in self.resolution:
+            for iter in self.iterations:
+                other_files = []
+                k = frozenset([res, iter])
+                for stage in self.stages:
+                    if stage.name != 'cleanup' and stage.name != 'stats':
+                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
+                other_args = ' '.join(other_files)
+                self.commands.append(f'Rscript {project_root}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
 
-    @timeit
-    def generate_analysis_report(self):
-        host_logger.info("******** GENERATING ANALYSIS REPORTS ********")
-        self._fetch_files_to_analyse()
-        for resolution in Stage.files_to_analyse[RESOLUTION_KEY]:
-            for n_iter in Stage.files_to_analyse[RESOLUTION_KEY][resolution]:
-                res_files_to_analyse = Stage.files_to_analyse[RESOLUTION_KEY][
-                    resolution][n_iter]
-                analysis_csv_file = self._get_analysis_file(resolution, n_iter)
-                cmd = ['Rscript',
-                       "./scripts/analysis.R",
-                       Stage.files_to_analyse[CLEANED_INPUT_FILE_KEY],
-                       analysis_csv_file,
-                       ]
-                cmd.extend(res_files_to_analyse)
-                self.cmd_obj.run(cmd)
-        host_logger.info(
-            "******** FINISHED GENERATING ANALYSIS REPORTS ******"
-            )
+        # Finish stage with timing
+        self.commands = self.commands + [
+            'wait',
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - stage_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Analysis Time Elapsed: $formatted_time"',
+            f'echo "Analysis,$formatted_time" >> execution_times.csv',
+            'echo "*** DONE ***"'
+        ]
 
-    @timeit
-    def start(self):
-        host_logger.info("******** STARTED CM WORKFLOW ********")
-        for stage in self.stages.values():
-            stage.execute()
-        # Todo:
-        list(self.stages.values())[-1].cmd_obj.write_placeholder()
-        host_logger.info("******** FINISHED CM WORKFLOW ********")
+        # Get overall timing
+        self.commands = self.commands + [
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - global_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Overall Time Elapsed: $formatted_time"',
+            'echo "*** PIPELINE DONE ***"'
+        ]
+    
+    def write_script(self):
+        with open(f"{self.output_dir}/commands.sh", "w") as file:
+            file.writelines(line + "\n" for line in self.commands)
 
-    def generate_execution_time_report(self):
-        import csv
-        from source.timeit import execution_info, STAGE_KEY, TIME_TAKEN_KEY
-        with open(
-                self.default_config.execution_info_csv, 'w', newline=''
-                ) as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow([STAGE_KEY, TIME_TAKEN_KEY])
-            for i in range(len(execution_info[STAGE_KEY])):
-                writer.writerow(
-                    [execution_info[STAGE_KEY][i],
-                     execution_info[TIME_TAKEN_KEY][i]]
-                    )
-        csvfile.close()
+    def execute(self):
+        try:
+            os.system(f'''
+                cd {self.output_dir}; 
+                chmod +x commands.sh; 
+                ./commands.sh | tee pipeline_{self.timestamp}.log; 
+                mv commands.sh {self.title}-{self.timestamp}/;
+                mv pipeline_{self.timestamp}.log {self.title}-{self.timestamp}/
+            ''')
+        except KeyboardInterrupt:
+            print('Aborted!')
+            return
+

@@ -1,117 +1,227 @@
-import os
-from collections import OrderedDict, defaultdict
-from string import Template
-from source.constants import *
-from source.cmd import Cmd
+from os import path
+from math import inf
 
-
-class Stage(object):
-    """
-    This is a class variable and hence all the instances will have access
-     files_to_analyse = {
-                         'cleaned_ip_file': 'S1_cit_patents_cleaned.tsv',
-                         '0.1': [],
-                         '0.5': []
-                         }
-    """
-    files_to_analyse = {
-            CLEANED_INPUT_FILE_KEY: "",
-            RESOLUTION_KEY: defaultdict(lambda: defaultdict(list))
-        }
-
+class Stage:
     def __init__(
-            self, config, default_config, stage_num, prev_stages=None
-            ):
-        if prev_stages is None:
-            prev_stages = OrderedDict()
+            self, 
+            data, 
+            input_file, 
+            network_name, 
+            resolutions, 
+            iterations, 
+            algorithm, 
+            working_dir,
+            index):
+        # Get input params as object params
+        self.name = data['name']
+        self.network = input_file
+        self.network_name = network_name
+        self.index = index
+        self.algorithm = algorithm
 
-        self.config = dict(config)
-        self.default_config = default_config
-        self.stage_num = stage_num
-        self.prev_stages = prev_stages
-        self._check_paths()
-        self.cmd_obj = Cmd(default_config)
-        self.files_to_analyse = OrderedDict()
+        # Get scripts if this is a filtering stage
+        if self.name == 'filtering':
+            try:
+                self.scripts = data['scripts']
+            except:
+                raise ValueError('Filtering stages need filtering scripts')
+            
+        # Check if this is a memprof stage
+        try:
+            self.memprof = data['memprof']
+        except:
+            self.memprof = False
+        
+        # Get extra arguments
+        self.args = ''
+        for key, val in data.items():
+            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit':
+                self.args = self.args + '--' + key + ' '
+                if type(val) != bool:
+                    self.args = self.args + str(val) + ' '
 
-    def execute(self):
-        raise NotImplementedError(
-            "Implement the execute function in each subclass"
-            )
+        if self.name == 'stats' or self.name == 'clustering':
+            try:
+                self.parallel_limit = data['parallel_limit']
+            except:
+                self.parallel_limit = inf
 
-    def _get_output_file_name_from_template(self, template_str, resolution,
-                                            n_iter):
-        template = Template(template_str)
-        output_file_name = template.substitute(
-            network_name=self.default_config.network_name,
-            algorithm=self.default_config.algorithm,
-            resolution=resolution,
-            stage_num=self.stage_num,
-            n_iter=n_iter
-            )
-        return output_file_name
-
-    def _get_output_file_name_from_template_prev(self, template_str, resolution,
-                                            n_iter):
-        template = Template(template_str)
-        output_file_name = template.substitute(
-            network_name=self.default_config.network_name,
-            algorithm=self.default_config.algorithm,
-            resolution=resolution,
-            stage_num=int(self.stage_num)-1,
-            n_iter=n_iter
-            )
-        return output_file_name
-
-    def _get_cleaned_input_file(self):
-        """
-        This function checks if the input file should be the output files from
-        the previous stage unless specified in the param.config file.
-        """
-
-        if CLEANED_NW_KEY in self.default_config.existing_ip_dict:
-            cleaned_input_file = self.default_config.existing_ip_dict[CLEANED_NW_KEY]
-        elif CLEANUP_SECTION in self.prev_stages:
-            cleanup_stage = self.prev_stages.get(CLEANUP_SECTION)
-            cleaned_input_file = cleanup_stage.cleaned_output_file
+        # Output file nomenclature
+        if self.index == 1:
+            if self.name == 'stats':
+                raise ValueError("First stage cannot be a stats stage.")
+            self.output_file = f'S1_{self.network_name}_{self.name}.tsv'
         else:
-            raise Exception(
-                "Cleaned input file not found in config file was not "
-                "generated in the cleanup stage"
-                )
-        return cleaned_input_file
+            if self.name == 'filtering':
+                filtering_operation = path.basename(self.scripts[-1])
+                self.output_file = {
+                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{filtering_operation}.tsv'
+                    for resolution in resolutions
+                    for iteration in iterations
+                }
+            elif self.name == 'connectivity_modifier':
+                self.output_file = {
+                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv.after.tsv'
+                    for resolution in resolutions
+                    for iteration in iterations
+                }
+            elif self.name != 'stats':
+                self.output_file = {
+                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv'
+                    for resolution in resolutions
+                    for iteration in iterations
+                }
+            else:
+                self.output_file = {
+                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
+                    for resolution in resolutions
+                    for iteration in iterations
+                }
 
-    def generate_metrics_report(self):
+    def link_previous_stage(self, stage):
+        ''' Build reverse linked list from stage array '''
+        self.prev = stage
 
-        pass
+    def get_previous_file(self):
+        ''' Get the previous file to use for the current stages input '''
+        if self.index == 1:
+            return self.network
+        else:
+            if self.prev.name == 'stats':
+                return self.prev.prev.output_file
+        return self.prev.output_file
+    
+    def unpack(self, k):
+        try:
+            res, niter = list(sorted(list(k)))
+        except:
+            for val in list(k):
+                if type(val) == str:
+                    res = val
+                else:
+                    niter = val
+        return res, niter
+    
+    def get_command(self):
+        # Get the absolute path of the current script
+        current_script = path.abspath(__file__)
 
-    def _check_paths(self):
-        """
-        1. Checks the input and output paths for ~ in the paths and replace
-        it with user home directory.
-        """
-        # default dir
-        self.default_config.output_dir = os.path.expanduser(
-            self.default_config.output_dir
-            )
-        os.makedirs(self.default_config.output_dir, exist_ok=True)
+        # Get the project root directory
+        project_root = path.dirname(path.dirname(current_script))
 
-        # other paths in config file
-        path_keys = [INPUT_FILE_KEY,
-                     CLUSTERING_SCRIPT_KEY,
-                     CLEANUP_SCRIPT_KEY,
-                     CLUSTERING_FILE_KEY,
-                     INPUT_CLUSTERING_FILE_DIR_KEY,
-                     CLEANED_INPUT_FILE_KEY,
-                     FILTERING_SCRIPT_KEY]
-        for key in path_keys:
-            if key in self.config:
-                self.config[key] = os.path.expanduser(self.config[key])
+        # Ouptut stage start and initialize stage time
+        cmd = [
+            f'echo "*** Starting {self.name} STAGE ***"',
+            'stage_start_time=$SECONDS',
+            ]
 
-    def _get_op_file_path_for_resolution(self, resolution, op_file_name, n_iter):
-        op_folder_name = f'res-{resolution}-i{n_iter}'
-        op_folder = os.path.join(
-            self.default_config.output_dir, op_folder_name
-            )
-        os.makedirs(op_folder, exist_ok=True)
-        op_file_name = os.path.join(op_folder, op_file_name)
-        return op_file_name
+        # Getting the previous file via linked list structure
+        prev_file = self.get_previous_file()
+
+        # Get command depending on stage type
+        if self.name == 'cleanup':
+            cmd.append(f'Rscript {project_root}/scripts/cleanup_el.R {prev_file} {self.output_file}')
+        elif self.name == 'clustering':
+            if self.algorithm == 'leiden':
+                counter = 1
+                for k, v in self.output_file.items():
+                    res, niter = list(sorted(list(k)))
+                    cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                    output_file = v
+                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
+                    cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
+                    if counter % self.parallel_limit == 0:
+                        cmd.append('wait')
+                cmd.append('wait')
+            elif self.algorithm == 'leiden_mod':
+                counter = 1
+                for k, v in self.output_file.items():
+                    res, niter = self.unpack(k)
+                    cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                    output_file = v
+                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
+                    cmd.append(f'python {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
+                    if counter % self.parallel_limit == 0:
+                        cmd.append('wait')
+                cmd.append('wait')
+            # TODO: Get support for IKC
+            else:
+                raise ValueError('Come back later for IKC support!')
+        elif self.name == 'stats':
+            counter = 1
+            for k, v in self.output_file.items():
+                res, niter = self.unpack(k)
+                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                output_file = v
+                input_file = prev_file if type(prev_file) != dict else prev_file[k]
+                c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
+                
+                # Set leiden param, TODO: IKC support for -k
+                if self.algorithm == 'leiden':
+                    c = c + f'-g {res} '
+                elif self.algorithm == 'ikc':
+                    raise ValueError('Come back later for IKC support!')
+                c = c + self.args 
+                cmd.append(c + ' &')
+
+                if counter % self.parallel_limit == 0:
+                    cmd.append('wait')
+            cmd.append('wait')
+        elif self.name == 'filtering':
+            for k, v in self.output_file.items():
+                res, niter = self.unpack(k)
+                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                
+                # Iterate through filtering scripts
+                output_file = v
+                input_file = prev_file if type(prev_file) != dict else prev_file[k]
+                input_files = [input_file]
+                output_files = []
+                for i, script in enumerate(self.scripts):
+                    filtering_operation = path.basename(script)
+                    output_files.append(f'res-{res}-i{niter}/S{self.index}_{self.network_name}_{self.algorithm}.{res}_i{niter}_{filtering_operation}.tsv')
+                    if i != len(self.scripts) - 1:
+                        input_files.append(f'res-{res}-i{niter}/S{self.index}_{self.network_name}_{self.algorithm}.{res}_i{niter}_{filtering_operation}.tsv')
+                for script, input_file, output_file in zip(self.scripts, input_files, output_files):
+                    if script == "./scripts/subset_graph_nonetworkit_treestar.R":
+                        cmd.append(f'Rscript {project_root}/scripts/subset_graph_nonetworkit_treestar.R {self.network} {input_file} {output_file}')
+                    elif script == "./scripts/make_cm_ready.R":
+                        cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
+                    elif script == "./scripts/post_cm_filter.R":
+                        cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
+        elif self.name == 'connectivity_modifier':
+            for k, v in self.output_file.items():
+                res, niter = self.unpack(k)
+                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                output_file = v
+
+                c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
+
+                c = c + f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
+
+                if self.algorithm == 'leiden':
+                    c = c + f'-g {res}'
+                
+                cmd.append(c)
+
+                # Profile memory usage if the memprof param is true for cm
+                if self.memprof:
+                    cmd.append(f'mv profile_* res-{res}-i{niter}')
+        
+        # Output runtime and finish sage
+        cmd = cmd + [
+            'end_time=$SECONDS',
+            'elapsed_time=$((end_time - stage_start_time))',
+            'hours=$(($elapsed_time / 3600))',
+            'minutes=$(($elapsed_time % 3600 / 60))',
+            'seconds=$(($elapsed_time % 60))',
+            'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
+            f'echo "Stage {self.index} Time Elapsed: $formatted_time"',
+            f'echo "Stage {self.index} {self.name},$formatted_time" >> execution_times.csv',
+            'echo "*** DONE ***"'
+        ]
+
+        return cmd
+
+
+            
