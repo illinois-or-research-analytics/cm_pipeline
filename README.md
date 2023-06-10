@@ -1,9 +1,6 @@
 # cm_pipeline
 Modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
-
-## Table of Contents
 - [cm\_pipeline](#cm_pipeline)
-  - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Major Release Notes](#major-release-notes)
     - [CM++ (v3.3)](#cm-v33)
