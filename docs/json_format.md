@@ -49,4 +49,5 @@ This stage uses the clustering algorithm specified in the overall parameters to 
 - **parallel_limit**: The number of clustering jobs that can be run in parallel. This is useful if resolutions or iterations are arrays. In the example above, clustering jobs will be run in pairs of twos.
   - If the limit is 1, clustering jobs will be run sequentially.
   - If no limit is specified, all clustering jobs will be run in parallel.
+  
 **Limitations**: This stage cannot come after a stage that outputs a clustering.
