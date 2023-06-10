@@ -24,3 +24,11 @@ All of the following parameter values are required:
 The following is only required if the algorithm is `"leiden"`:
 - **resolution**: The resolution parameters for Leiden. Can either be a single float or an array of floats. If it is an array, the pipeline will generate multiple clusterings for each resolution value. If iterations is also an array, the pipeline will generate a clustering for every iteration-resolution pair.
 ## Stages
+### Cleanup 
+This stage removes any self loops (i.e. edges $$(u, u)$$) and parallel edges (i.e. duplicate edges $$(u, v)$$ with more than one occurrence in the edge list). This stage does not take any extra parameters and has the following syntax. Add the following object in the stages array:
+```json
+{
+    "name": "cleanup"
+}
+```
+**Limitations**: The cleanup stage must be the first stage (**TODO** allow pipeline to start from any point). This stage cannot come after a stage that outputs a clustering (ex. filtering, connectivity_modifier).
