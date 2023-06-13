@@ -126,7 +126,7 @@ class Stage:
                 counter = 1
                 for k, v in self.output_file.items():
                     res, niter = list(sorted(list(k)))
-                    cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
                     cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
@@ -137,7 +137,7 @@ class Stage:
                 counter = 1
                 for k, v in self.output_file.items():
                     res, niter = self.unpack(k)
-                    cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
                     cmd.append(f'python {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
@@ -151,7 +151,7 @@ class Stage:
             counter = 1
             for k, v in self.output_file.items():
                 res, niter = self.unpack(k)
-                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                 output_file = v
                 input_file = prev_file if type(prev_file) != dict else prev_file[k]
                 c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
@@ -170,7 +170,7 @@ class Stage:
         elif self.name == 'filtering':
             for k, v in self.output_file.items():
                 res, niter = self.unpack(k)
-                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                 
                 # Iterate through filtering scripts
                 output_file = v
@@ -192,7 +192,7 @@ class Stage:
         elif self.name == 'connectivity_modifier':
             for k, v in self.output_file.items():
                 res, niter = self.unpack(k)
-                cmd.append(f'echo "Currently on resolution {res}, iteration {niter}"')
+                cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                 output_file = v
 
                 c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
