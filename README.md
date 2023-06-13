@@ -85,7 +85,8 @@ module load cmake/3.25.1
 module load openmpi/4.0.1
 module load gcc/9.2.0
 ```
-
+**NOTE: These need to be loaded not just on installation but on execution of the CM pipeline**
+  
 ## Setup and Running Instructions
 - Clone the cm_pipeline repository
 - Activate the venv which has the necessary packages 
