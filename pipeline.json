@@ -2,9 +2,9 @@
     "title": "cit-new-pp-output-leiden_mod",
     "name": "cit_patents",
     "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
-    "output_dir": "tutorial/",
+    "output_dir": "samples/",
     "algorithm": "leiden",
-    "resolution": 0.5,
+    "resolution": [0.5, 0.1, 0.001],
     "iterations": 2,
     "stages": [
         {

@@ -132,6 +132,7 @@ class Stage:
                     cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
                     if counter % self.parallel_limit == 0:
                         cmd.append('wait')
+                    counter += 1
                 cmd.append('wait')
             elif self.algorithm == 'leiden_mod':
                 counter = 1
@@ -143,6 +144,7 @@ class Stage:
                     cmd.append(f'python {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
                     if counter % self.parallel_limit == 0:
                         cmd.append('wait')
+                    counter += 1
                 cmd.append('wait')
             # TODO: Get support for IKC
             else:
@@ -166,6 +168,8 @@ class Stage:
 
                 if counter % self.parallel_limit == 0:
                     cmd.append('wait')
+                
+                counter += 1
             cmd.append('wait')
         elif self.name == 'filtering':
             for k, v in self.output_file.items():
@@ -222,6 +226,3 @@ class Stage:
         ]
 
         return cmd
-
-
-            
