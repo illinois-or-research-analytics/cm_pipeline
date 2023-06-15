@@ -187,11 +187,12 @@ class Stage:
                     if i != len(self.scripts) - 1:
                         input_files.append(f'res-{res}-i{niter}/S{self.index}_{self.network_name}_{self.algorithm}.{res}_i{niter}_{filtering_operation}.tsv')
                 for script, input_file, output_file in zip(self.scripts, input_files, output_files):
-                    if script == "./scripts/subset_graph_nonetworkit_treestar.R":
+                    script_file = script.split('/')[-1]
+                    if script_file == "subset_graph_nonetworkit_treestar.R":
                         cmd.append(f'Rscript {project_root}/scripts/subset_graph_nonetworkit_treestar.R {self.network} {input_file} {output_file}')
-                    elif script == "./scripts/make_cm_ready.R":
+                    elif script_file == "make_cm_ready.R":
                         cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
-                    elif script == "./scripts/post_cm_filter.R":
+                    elif script_file == "post_cm_filter.R":
                         cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
         elif self.name == 'connectivity_modifier':
             for k, v in self.output_file.items():

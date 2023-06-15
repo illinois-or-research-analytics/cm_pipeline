@@ -5,13 +5,17 @@ import os
 from source.stage import Stage
 
 class Workflow:
-    def __init__(self, data):
+    def __init__(self, data, pipeline):
+        # Load working dirs
+        self.working_dir = path.dirname(path.abspath(pipeline))
+        self.current_script = path.dirname(path.dirname(path.abspath(__file__)))
+
         # Load global parameters
         self.title = data['title']
         self.algorithm = data['algorithm']
         self.network_name = data['name']
         self.output_dir = data['output_dir']
-        self.input_file = data['input_file']
+        self.input_file = data['input_file'] if data['input_file'][0] == '/' else f'{self.working_dir}/{data["input_file"]}'
         self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
 
         if self.algorithm == 'leiden':
@@ -50,11 +54,8 @@ class Workflow:
             'echo "*** DONE ***"'
         ]
 
-        # Get the absolute path of the current script
-        current_script = path.abspath(__file__)
-
         # Get the project root directory
-        project_root = path.dirname(path.dirname(current_script))
+        project_root = self.working_dir
 
         # Initialize and link stages
         self.stages = [Stage(
@@ -99,7 +100,7 @@ class Workflow:
                     if stage.name != 'cleanup' and stage.name != 'stats':
                         other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
                 other_args = ' '.join(other_files)
-                self.commands.append(f'Rscript {project_root}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
 
         # Finish stage with timing
         self.commands = self.commands + [
@@ -128,12 +129,14 @@ class Workflow:
         ]
     
     def write_script(self):
-        with open(f"{self.output_dir}/commands.sh", "w") as file:
+        os.system(f'mkdir -p {self.working_dir}/{self.output_dir}')
+        with open(f"{self.working_dir}/{self.output_dir}/commands.sh", "w") as file:
             file.writelines(line + "\n" for line in self.commands)
 
     def execute(self):
         try:
             os.system(f'''
+                cd {self.working_dir};
                 cd {self.output_dir}; 
                 chmod +x commands.sh; 
                 ./commands.sh | tee pipeline_{self.timestamp}.log; 
