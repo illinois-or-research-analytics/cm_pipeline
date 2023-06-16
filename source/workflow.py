@@ -16,12 +16,18 @@ class Workflow:
         self.network_name = data['name']
         self.output_dir = data['output_dir']
         self.input_file = data['input_file'] if data['input_file'][0] == '/' else f'{self.working_dir}/{data["input_file"]}'
-        self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
+
+        if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
+            self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
+        else:
+            self.iterations = None
 
         if self.algorithm == 'leiden':
             self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
-        else:
+        elif self.algorithm == 'leiden_mod':
             self.resolution = ['mod']
+        else:
+            self.resolution = data['k'] if type(data['k']) == list else [data['k']]
 
         # Get timestamp of algo run
         self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
@@ -39,8 +45,11 @@ class Workflow:
 
         # Create directories for the resolutions and iterations
         for res in self.resolution:
-            for niter in self.iterations:
-                self.commands.append(f'mkdir -p res-{res}-i{niter}')
+            if self.iterations:
+                for niter in self.iterations:
+                    self.commands.append(f'mkdir -p res-{res}-i{niter}')
+            else:
+                self.commands.append(f'mkdir -p k-{res}')
 
         # Output the initialization stage finished
         self.commands = self.commands + [
@@ -93,14 +102,23 @@ class Workflow:
 
         # Fetch other arguments and run commands
         for res in self.resolution:
-            for iter in self.iterations:
+            if self.iterations:
+                for iter in self.iterations:
+                    other_files = []
+                    k = frozenset([res, iter])
+                    for stage in self.stages:
+                        if stage.name != 'cleanup' and stage.name != 'stats':
+                            other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
+                    other_args = ' '.join(other_files)
+                    self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+            else:
                 other_files = []
-                k = frozenset([res, iter])
                 for stage in self.stages:
                     if stage.name != 'cleanup' and stage.name != 'stats':
-                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
-                other_args = ' '.join(other_files)
-                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[res])
+                    other_args = ' '.join(other_files)
+                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_k{res}_analysis.csv {other_args} &')
+
 
         # Finish stage with timing
         self.commands = self.commands + [

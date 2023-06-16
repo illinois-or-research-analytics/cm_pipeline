@@ -13,6 +13,8 @@ import jsonpickle
 import sys
 
 # (VR) Change: I removed the context import since we do everything in memory
+# (VR) Change 2: I brought back context just for IKC
+from context import context
 from clusterers.ikc_wrapper import IkcClusterer
 from clusterers.leiden_wrapper import LeidenClusterer, Quality
 from mincut_requirement import MincutRequirement
@@ -290,6 +292,10 @@ def main(
     else:
         assert k != -1, "IKC requires k"
         clusterer = IkcClusterer(k)
+
+    # (VR) Change get working dir iff IKC
+    if isinstance(clusterer, IkcClusterer):
+        context.with_working_dir(input + "_working_dir")
 
     # (VR) Start hm01
     if not quiet:
