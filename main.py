@@ -1,9 +1,11 @@
 from argparse import ArgumentParser
 import json
+import os
 
 from source.workflow import Workflow
 
 if __name__ == "__main__":
+    print(os.getcwd())
     # Retrieve the input json file
     parser = ArgumentParser(
         prog='cm_pp',
@@ -24,7 +26,7 @@ if __name__ == "__main__":
             raise IOError("The file is not valid Json")
     
     # Initialize workflow
-    workflow = Workflow(data)
+    workflow = Workflow(data, pipeline)
 
     # Write and execute end-to-end shell script
     workflow.write_script()

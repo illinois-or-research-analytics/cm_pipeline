@@ -5,19 +5,29 @@ import os
 from source.stage import Stage
 
 class Workflow:
-    def __init__(self, data):
+    def __init__(self, data, pipeline):
+        # Load working dirs
+        self.working_dir = path.dirname(path.abspath(pipeline))
+        self.current_script = path.dirname(path.dirname(path.abspath(__file__)))
+
         # Load global parameters
         self.title = data['title']
         self.algorithm = data['algorithm']
         self.network_name = data['name']
         self.output_dir = data['output_dir']
-        self.input_file = data['input_file']
-        self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
+        self.input_file = data['input_file'] if data['input_file'][0] == '/' else f'{self.working_dir}/{data["input_file"]}'
+
+        if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
+            self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
+        else:
+            self.iterations = None
 
         if self.algorithm == 'leiden':
             self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
-        else:
+        elif self.algorithm == 'leiden_mod':
             self.resolution = ['mod']
+        else:
+            self.resolution = data['k'] if type(data['k']) == list else [data['k']]
 
         # Get timestamp of algo run
         self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
@@ -35,8 +45,11 @@ class Workflow:
 
         # Create directories for the resolutions and iterations
         for res in self.resolution:
-            for niter in self.iterations:
-                self.commands.append(f'mkdir -p res-{res}-i{niter}')
+            if self.iterations:
+                for niter in self.iterations:
+                    self.commands.append(f'mkdir -p res-{res}-i{niter}')
+            else:
+                self.commands.append(f'mkdir -p k-{res}')
 
         # Output the initialization stage finished
         self.commands = self.commands + [
@@ -50,11 +63,8 @@ class Workflow:
             'echo "*** DONE ***"'
         ]
 
-        # Get the absolute path of the current script
-        current_script = path.abspath(__file__)
-
         # Get the project root directory
-        project_root = path.dirname(path.dirname(current_script))
+        project_root = self.working_dir
 
         # Initialize and link stages
         self.stages = [Stage(
@@ -92,14 +102,23 @@ class Workflow:
 
         # Fetch other arguments and run commands
         for res in self.resolution:
-            for iter in self.iterations:
+            if self.iterations:
+                for iter in self.iterations:
+                    other_files = []
+                    k = frozenset([res, iter])
+                    for stage in self.stages:
+                        if stage.name != 'cleanup' and stage.name != 'stats':
+                            other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
+                    other_args = ' '.join(other_files)
+                    self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+            else:
                 other_files = []
-                k = frozenset([res, iter])
                 for stage in self.stages:
                     if stage.name != 'cleanup' and stage.name != 'stats':
-                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
-                other_args = ' '.join(other_files)
-                self.commands.append(f'Rscript {project_root}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
+                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[res])
+                    other_args = ' '.join(other_files)
+                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_k{res}_analysis.csv {other_args} &')
+
 
         # Finish stage with timing
         self.commands = self.commands + [
@@ -128,12 +147,14 @@ class Workflow:
         ]
     
     def write_script(self):
-        with open(f"{self.output_dir}/commands.sh", "w") as file:
+        os.system(f'mkdir -p {self.working_dir}/{self.output_dir}')
+        with open(f"{self.working_dir}/{self.output_dir}/commands.sh", "w") as file:
             file.writelines(line + "\n" for line in self.commands)
 
     def execute(self):
         try:
             os.system(f'''
+                cd {self.working_dir};
                 cd {self.output_dir}; 
                 chmod +x commands.sh; 
                 ./commands.sh | tee pipeline_{self.timestamp}.log; 
