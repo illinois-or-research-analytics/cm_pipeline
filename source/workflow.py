@@ -16,6 +16,33 @@ class Workflow:
         self.network_name = data['name']
         self.output_dir = data['output_dir']
         self.input_file = data['input_file'] if data['input_file'][0] == '/' else f'{self.working_dir}/{data["input_file"]}'
+        
+        # Load and process existing clustering
+        self.existing_clustering = {}
+        try:
+            if self.algorithm == 'leiden':
+                for k, v in data['existing'].items():
+                    res, i = k.split(", ")
+                    if v[0] == '/':
+                        self.existing_clustering[frozenset([float(res), int(i)])] = v
+                    else:
+                        self.existing_clustering[frozenset([float(res), int(i)])] = f'{self.working_dir}/{v}'
+            elif self.algorithm == 'leiden_mod':
+                for k, v in data['existing'].items():
+                    i = int(k)
+                    if v[0] == '/':
+                        self.existing_clustering[frozenset(['mod', int(i)])] = v
+                    else:
+                        self.existing_clustering[frozenset(['mod', int(i)])] = f'{self.working_dir}/{v}'
+            else:
+                for k, v in data['existing'].items():
+                    i = int(k)
+                    if v[0] == '/':
+                        self.existing_clustering[int(i)] = v
+                    else:
+                        self.existing_clustering[int(i)] = f'{self.working_dir}/{v}'
+        except KeyError:
+            self.existing_clustering = None
 
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
             self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
@@ -74,15 +101,13 @@ class Workflow:
                 self.resolution, 
                 self.iterations,
                 self.algorithm,
+                self.existing_clustering,
                 f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}',
                 i+1
             ) for i, stage in enumerate(data['stages'])]
         for i, stage in enumerate(self.stages):
             if i > 0:
                 stage.link_previous_stage(self.stages[i-1])
-
-        # TODO: For now, lets just require that the first stage is cleaning
-        assert self.stages[0].name == 'cleanup'
 
         # Get commands for each stage
         for stage in self.stages:
