@@ -13,7 +13,7 @@ class Stage:
             existing_clustering,
             working_dir,
             index):
-        # Get input params as object params
+         # Get input params as object params
         self.name = data['name']
         self.network = input_file
         self.network_name = network_name
@@ -106,6 +106,10 @@ class Stage:
                         k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.csv'
                         for k in resolutions
                     }
+
+    def set_network(self, network_file):
+        ''' Set the input network file in case theres a cleaning stage '''
+        self.network = network_file
 
     def link_previous_stage(self, stage):
         ''' Build reverse linked list from stage array '''

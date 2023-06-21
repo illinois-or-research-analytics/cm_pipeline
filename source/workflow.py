@@ -125,6 +125,14 @@ class Workflow:
                 cleaned_file = stage.output_file
         cleaned_file = self.input_file
 
+        # Set network files post cleanup to the cleaned file
+        post_cleaned = False
+        for stage in self.stages:
+            if post_cleaned:
+                stage.set_network(cleaned_file)
+            if stage.name == 'cleanup':
+                post_cleaned = True
+
         # Fetch other arguments and run commands
         for res in self.resolution:
             if self.iterations:
