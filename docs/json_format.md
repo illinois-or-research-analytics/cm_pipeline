@@ -107,7 +107,9 @@ This is the stage that applies CM++ to a clustering to ensure connectivity requi
 - **quiet**: Silence output to terminal. If omitted, this defaults to false.
 - **firsttsv**: Output the original clustering output before CM2Universal is run. If omitted, this defaults to false.
   
-**Limitations**: This must come after a stage that outputs a clustering.
+**Limitations**: This must come after a stage that outputs a clustering.  
+
+**NOTE: If using IKC, it's recommended to run no more than 4 processors on CM**
 ### Stats
 This stage reports statistics of a clustering that was outputted by a stage preceding it. For more information on the statistics reporting ans its outputs. Refer to the following [repository](https://github.com/vikramr2/cluster-statistics). The code for the stage is the following:
 ```json
