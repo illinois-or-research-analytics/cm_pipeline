@@ -82,8 +82,8 @@ Commands from v2.0 stay consistent, except now you can add the following options
 ```bash
 module load python3/3.10.0
 module load cmake/3.25.1
-module load openmpi/4.0.1
 module load gcc/9.2.0
+module load openmpi/4.0.1
 ```
 **NOTE: These need to be loaded not just on installation but on execution of the CM pipeline**
   
