@@ -8,6 +8,10 @@ The following document will go over the different parameters for each stage as w
     - [Filtering](#filtering)
     - [Connectivity Modifier](#connectivity-modifier)
     - [Stats](#stats)
+  - [Using an Existing Clustering](#using-an-existing-clustering)
+    - [Using an Existing Leiden Clustering](#using-an-existing-leiden-clustering)
+    - [Using an Existing Leiden-Mod Clustering](#using-an-existing-leiden-mod-clustering)
+    - [Using an Existing IKC Clustering](#using-an-existing-ikc-clustering)
 ## Overall Parameters
 The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:
 ```json
@@ -26,11 +30,16 @@ All of the following parameter values are required:
 - **input_file**: The filename of the input network. Is an edgelist .tsv.
 - **output_dir**: The directory to store pipeline outputs.
 - **algorithm**: The name of the algorithm. Can choose from `"leiden"`, `"leiden_mod"`, and `"ikc"`.
-- **iterations**: The number of iterations to run the clustering algorithm, Can either be an int or an array of ints. If it is an array, the pipeline will generate multiple clusterings for each iteration value.
 - **stages**: An array of [stage](#stages) objects.
   
 The following is only required if the algorithm is `"leiden"`:
-- **resolution**: The resolution parameters for Leiden. Can either be a single float or an array of floats. If it is an array, the pipeline will generate multiple clusterings for each resolution value. If iterations is also an array, the pipeline will generate a clustering for every iteration-resolution pair.  
+- **resolution**: The resolution parameters for Leiden. Can either be a single float or an array of floats. If it is an array, the pipeline will generate multiple clusterings for each resolution value. If iterations is also an array, the pipeline will generate a clustering for every iteration-resolution pair.
+  
+The following is only required if the algorithm is `"leiden"` or `"leiden_mod"`
+- **iterations**: The number of iterations to run the clustering algorithm, Can either be an int or an array of ints. If it is an array, the pipeline will generate multiple clusterings for each iteration value.
+
+The following is only required if the algorithm is `"ikc"`
+- **k**: The k parameter used for ikc. This can be a single integer or an array where the clustering will be repeated using the different `k` values.  
   
 **NOTE** Paths must be relative to the json file, or absolute.  
 ## Stages
@@ -41,7 +50,7 @@ This stage removes any self loops (i.e. edges $(u, u)$ ) and parallel edges (i.e
     "name": "cleanup"
 }
 ```
-**Limitations**: The cleanup stage must be the first stage (**TODO** allow pipeline to start from any point). This stage cannot come after a stage that outputs a clustering (ex. filtering, connectivity_modifier).
+**Limitations**: This stage cannot come after a stage that outputs a clustering (ex. filtering, connectivity_modifier).  
 ### Clustering
 This stage uses the clustering algorithm specified in the overall parameters to cluster a cleaned network. If resolutions and/or iterations are arrays, multiple clusterings are outputted. To add this stage, add the following to the stages array. Modify the parameters as needed:
 ```json
@@ -113,3 +122,48 @@ This stage reports statistics of a clustering that was outputted by a stage prec
 - **noktruss**: Silence k-truss computations in the stats script. This is simply because k-truss computation uses a lot of runtime.
   
 **Limitations**: This stage must come after a stage that outputs a clustering.
+## Using an Existing Clustering
+### Using an Existing Leiden Clustering
+```json
+    "title": "cit-new-pp-output-leiden-skipstage",
+    "name": "cit_patents",
+    "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden",
+    "resolution": [0.5, 0.1],
+    "iterations": 2,
+    "existing": {
+        "0.5, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv",
+        "0.1, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
+    },
+    "stages": ["..."]
+```
+To use an existing clustering, use a json value `"existing"` that stores a dictionary mapping a `"(resolution), (iterations)"` string to the corresponding clustering file path that uses those parameters.
+### Using an Existing Leiden-Mod Clustering
+```json
+    "title": "cit-new-pp-output-leiden_mod",
+    "name": "cit_patents",
+    "input_file": "cit_patents_cleaned.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden_mod",
+    "iterations": 2,
+    "existing": {
+        "2": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
+    },
+    "stages": ["..."]
+```
+The mapping on the `"existing"` field maps just the iterations value (stored as a string) to the corresponding leiden-mod clustering that used that number of iterations.
+### Using an Existing IKC Clustering
+```json
+    "title": "cit-new-pp-output-ikc-skipstage",
+    "name": "cit_patents",
+    "input_file": "cit_patents_cleaned.tsv",
+    "output_dir": "samples/",
+    "algorithm": "ikc",
+    "k": 10,
+    "existing": {
+        "10": "samples/cit-new-pp-output-ikc-20230616-05:03:59/k-10/S2_cit_patents_ikc.10_clustering_reformatted.tsv"
+    },
+    "stages": ["..."]
+```
+Likewise the `"existing"` field maps k values to clustering files using that k value.
