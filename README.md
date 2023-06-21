@@ -62,7 +62,7 @@ Commands from v2.0 stay consistent, except now you can add the following options
 - Refer to [this link](https://github.com/RuneBlaze/connectivity-modifier)
 
 ## Input and Usage Instructions
-- The input to the pipeline script is a [param.json](param.json) file. **NOTE** that you can use any other json file as input as long as it fit
+- The input to the pipeline script is a [pipeline.json](pipeline.json) file. **NOTE** that you can use any other json file as input as long as it fit
 - Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
 - Run `python -m main pipeline.json`
