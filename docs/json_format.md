@@ -12,6 +12,7 @@ The following document will go over the different parameters for each stage as w
     - [Using an Existing Leiden Clustering](#using-an-existing-leiden-clustering)
     - [Using an Existing Leiden-Mod Clustering](#using-an-existing-leiden-mod-clustering)
     - [Using an Existing IKC Clustering](#using-an-existing-ikc-clustering)
+  - [Examples](#examples) 
 ## Overall Parameters
 The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:
 ```json
@@ -169,3 +170,5 @@ The mapping on the `"existing"` field maps just the iterations value (stored as 
     "stages": ["..."]
 ```
 Likewise the `"existing"` field maps k values to clustering files using that k value.
+## Examples
+View the following folder to check out examples: [examples/](../examples/)
