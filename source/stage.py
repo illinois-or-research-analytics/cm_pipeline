@@ -164,7 +164,7 @@ class Stage:
                     cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
+                    cmd.append(f'python3 {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
                     if counter % self.parallel_limit == 0:
                         cmd.append('wait')
                     counter += 1
@@ -176,7 +176,7 @@ class Stage:
                     cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
+                    cmd.append(f'python3 {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
                     if counter % self.parallel_limit == 0:
                         cmd.append('wait')
                     counter += 1
@@ -189,8 +189,8 @@ class Stage:
                     pre_output_file = pre_output_file[:-12] + '.tsv'
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python {project_root}/hm01/tools/ikc.py -e {input_file} -o {pre_output_file} -k {k}')
-                    cmd.append(f'python {project_root}/scripts/format_ikc_output.py {pre_output_file}')
+                    cmd.append(f'python3 {project_root}/hm01/tools/ikc.py -e {input_file} -o {pre_output_file} -k {k}')
+                    cmd.append(f'python3 {project_root}/scripts/format_ikc_output.py {pre_output_file}')
         elif self.name == 'stats':
             counter = 1
             if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
@@ -199,7 +199,7 @@ class Stage:
                     cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
+                    c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
                     
                     # Set leiden param, TODO: IKC support for -k
                     if self.algorithm == 'leiden':
@@ -219,7 +219,7 @@ class Stage:
                     cmd.append(f'echo "Currently on k={k}"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k} '
+                    c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k} '
                     c = c + self.args 
                     cmd.append(c)
         elif self.name == 'filtering':
@@ -275,7 +275,7 @@ class Stage:
 
                     c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
 
-                    c = c + f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
+                    c = c + f'python3 {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
 
                     if self.algorithm == 'leiden':
                         c = c + f'-g {res}'
@@ -291,7 +291,7 @@ class Stage:
                     output_file = v
 
                     c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
-                    c = c + f'python {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
+                    c = c + f'python3 {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
                     c = c + f' -k {k}'
 
                     cmd.append(c)
