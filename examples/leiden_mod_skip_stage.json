@@ -1,0 +1,43 @@
+{
+    "title": "cit-new-pp-output-leiden_mod",
+    "name": "cit_patents",
+    "input_file": "cit_patents_cleaned.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden_mod",
+    "iterations": 2,
+    "existing": {
+        "2": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
+    },
+    "stages": [
+        {
+            "name": "stats",
+            "noktruss": true,
+            "parallel_limit": 2
+        },
+        {
+            "name": "filtering",
+            "scripts": [
+                "./scripts/subset_graph_nonetworkit_treestar.R",
+                "./scripts/make_cm_ready.R"
+            ]
+        },
+        {
+            "name": "connectivity_modifier",
+            "memprof": true,
+            "threshold": "1log10",
+            "nprocs": 32,
+            "quiet": true
+        },
+        {
+            "name": "filtering",
+            "scripts": [
+                "./scripts/post_cm_filter.R"
+            ]
+        },
+        {
+            "name": "stats",
+            "noktruss": true,
+            "parallel_limit": 2
+        }
+    ]
+}

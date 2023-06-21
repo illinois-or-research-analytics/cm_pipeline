@@ -113,17 +113,20 @@ class ClusteringSkeleton:
 
         Why? It's because then we'll have valid json outputs
         """
+        json_str = ""
         with open(filepath, "w+") as f:
-            f.write("[\n")
+            json_str += "["
             for i, g in enumerate(graphs):
                 d = asdict(g)
                 if not use_descendants:
                     del d["descendants"]
                 if i < len(graphs) - 1:
-                    f.write("\t" + json.dumps(d) + ",\n")
+                    json_str += json.dumps(d) + ","
                 else:
-                    f.write("\t" + json.dumps(d) + "\n")
-            f.write("]")
+                    json_str += json.dumps(d)
+            json_str += "]"
+
+            f.write(json.dumps(json.loads(json_str), indent=4))
 
 # TODO: arguments below should eventually be converted to Path types
 def cm2universal(

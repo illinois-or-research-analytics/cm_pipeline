@@ -10,6 +10,7 @@ class Stage:
             resolutions, 
             iterations, 
             algorithm, 
+            existing_clustering,
             working_dir,
             index):
         # Get input params as object params
@@ -18,6 +19,7 @@ class Stage:
         self.network_name = network_name
         self.index = index
         self.algorithm = algorithm
+        self.existing_clustering = existing_clustering
 
         # Get scripts if this is a filtering stage
         if self.name == 'filtering':
@@ -47,9 +49,7 @@ class Stage:
                 self.parallel_limit = inf
 
         # Output file nomenclature
-        if self.index == 1:
-            if self.name == 'stats':
-                raise ValueError("First stage cannot be a stats stage.")
+        if self.index == 1 and type(self.existing_clustering) != dict:
             self.output_file = f'S1_{self.network_name}_{self.name}.tsv'
         else:
             if self.name == 'filtering':
@@ -114,10 +114,16 @@ class Stage:
     def get_previous_file(self):
         ''' Get the previous file to use for the current stages input '''
         if self.index == 1:
-            return self.network
+            if not self.existing_clustering:
+                return self.network
+            else:
+                return self.existing_clustering
         else:
             if self.prev.name == 'stats':
-                return self.prev.prev.output_file
+                try:
+                    return self.prev.prev.output_file
+                except:
+                    return self.existing_clustering
         return self.prev.output_file
     
     def unpack(self, k):
@@ -213,7 +219,8 @@ class Stage:
                     cmd.append(f'echo "Currently on k={k}"')
                     output_file = v
                     input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k}'
+                    c = f'python {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k} '
+                    c = c + self.args 
                     cmd.append(c)
         elif self.name == 'filtering':
             if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
