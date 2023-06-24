@@ -276,6 +276,13 @@ class Stage:
                             cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
                         elif script_file == "post_cm_filter.R":
                             cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
+                        cmd = cmd + [
+                            'exit_status=$?',
+                            'if [ $exit_status -ne 0 ]; then',
+                            f'\techo "{output_file} failed to generate"',
+                            f'\texit',
+                            'fi'
+                        ]
             else:
                 for k, v in self.output_file.items():
                     cmd.append(f'echo "Currently on k={k}"')
@@ -296,6 +303,13 @@ class Stage:
                             cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
                         elif script_file == "post_cm_filter.R":
                             cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
+                        cmd = cmd + [
+                            'exit_status=$?',
+                            'if [ $exit_status -ne 0 ]; then',
+                            f'\techo "{output_file} failed to generate"',
+                            f'\texit',
+                            'fi'
+                        ]
         elif self.name == 'connectivity_modifier':
             if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
                 for k, v in self.output_file.items():
@@ -312,6 +326,14 @@ class Stage:
                     
                     cmd.append(c)
 
+                    cmd = cmd + [
+                        'exit_status=$?',
+                        'if [ $exit_status -ne 0 ]; then',
+                        f'\techo "{output_file} failed to generate"',
+                        f'\texit',
+                        'fi'
+                    ]
+
                     # Profile memory usage if the memprof param is true for cm
                     if self.memprof:
                         cmd.append(f'mv profile_* res-{res}-i{niter}')
@@ -325,6 +347,14 @@ class Stage:
                     c = c + f' -k {k}'
 
                     cmd.append(c)
+
+                    cmd = cmd + [
+                        'exit_status=$?',
+                        'if [ $exit_status -ne 0 ]; then',
+                        f'\techo "{output_file} failed to generate"',
+                        f'\texit',
+                        'fi'
+                    ]
 
                     # Profile memory usage if the memprof param is true for cm
                     if self.memprof:

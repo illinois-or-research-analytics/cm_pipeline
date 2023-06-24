@@ -13,6 +13,13 @@ if (length(args)==0) {
   print("OK 2 params supplied")
 }
 
+# Check the file size
+file_size <- file.info(args[1])$size
+
+if (file_size == 0) {
+  stop("Error: Clustering is empty.")
+}
+
 # read in post-cm clustering
 c <- fread(args[1])
 

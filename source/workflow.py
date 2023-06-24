@@ -147,6 +147,7 @@ class Workflow:
         self.commands.append('stage_start_time=$SECONDS')
 
         # Fetch other arguments and run commands
+        ind = 0
         for res in self.resolution:
             if self.iterations:
                 for iter in self.iterations:
@@ -164,11 +165,20 @@ class Workflow:
                         other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[res])
                     other_args = ' '.join(other_files)
                 self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_k{res}_analysis.csv {other_args} &')
-
+            
+            # Get PIDs
+            self.commands.append(f'pids[{ind}]=$!')
+            ind += 1
 
         # Finish stage with timing
         self.commands = self.commands + [
-            'wait',
+            'for pid in "${pids[@]}"; do',
+            '\twait $pid',
+            '\texit_status=$?',
+            '\tif [ $exit_status -ne 0 ]; then',
+            '\t\techo "Analysis Stage Failed"',
+            '\tfi',
+            'done',
             'end_time=$SECONDS',
             'elapsed_time=$((end_time - stage_start_time))',
             'hours=$(($elapsed_time / 3600))',

@@ -72,6 +72,10 @@ class ClusteringSkeleton:
             metadata (ClusteringMetadata):      wrapper for the cluster provenance tree
         """
         ans = []
+
+        if graphs == [IntangibleSubgraph(subset=[], index='')]:
+            return []
+        
         for g in graphs:
             info = metadata.find_info(g)            # (VR) Get the current cluster and its location in the tree
             assert info                             # (VR) Assert that it exists
