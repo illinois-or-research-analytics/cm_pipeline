@@ -126,7 +126,9 @@ This stage reports statistics of a clustering that was outputted by a stage prec
 - **noktruss**: Silence k-truss computations in the stats script. This is simply because k-truss computation uses a lot of runtime.
 - **universal_before**: Output extra details on which clusters were split by CM. If ommitted, this defaults to `false`.
   
-**Limitations**: This stage must come after a stage that outputs a clustering.
+**Limitations**
+- This stage must come after a stage that outputs a clustering.
+- If `universal_before` is a field, CM must appear sometime before this stats stage (*NOTE*: Not necessarily one stage before, can be at any point preceding this stats stage). 
 ## Using an Existing Clustering
 ### Using an Existing Leiden Clustering
 ```json
