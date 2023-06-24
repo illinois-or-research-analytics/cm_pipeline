@@ -118,11 +118,13 @@ This stage reports statistics of a clustering that was outputted by a stage prec
     "name": "stats",
     "noktruss": true,
     "parallel_limit": 2
+    "universal_before": false
 }
 ```
 **Optional Parameters**
 - **parallel_limit**: This is the same as for the clustering stage
 - **noktruss**: Silence k-truss computations in the stats script. This is simply because k-truss computation uses a lot of runtime.
+- **universal_before**: Output extra details on which clusters were split by CM. If ommitted, this defaults to `false`.
   
 **Limitations**: This stage must come after a stage that outputs a clustering.
 ## Using an Existing Clustering
