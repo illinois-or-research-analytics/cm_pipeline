@@ -37,16 +37,23 @@ class Stage:
         # Get extra arguments
         self.args = ''
         for key, val in data.items():
-            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit':
+            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit' and key != "universal_before":
                 self.args = self.args + '--' + key + ' '
                 if type(val) != bool:
                     self.args = self.args + str(val) + ' '
 
+        # Set parallel limit if it exists
         if self.name == 'stats' or self.name == 'clustering':
             try:
                 self.parallel_limit = data['parallel_limit']
             except:
                 self.parallel_limit = inf
+
+        # Set universal before value if it exists
+        try:
+            self.universal_before = data['universal_before']
+        except:
+            self.universal_before = False
 
         # Output file nomenclature
         if self.index == 1 and type(self.existing_clustering) != dict:
@@ -106,6 +113,17 @@ class Stage:
                         k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.csv'
                         for k in resolutions
                     }
+
+    def set_ub(self, cm_output):
+        ''' Set the universal before file from CM2Universal dynamically '''
+
+        # Reformat filename to fetch before.json file
+        ub_output = {
+            k: f'{path.splitext(path.splitext(cm_output[k])[0])[0]}.before.json'
+            for k in cm_output
+        }
+
+        self.ub = ub_output
 
     def set_network(self, network_file):
         ''' Set the input network file in case theres a cleaning stage '''
@@ -211,6 +229,14 @@ class Stage:
                     elif self.algorithm == 'ikc':
                         raise ValueError('Come back later for IKC support!')
                     c = c + self.args 
+
+                    # If there is a universal before parameter, set it
+                    if self.universal_before:
+                        try:
+                            c = c + ' --universal-before ' + self.ub[k]
+                        except:
+                            raise ValueError('Cannot find a before.json file: double check that this stats stage comes after a CM++ stage.')
+
                     cmd.append(c + ' &')
 
                     if counter % self.parallel_limit == 0:

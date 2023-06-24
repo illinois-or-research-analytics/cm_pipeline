@@ -109,6 +109,34 @@ class Workflow:
             if i > 0:
                 stage.link_previous_stage(self.stages[i-1])
 
+        # Fetch cleaned network
+        cleaned_file = None
+        for stage in self.stages:
+            if stage.name == 'cleanup':
+                cleaned_file = stage.output_file
+        
+        if not cleaned_file:
+            cleaned_file = self.input_file
+
+        # Fetch CM++ output
+        cm_out = None
+        for stage in self.stages:
+            if stage.name == 'connectivity_modifier':
+                cm_out  = stage.output_file      
+
+        # Set network files post cleanup to the cleaned file and set before.json files post CM++ stage
+        post_cleaned = False
+        post_cm = False
+        for stage in self.stages:
+            if post_cleaned:
+                stage.set_network(cleaned_file)
+            if post_cm:
+                stage.set_ub(cm_out)
+            if stage.name == 'cleanup':
+                post_cleaned = True
+            if stage.name == 'connectivity_modifier':
+                post_cm = True
+
         # Get commands for each stage
         for stage in self.stages:
             self.commands = self.commands + stage.get_command()
@@ -117,21 +145,6 @@ class Workflow:
         self.commands.append('echo "*** ANALYSIS ***"')
         self.commands.append('mkdir analysis')
         self.commands.append('stage_start_time=$SECONDS')
-
-        # Fetch cleaned network
-        cleaned_file = None
-        for stage in self.stages:
-            if stage.name == 'cleanup':
-                cleaned_file = stage.output_file
-        cleaned_file = self.input_file
-
-        # Set network files post cleanup to the cleaned file
-        post_cleaned = False
-        for stage in self.stages:
-            if post_cleaned:
-                stage.set_network(cleaned_file)
-            if stage.name == 'cleanup':
-                post_cleaned = True
 
         # Fetch other arguments and run commands
         for res in self.resolution:

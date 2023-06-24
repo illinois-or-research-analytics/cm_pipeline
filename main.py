@@ -5,7 +5,6 @@ import os
 from source.workflow import Workflow
 
 if __name__ == "__main__":
-    print(os.getcwd())
     # Retrieve the input json file
     parser = ArgumentParser(
         prog='cm_pp',
