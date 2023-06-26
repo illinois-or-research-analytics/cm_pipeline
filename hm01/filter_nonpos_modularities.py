@@ -24,7 +24,7 @@ def main(
     existing_clustering: str = typer.Option(..., "--existing-clustering", "-e", help="The existing clustering of the input network to be reclustered."),
 ):
     # Split ext
-    base, ext = path.splitext(existing_clustering)
+    base, _ = path.splitext(existing_clustering)
 
     # Load full graph into Graph object
     edgelist_reader = nk.graphio.EdgeListReader("\t", 0)
