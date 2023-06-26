@@ -37,7 +37,7 @@ class Stage:
         # Get extra arguments
         self.args = ''
         for key, val in data.items():
-            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit' and key != "universal_before":
+            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit' and key != "universal_before" and key != 'summarize':
                 self.args = self.args + '--' + key + ' '
                 if type(val) != bool:
                     self.args = self.args + str(val) + ' '
@@ -49,11 +49,16 @@ class Stage:
             except:
                 self.parallel_limit = inf
 
-        # Set universal before value if it exists
+        # Set universal before and summarize values if they exists
         try:
             self.universal_before = data['universal_before']
         except:
             self.universal_before = False
+
+        try:
+            self.summarize = data['summarize']
+        except:
+            self.summarize = False
 
         # Output file nomenclature
         if self.index == 1 and type(self.existing_clustering) != dict:
@@ -252,6 +257,11 @@ class Stage:
                     c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k} '
                     c = c + self.args 
                     cmd.append(c)
+
+            # If the summarize value is set to true, output summary stats
+            if self.summarize:
+                for k, v in self.output_file.items():
+                    cmd.append(f'python3 {project_root}/cluster-statistics/summarize.py {v} {self.network}')
         elif self.name == 'filtering':
             if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
                 for k, v in self.output_file.items():
