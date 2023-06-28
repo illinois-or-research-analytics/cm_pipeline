@@ -295,7 +295,7 @@ def main(
 
     # (VR) Change get working dir iff IKC
     if isinstance(clusterer, IkcClusterer):
-        context.with_working_dir(input + "_working_dir")
+        context.with_working_dir(input.split('/')[-1] + "_working_dir")
 
     # (VR) Start hm01
     if not quiet:
