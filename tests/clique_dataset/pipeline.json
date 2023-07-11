@@ -1,0 +1,21 @@
+{
+    "title": "clique_dataset_small_run",
+    "name": "clique_dataset_small",
+    "input_file": "network.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden",
+    "resolution": 0.5,
+    "iterations": 2,
+    "existing": {
+        "0.5, 2": "clustering.tsv"
+    },
+    "stages": [
+        {
+            "name": "connectivity_modifier",
+            "memprof": false,
+            "threshold": "1log10",
+            "nprocs": 1,
+            "quiet": true
+        }
+    ]
+}
