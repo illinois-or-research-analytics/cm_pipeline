@@ -1,0 +1,21 @@
+{
+    "title": "sun_run",
+    "name": "sun",
+    "input_file": "network.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden",
+    "resolution": 0.5,
+    "iterations": 2,
+    "existing": {
+        "0.5, 2": "clustering.tsv"
+    },
+    "stages": [
+        {
+            "name": "connectivity_modifier",
+            "memprof": false,
+            "threshold": "1log10",
+            "nprocs": 1,
+            "quiet": true
+        }
+    ]
+}

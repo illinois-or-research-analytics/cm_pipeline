@@ -1,8 +1,9 @@
 import os
 import json
+import csv
 
-from sys import argv
 from datetime import datetime
+from collections import Counter
 
 def navigate_out():
     # Get the current directory
@@ -13,6 +14,9 @@ def navigate_out():
 
     # Change the current directory to the parent directory
     os.chdir(parent_directory)
+
+def navigate_back():
+    os.chdir('tests/')
 
 def get_max_timestamp(timestamps):
     ''' Get most recent timestamp out of a list of YYYYMMDD-HH:MM:SS strings '''
@@ -25,13 +29,58 @@ def get_run_name(json_file):
     
     return json_data["title"]
 
-def get_latest_stage()
-
 def get_recent_run(dirs, run_name):
     ''' Get most recent CM run from outputs directory '''
     timestamps = [d[len(run_name)+1:] for d in dirs if d.startswith(run_name)]
     max_timestamp = get_max_timestamp(timestamps)
     return f'{run_name}-{max_timestamp}'
+
+def count_nodes(file):
+    line_count = 0
+    with open(file, 'r') as file:
+        for line in file:
+            line_count += 1
+    return line_count
+
+def count_clusters(file):
+    column_index = 1
+    unique_values = set()
+
+    with open(file, 'r') as file:
+        reader = csv.reader(file, delimiter='\t')
+        for row in reader:
+            value = row[column_index]
+            unique_values.add(value)
+
+    count = len(unique_values)
+
+    return count
+
+def get_cluster_sizes(file):
+    ''' The cluster sizes will be a sorted array '''
+    column_index = 1  # Index of the column (0-based) to calculate frequencies
+
+    frequencies = Counter()
+
+    with open(file, 'r') as file:
+        reader = csv.reader(file, delimiter='\t')
+        for row in reader:
+            value = row[column_index]
+            frequencies[value] += 1
+
+    frequency_array = list(frequencies.values())
+    frequency_array.sort()
+    return frequency_array
+
+def get_final_tsv_leiden(files, res, iter):
+    ''' Get the final clustering output for a leiden clustering '''
+    tsvs = [f for f in files[f'res-{res}-i{iter}'] if f.endswith('.tsv')]
+    return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
+
+def get_final_tsv_ikc(files, k):
+    ''' Get the final clustering for an ikc output '''
+    tsvs = [f for f in files[f'k-{k}'] if f.endswith('.tsv')]
+    return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
 
 def run_cm(data_dir: str):
     ''' Wrapper for running the cm pipeline and fetching outputs
@@ -39,6 +88,10 @@ def run_cm(data_dir: str):
     parameters
     ----------
     data_dir: directory holding the test-case dataset
+
+    returns
+    -------
+    A dictionary mapping algorithm parameters to stage outputs
     '''
     full_path = os.path.abspath(data_dir)
 
@@ -52,14 +105,12 @@ def run_cm(data_dir: str):
     # Navigate to the directory where the cm_pipeline final output is stored
     output_dir = get_recent_run(dirs, run_name)
     output_dirs = os.listdir(f'{full_path}/samples/{output_dir}/')
-    data_output_dir = [d for d in output_dirs if d.startswith(('res', 'k'))][0]
-    stage_outputs = os.listdir(f'{full_path}/samples/{output_dir}/{data_output_dir}/')
-    print(stage_outputs)
+    data_output_dir = [d for d in output_dirs if d.startswith(('res', 'k'))]
+    stage_outputs = {
+        d: [f"{full_path}/samples/{output_dir}/{d}/{f}" for f in os.listdir(f'{full_path}/samples/{output_dir}/{d}/')]
+        for d in data_output_dir
+    }
 
+    navigate_back()
 
-
-def main():
-    run_cm(argv[1])
-
-if __name__ == '__main__':
-    main()
+    return stage_outputs
