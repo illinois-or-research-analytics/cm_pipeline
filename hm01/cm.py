@@ -42,9 +42,10 @@ class ClustererSpec(str, Enum):
     leiden_mod = "leiden_mod"
 
 
-def annotate_tree_node(node: ClusterTreeNode,
-                       graph: Union[Graph, IntangibleSubgraph,
-                                    RealizedSubgraph]):
+def annotate_tree_node(
+    node: ClusterTreeNode,
+    graph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
+):
     """ (VR) Labels a ClusterTreeNode with its respective cluster """
 
     # (VR) Def Extant: An input cluster that has remained untouched by CM
@@ -304,9 +305,28 @@ def algorithm_g(
 def new_par_task(
     queue,
     shm,
-    shm_node_begin,
-    shm_node_end,
+    shm_adj,
+    shm_endpoints,
+    num_nodes,
+    num_edges,
+    dtype,
 ):
+    nodes_global = np.ndarray(
+        shape=(num_nodes, ),
+        dtype=dtype,
+        buffer=shm.buf,
+    )
+    adj_global = np.ndarray(
+        shape=(num_nodes + 1, ),
+        dtype=dtype,
+        buffer=shm_adj.buf,
+    )
+    endpoints_global = np.ndarray(
+        shape=(2 * num_edges, ),
+        dtype=dtype,
+        buffer=shm_endpoints.buf,
+    )
+
     # Bookkeeping table.
     local_jobs = []
 
@@ -332,12 +352,10 @@ def new_par_task(
         #
         # Make the nodes list and cluster edges dictionary.
         #
-        item_size = np.uint64(0).itemsize
-        nodes = np.ndarray(
-            shape=(num_nodes, ),
-            dtype=np.uint64,
-            buffer=shm.buf[(begin * item_size):(end * item_size)],
-        )
+        nodes = nodes_global[begin:end]
+
+        # Create temporary cluster array
+        cluster_ids = [cluster_id] * (end - begin)
 
         node_set = set(nodes.tolist())
         edges = {}
@@ -345,15 +363,23 @@ def new_par_task(
             endpoints = []
 
             # Locate neighbors of node_a that are in the node_set.
-            begin = shm_node_begin[node_a]
-            end = shm_node_begin[node_a + 1]
-            for node_b in shm_node_end[begin:end]:
+            begin = adj_global[node_a]
+            end = adj_global[node_a + 1]
+            for node_b in endpoints_global[begin:end]:
                 if node_b in node_set:
                     endpoints.append(node_b)
 
             edges[node_a] = endpoints
 
         # make pruner, etc.
+        subgraph = RealizedSubgraph.from_adjlist(node_set, edges, cluster_id)
+
+        # (VR) Get minimum node degree in current cluster
+        original_mcd = subgraph.mcd()
+
+        # (VR) Pruning: Remove singletons with node degree under threshold
+        # until there exists none
+        num_pruned = prune_graph(subgraph, requirement, clusterer)
 
         print(item)
         queue.task_done()
@@ -368,22 +394,47 @@ def algorithm_h(
 
     print(f'process {os.getpid()} is the master')
 
-    # Make the adjacency list structure.
-    total_num_nodes = nk_graph.numberOfNodes()
-    node_degrees = [nk_graph.degree(k) for k in range(total_num_nodes - 1)]
-    node_begin = [0] + np.cumsum(node_degrees).tolist()
-    shm_node_begin = shared_memory.ShareableList(node_begin)
-    node_neighbors = [ \
-        list(nk_graph.iterNeighbors(node)) for node in range(total_num_nodes) \
-    ]
-    node_neighbors = list(chain.from_iterable(node_neighbors))
-    shm_node_end = shared_memory.ShareableList(node_neighbors)
+    num_nodes = nk_graph.numberOfNodes()
+    num_edges = nk_graph.numberOfEdges()
 
-    # Place all work on the stack and the nodes on the shared memory.
-    num_nodes = sum(len(graph.subset) for graph in graphs)
     dtype = np.uint64
+
+    # Make the shared memory for the node list.
+    # TODO: document the node list structure.
     memory_size = num_nodes * dtype(0).itemsize
     shm = shared_memory.SharedMemory(create=True, size=memory_size)
+
+    # Make the shared memory for the adjacency list structure.
+    # TODO: document the adjacency list structure.
+    len_adj = num_nodes + 1
+    memory_size = len_adj * dtype(0).itemsize
+    shm_adj = shared_memory.SharedMemory(create=True, size=memory_size)
+
+    len_endpoints = 2 * num_edges
+    memory_size = len_endpoints * dtype(0).itemsize
+    shm_endpoints = shared_memory.SharedMemory(create=True, size=memory_size)
+
+    # Populate the adjacency list.
+    node_degrees = [nk_graph.degree(k) for k in range(num_nodes)]
+    adj_list_content = [0] + np.cumsum(node_degrees).tolist()
+
+    adj = np.ndarray(shape=(len_adj, ), dtype=dtype, buffer=shm_adj.buf)
+    adj[:] = adj_list_content
+
+    # Populate the endpoints list.
+    node_neighbors = [ \
+        list(nk_graph.iterNeighbors(node)) for node in range(num_nodes) \
+    ]
+    endpoints_list_content = list(chain.from_iterable(node_neighbors))
+
+    endpoints = np.ndarray(
+        shape=(len_endpoints, ),
+        dtype=dtype,
+        buffer=shm_endpoints.buf,
+    )
+    endpoints[:] = endpoints_list_content
+
+    # Place all work on the stack and the nodes on the shared memory.
     nodes_array = np.ndarray(shape=(num_nodes, ), dtype=dtype, buffer=shm.buf)
 
     work_queue = mp.JoinableQueue()
@@ -410,8 +461,11 @@ def algorithm_h(
             args=(
                 work_queue,
                 shm,
-                shm_node_begin,
-                shm_node_end,
+                shm_adj,
+                shm_endpoints,
+                num_nodes,
+                num_edges,
+                dtype,
             ),
         )
         workers.append(worker)
@@ -427,11 +481,11 @@ def algorithm_h(
     shm.close()
     shm.unlink()
 
-    shm_node_begin.shm.close()
-    shm_node_begin.shm.unlink()
+    shm_adj.close()
+    shm_adj.unlink()
 
-    shm_node_end.shm.close()
-    shm_node_end.shm.unlink()
+    shm_endpoints.close()
+    shm_endpoints.unlink()
 
 
 def main(

@@ -259,6 +259,17 @@ class RealizedSubgraph(AbstractGraph):
         self._dirty = True
         # self.recompact()
 
+    @staticmethod
+    def from_adjlist(nodes, edges, cluster_id):
+        subgraph = RealizedSubgraph()
+        subgraph.nodeset = nodes.copy()
+        subgraph.adj = edges
+        subgraph.index = cluster_id
+        subgraph._n = len(nodes)
+        subgraph._m = sum(len(subgraph.adj[n]) for n in subgraph.nodeset) // 2
+        subgraph._dirty = True
+        return subgraph
+
     def recompact(self):
         """ (VR) When the graph is modified, reconstruct the compacted adjacency list """
         unallocated = 0
