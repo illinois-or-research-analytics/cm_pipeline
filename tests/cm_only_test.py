@@ -34,7 +34,7 @@ def test_sun():
     assert count_nodes(final_tsv) == 9
     assert count_clusters(final_tsv) == 1
 
-def test_sun():
+def test_tail():
     test_dir = 'tail_dataset/'
     out_dict = run_cm(test_dir)
     final_tsv = get_final_tsv_leiden(out_dict, 0.5, 2)

@@ -1,0 +1,46 @@
+name: cm_pipeline
+channels:
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - python=3.10
+  - r-base
+  - r:rstudio
+  - r:r-feather
+  - conda-forge:r-data.table
+  - pip
+  - pip:
+    - attrs==22.2.0
+    - click==8.1.3
+    - colorama==0.4.6
+    - coloredlogs==15.0.1
+    - connectivity-modifier==0.1.0b13
+    - exceptiongroup==1.1.1
+    - graphviz==0.20.1
+    - HeapDict==1.0.1
+    - humanfriendly==10.0
+    - igraph==0.10.4
+    - iniconfig==2.0.0
+    - jsonpickle==2.2.0
+    - leidenalg==0.9.1
+    - networkit==10.1
+    - numpy==1.24.2
+    - packaging==23.0
+    - pandas==1.5.3
+    - pip==20.2.4
+    - pluggy==1.0.0
+    - pytest==7.2.2
+    - python-dateutil==2.8.2
+    - pytz==2023.2
+    - scipy==1.10.1
+    - setuptools==50.3.2
+    - six==1.16.0
+    - structlog==22.3.0
+    - texttable==1.6.7
+    - tomli==2.0.1
+    - treeswift==1.1.33
+    - typer==0.6.1
+    - typing-extensions==4.5.0
+    - networkx==3.1
+    - psutil==5.9.5    
