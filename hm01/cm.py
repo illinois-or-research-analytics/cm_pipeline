@@ -1,6 +1,6 @@
 # pylint: disable=missing-docstring, unused-variable, global-statement
 # pylint: disable=global-variable-undefined, unused-argument
-# pylint: disable=c-extension-no-member, invalid-name
+# pylint: disable=c-extension-no-member, invalid-name, import-error
 """The main CLI logic, containing also the main algorithm"""
 from __future__ import annotations
 
@@ -22,15 +22,15 @@ import typer
 from structlog import get_logger
 
 # from .to_universal import cm2universal
-from .cluster_tree import ClusterTreeNode
-from .clusterers.ikc_wrapper import IkcClusterer
-from .clusterers.leiden_wrapper import LeidenClusterer, Quality
+from cluster_tree import ClusterTreeNode
+from clusterers.ikc_wrapper import IkcClusterer
+from clusterers.leiden_wrapper import LeidenClusterer, Quality
 # (VR) Change: I removed the context import since we do everything in memory
 # (VR) Change 2: I brought back context just for IKC
-from .context import context
-from .graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from .mincut_requirement import MincutRequirement
-from .pruner import prune_graph
+from context import context
+from graph import Graph, IntangibleSubgraph, RealizedSubgraph
+from mincut_requirement import MincutRequirement
+from pruner import prune_graph
 
 # from .json2membership import json2membership
 
@@ -159,8 +159,10 @@ def par_task(stack, node_mapping, node2cids):
         mincut_res = subgraph.find_mincut()
         valid_threshold = requirement.validity_threshold(clusterer, subgraph)
         if not quiet_g:
-            log.debug("calculated validity threshold",
-                      validity_threshold=valid_threshold)
+            log.debug(
+                "calculated validity threshold",
+                validity_threshold=valid_threshold,
+            )
             log.debug(
                 "mincut computed",
                 a_side_size=len(mincut_res.get_light_partition()),
@@ -319,20 +321,39 @@ def new_par_task(
         local_jobs.append(item)
 
         _, cluster_id, begin, end = item
-        num_nodes = end - begin
 
+        # If the cluster is a singleton, nothing to be done here,
+        # get another work item.
+        num_nodes = end - begin
         if num_nodes <= 1:
             queue.task_done()
             continue
 
+        #
+        # Make the nodes list and cluster edges dictionary.
+        #
         item_size = np.uint64(0).itemsize
         nodes = np.ndarray(
             shape=(num_nodes, ),
             dtype=np.uint64,
-            buffer=shm.buf[begin * item_size:end * item_size],
+            buffer=shm.buf[(begin * item_size):(end * item_size)],
         )
 
-        # create realized subgraph, make pruner, etc.
+        node_set = set(nodes.tolist())
+        edges = {}
+        for node_a in node_set:
+            endpoints = []
+
+            # Locate neighbors of node_a that are in the node_set.
+            begin = shm_node_begin[node_a]
+            end = shm_node_begin[node_a + 1]
+            for node_b in shm_node_end[begin:end]:
+                if node_b in node_set:
+                    endpoints.append(node_b)
+
+            edges[node_a] = endpoints
+
+        # make pruner, etc.
 
         print(item)
         queue.task_done()
