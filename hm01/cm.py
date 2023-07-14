@@ -1,5 +1,5 @@
 # pylint: disable=missing-docstring, unused-variable, global-statement
-# pylint: disable=global-variable-undefined, unused-argument
+# pylint: disable=global-variable-undefined, unused-argument, fixme
 # pylint: disable=c-extension-no-member, invalid-name, import-error
 """The main CLI logic, containing also the main algorithm"""
 from __future__ import annotations
@@ -302,6 +302,17 @@ def algorithm_g(
     return node2cids, tree
 
 
+class ClusterInfo:
+
+    def __init__(self, parent_id, cluster_id, begin, end):
+        self.parent_id: str = parent_id
+        self.cluster_id: str = cluster_id
+        self.begin: int = begin
+        self.end: int = end
+        self.cut_size: int | None = None
+        self.validity_threshold: float | None = None
+
+
 def new_par_task(
     queue,
     shm,
@@ -333,17 +344,18 @@ def new_par_task(
     while True:
         item = queue.get()
         if item is None:
-            print(f'process {os.getpid()} done')
             queue.task_done()
             break
 
-        # A job has been accepted, enter the item into the bookkeeping table.
-        local_jobs.append(item)
-
-        _, cluster_id, begin, end = item
+        # A job (a cluster) has been accepted.
+        # Must place it into local_jobs (the bookkeeping table) once done
+        # with the cluster.
+        parent_id, cluster_id, begin, end = item
+        cluster_info = ClusterInfo(parent_id, cluster_id, begin, end)
 
         # If the cluster is a singleton, nothing to be done here,
-        # get another work item.
+        # get another work item. Since singletons are being discarded,
+        # this item is not even registered into the bookkeeping table.
         num_nodes = end - begin
         if num_nodes <= 1:
             queue.task_done()
@@ -352,12 +364,8 @@ def new_par_task(
         #
         # Make the nodes list and cluster edges dictionary.
         #
-        nodes = nodes_global[begin:end]
+        node_set = set(nodes_global[begin:end].tolist())
 
-        # Create temporary cluster array
-        cluster_ids = [cluster_id] * (end - begin)
-
-        node_set = set(nodes.tolist())
         edges = {}
         for node_a in node_set:
             endpoints = []
@@ -380,10 +388,122 @@ def new_par_task(
         # (VR) Pruning: Remove singletons with node degree under threshold
         # until there exists none
         num_pruned = prune_graph(subgraph, requirement, clusterer)
+        if num_pruned > 0:
+            # TODO: Cut size might not actually be mcd, but just the degree
+            cluster_info.cut_size = original_mcd
 
-        print(item)
+            # Now, rearrange the nodes to separate the pruned nodes from the
+            # surviving nodes.
+            surviving_node_set = subgraph.nodeset
+            pruned_node_set = node_set - surviving_node_set
+
+            begin = cluster_info.begin
+            end = cluster_info.end
+
+            nodes_global[begin:end] = \
+                list(surviving_node_set) + list(pruned_node_set)
+
+            # A cluster has been processed, move on to the cluster of
+            # surviving nodes.
+            local_jobs.append(cluster_info)
+
+            parent_id = cluster_info.cluster_id
+            cluster_id = parent_id + 'δ'
+            end = begin + len(surviving_node_set)
+
+            subgraph.index = cluster_id
+
+            cluster_info = ClusterInfo(parent_id, cluster_id, begin, end)
+
+        # (VR) Compute the mincut and validity threshold of the cluster
+        mincut_res = subgraph.find_mincut()
+        valid_threshold = requirement.validity_threshold(clusterer, subgraph)
+
+        # (VR) Set the current cluster's cut size
+        cluster_info.cut_size = mincut_res.get_cut_size()
+        cluster_info.validity_threshold = valid_threshold
+        local_jobs.append(cluster_info)
+
+        # (VR) If the cut size is above validity, we are done.
+        # Else, split!
+        if mincut_res.get_cut_size() <= valid_threshold:
+            # (VR) Change: The current cluster has been changed,
+            # so its not extant or CM valid anymore
+
+            # (VR) Split partitions and set them as children nodes
+            p1, p2 = subgraph.cut_by_mincut(mincut_res)
+
+            begin = cluster_info.begin
+            end = cluster_info.end
+            nodes_global[begin:end] = list(p1.nodeset) + list(p2.nodeset)
+
+            parent_id = cluster_info.cluster_id
+
+            cluster_id_a = parent_id + 'a'
+            begin_a = cluster_info.begin
+            end_a = begin_a + len(p1.nodeset)
+            cluster_info_a = ClusterInfo(
+                parent_id,
+                cluster_id_a,
+                begin_a,
+                end_a,
+            )
+            local_jobs.append(cluster_info_a)
+
+            cluster_id_b = parent_id + 'b'
+            begin_b = end_a
+            end_b = cluster_info.end
+            cluster_info_b = ClusterInfo(
+                parent_id,
+                cluster_id_b,
+                begin_b,
+                end_b,
+            )
+            local_jobs.append(cluster_info_b)
+
+            # (VR) Cluster both partitions
+            subp1 = list(clusterer.cluster_without_singletons(p1))
+            subp2 = list(clusterer.cluster_without_singletons(p2))
+
+            sorted_node_list = []
+            cluster_info_children = []
+            parent_node_set = subgraph.nodeset.copy()
+
+            for child_graph_list, parent_cluster_info in [
+                (subp1, cluster_info_a), (subp2, cluster_info_b)
+            ]:
+                parent_id = parent_cluster_info.cluster_id
+                begin = parent_cluster_info.begin
+                for k, child_graph in enumerate(child_graph_list):
+                    child_node_set = child_graph.nodeset
+
+                    parent_node_set -= child_node_set
+                    sorted_node_list.extend(list(child_node_set))
+
+                    cluster_id = parent_id + str(k)
+                    end = begin + len(child_node_set)
+                    child_cluster_info = ClusterInfo(
+                        parent_id,
+                        cluster_id,
+                        begin,
+                        end,
+                    )
+                    cluster_info_children.append(child_cluster_info)
+                    begin = end
+
+            # Add the removed singletons to the original node list.
+            sorted_node_list.extend(list(parent_node_set))
+            begin = cluster_info.begin
+            end = cluster_info.end
+            nodes_global[begin:end] = sorted_node_list
+
+            # Place the jobs on the queue.
+            for item in cluster_info_children:
+                queue.put((item.parent_id, item.cluster_id, item.begin, item.end))
+
         queue.task_done()
 
+    queue.put(local_jobs)
 
 def algorithm_h(
     graphs: List[IntangibleSubgraph],
@@ -439,21 +559,17 @@ def algorithm_h(
 
     work_queue = mp.JoinableQueue()
 
-    cluster_index = 0
     begin = 0
-    for graph in graphs:
+    for cluster_index, graph in enumerate(graphs):
         end = begin + len(graph.subset)
         nodes_array[begin:end] = graph.subset
 
-        # (parent, cluster_id, begin, end)
+        # (parent_id, cluster_id, begin, end)
         work_queue.put(('', str(cluster_index), begin, end))
 
         begin = end
-        cluster_index += 1
 
-    for _ in range(cores):
-        work_queue.put(None)
-
+    # Create the workers.
     workers = []
     for _ in range(cores):
         worker = mp.Process(
@@ -475,8 +591,17 @@ def algorithm_h(
 
     work_queue.join()
 
+    # Place the sentinels to signal to the workers that no more tasks
+    # will come.
+    for _ in range(cores):
+        work_queue.put(None)
+
     for worker in workers:
         worker.join()
+
+    work_tables = []
+    for _ in range(cores):
+        work_tables.extend(work_queue.get())
 
     shm.close()
     shm.unlink()
