@@ -6,22 +6,18 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import os
-# import jsonpickle
 import sys
 import time
-# from typing import cast
 from enum import Enum
 from itertools import chain
 from multiprocessing import shared_memory
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, cast
 
+import jsonpickle
 import networkit as nk
 import numpy as np
 import treeswift as ts
 import typer
-from structlog import get_logger
-
-# from .to_universal import cm2universal
 from cluster_tree import ClusterTreeNode
 from clusterers.ikc_wrapper import IkcClusterer
 from clusterers.leiden_wrapper import LeidenClusterer, Quality
@@ -31,8 +27,10 @@ from context import context
 from graph import Graph, IntangibleSubgraph, RealizedSubgraph
 from mincut_requirement import MincutRequirement
 from pruner import prune_graph
+from structlog import get_logger
 
-# from .json2membership import json2membership
+from json2membership import json2membership
+from to_universal import cm2universal
 
 
 class ClustererSpec(str, Enum):
@@ -615,18 +613,18 @@ def algorithm_h(
         ClusterTreeNode(
             item.cluster_id,
             item.end - item.begin,
+            item.begin,
+            item.end,
             item.cut_size,
             item.validity_threshold,
         )
         for item in work_tables
     }
-    root_node = ClusterTreeNode('', num_nodes, None, None)
+    root_node = ClusterTreeNode('', num_nodes, 0, num_nodes, None, None)
     node_mapping[''] = root_node
 
     tree = ts.Tree()
     tree.root = root_node
-
-    # work_tables = sorted(work_tables, key=lambda x: (x.begin, -x.end))
 
     # Link the tree nodes to each other
     for entry in work_tables:
@@ -641,6 +639,13 @@ def algorithm_h(
     for child in root_node.children:
         child.extant = child.cm_valid
 
+    # Make the node2cids dict.
+    node2cids = {}
+    for tree_node in tree.traverse_leaves():
+        if tree_node.cm_valid:
+            for node_id in range(tree_node.begin, tree_node.end):
+                node2cids[node_id] = tree_node.graph_index
+
     shm.close()
     shm.unlink()
 
@@ -650,6 +655,7 @@ def algorithm_h(
     shm_endpoints.close()
     shm_endpoints.unlink()
 
+    return node2cids, tree
 
 def main(
     input_: str = typer.Option(
@@ -790,29 +796,26 @@ def main(
     if not quiet:
         time1 = time.perf_counter()
 
-    # labels, tree = algorithm_g(clusters, quiet, cores)
-    algorithm_h(clusters, nk_graph, quiet, cores)
+    labels, tree = algorithm_h(clusters, nk_graph, quiet, cores)
 
-    return
+    # (VR) Log the output time for the algorithmic stage of CM
+    if not quiet:
+        log.info("CM algorithm completed",
+                 time_elapsed=time.perf_counter() - time1)
 
-    # # (VR) Log the output time for the algorithmic stage of CM
-    # if not quiet:
-    #     log.info("CM algorithm completed",
-    #              time_elapsed=time.perf_counter() - time1)
+    # (VR) Retrieve output if we want the original tsv
+    if first_tsv:
+        with open(output, "w+") as f:
+            for n, cid in labels.items():
+                f.write(f"{n} {cid}\n")
 
-    # # (VR) Retrieve output if we want the original tsv
-    # if first_tsv:
-    #     with open(output, "w+") as f:
-    #         for n, cid in labels.items():
-    #             f.write(f"{n} {cid}\n")
+    # (VR) Output the json data
+    with open(output + ".tree.json", "w+") as f:
+        f.write(cast(str, jsonpickle.encode(tree)))
+    cm2universal(quiet, tree, labels, output)
 
-    # # (VR) Output the json data
-    # with open(output + ".tree.json", "w+") as f:
-    #     f.write(cast(str, jsonpickle.encode(tree)))
-    # cm2universal(quiet, tree, labels, output)
-
-    # # (VR) Convert the 'after' json into a tsv file with columns (node_id, cluster_id)
-    # json2membership(output + ".after.json", output + ".after.tsv")
+    # (VR) Convert the 'after' json into a tsv file with columns (node_id, cluster_id)
+    json2membership(output + ".after.json", output + ".after.tsv")
 
 
 def entry_point():
