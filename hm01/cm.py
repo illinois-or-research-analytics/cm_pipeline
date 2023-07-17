@@ -499,11 +499,17 @@ def new_par_task(
 
             # Place the jobs on the queue.
             for item in cluster_info_children:
-                queue.put((item.parent_id, item.cluster_id, item.begin, item.end))
+                queue.put((
+                    item.parent_id,
+                    item.cluster_id,
+                    item.begin,
+                    item.end,
+                ))
 
         queue.task_done()
 
     queue.put(local_jobs)
+
 
 def algorithm_h(
     graphs: List[IntangibleSubgraph],
@@ -603,6 +609,38 @@ def algorithm_h(
     for _ in range(cores):
         work_tables.extend(work_queue.get())
 
+    # Construct the tree nodes
+    node_mapping = {
+        item.cluster_id:
+        ClusterTreeNode(
+            item.cluster_id,
+            item.end - item.begin,
+            item.cut_size,
+            item.validity_threshold,
+        )
+        for item in work_tables
+    }
+    root_node = ClusterTreeNode('', num_nodes, None, None)
+    node_mapping[''] = root_node
+
+    tree = ts.Tree()
+    tree.root = root_node
+
+    # work_tables = sorted(work_tables, key=lambda x: (x.begin, -x.end))
+
+    # Link the tree nodes to each other
+    for entry in work_tables:
+        parent_id = entry.parent_id
+        child_id = entry.cluster_id
+        parent_node = node_mapping[parent_id]
+        child_node = node_mapping[child_id]
+        parent_node.add_child(child_node)
+        parent_node.cm_valid = False
+
+    # Mark extant clusters
+    for child in root_node.children:
+        child.extant = child.cm_valid
+
     shm.close()
     shm.unlink()
 
@@ -627,7 +665,7 @@ def main(
         help="The existing clustering of the input network to be reclustered.",
     ),
     # (VR) Change: Removed working directory parameter
-    # since no FileIO occurs during runtime anymore.
+    # since no FileIO occurs during runtime aputnymore.
     quiet: Optional[bool] = typer.Option(
         False,
         "--quiet",
