@@ -657,6 +657,7 @@ def algorithm_h(
 
     return node2cids, tree
 
+
 def main(
     input_: str = typer.Option(
         ...,
@@ -800,17 +801,19 @@ def main(
 
     # (VR) Log the output time for the algorithmic stage of CM
     if not quiet:
-        log.info("CM algorithm completed",
-                 time_elapsed=time.perf_counter() - time1)
+        log.info(
+            "CM algorithm completed",
+            time_elapsed=time.perf_counter() - time1,
+        )
 
     # (VR) Retrieve output if we want the original tsv
     if first_tsv:
-        with open(output, "w+") as f:
+        with open(output, "w+", encoding='utf8') as f:
             for n, cid in labels.items():
                 f.write(f"{n} {cid}\n")
 
     # (VR) Output the json data
-    with open(output + ".tree.json", "w+") as f:
+    with open(output + ".tree.json", "w+", encoding='utf8') as f:
         f.write(cast(str, jsonpickle.encode(tree)))
     cm2universal(quiet, tree, labels, output)
 
