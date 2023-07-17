@@ -41,3 +41,12 @@ def test_tail():
 
     assert count_nodes(final_tsv) == 9
     assert count_clusters(final_tsv) == 1
+
+def test_disconnected_ikc():
+    test_dir = 'disconnected_dataset2_ikc/'
+    out_dict = run_cm(test_dir)
+    final_tsv = get_final_tsv_ikc(out_dict, 10)
+
+    assert count_nodes(final_tsv) == 11
+    assert count_clusters(final_tsv) == 3
+    assert get_cluster_sizes(final_tsv) == [3, 3, 5]

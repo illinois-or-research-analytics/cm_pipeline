@@ -1,0 +1,20 @@
+{
+    "title": "disconnected2_run",
+    "name": "disconnected2",
+    "input_file": "network.tsv",
+    "output_dir": "samples/",
+    "algorithm": "ikc",
+    "k": 10,
+    "existing": {
+        "10": "clustering.tsv"
+    },
+    "stages": [
+        {
+            "name": "connectivity_modifier",
+            "memprof": false,
+            "threshold": "1log10",
+            "nprocs": 1,
+            "quiet": true
+        }
+    ]
+}
