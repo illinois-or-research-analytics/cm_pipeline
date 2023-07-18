@@ -33,7 +33,7 @@ def run_viecut_command(pygraph):
     """ (VR) Run the viecut command and return the mincut result object """
     algorithm = 'noi'                                   # (VR) Mincut algorithm from Nagamochi et. al.
     queue_implementation = 'bqueue'
-    balanced = False
+    balanced = True
 
     light_partition, heavy_partition, cut_size = pygraph.mincut(algorithm, queue_implementation, balanced)
 

@@ -63,6 +63,7 @@ class ClusterInfo:
 
 def new_par_task(
     queue,
+    data_queue,
     shm,
     shm_adj,
     shm_endpoints,
@@ -127,7 +128,6 @@ def new_par_task(
 
             edges[node_a] = endpoints
 
-        # make pruner, etc.
         subgraph = RealizedSubgraph.from_adjlist(node_set, edges, cluster_id)
 
         # (VR) Get minimum node degree in current cluster
@@ -256,7 +256,7 @@ def new_par_task(
 
         queue.task_done()
 
-    queue.put(local_jobs)
+    data_queue.put(local_jobs)
 
 
 def algorithm_h(
@@ -312,6 +312,7 @@ def algorithm_h(
     nodes_array = np.ndarray(shape=(num_nodes, ), dtype=dtype, buffer=shm.buf)
 
     work_queue = mp.JoinableQueue()
+    data_queue = mp.Queue()
 
     begin = 0
     for cluster_index, graph in enumerate(graphs):
@@ -330,6 +331,7 @@ def algorithm_h(
             target=new_par_task,
             args=(
                 work_queue,
+                data_queue,
                 shm,
                 shm_adj,
                 shm_endpoints,
@@ -350,12 +352,14 @@ def algorithm_h(
     for _ in range(cores):
         work_queue.put(None)
 
-    for worker in workers:
-        worker.join()
+    work_queue.join()
 
     work_tables = []
     for _ in range(cores):
-        work_tables.extend(work_queue.get())
+        work_tables.extend(data_queue.get())
+
+    for worker in workers:
+        worker.join()
 
     # Construct the tree nodes
     node_mapping = {
@@ -549,8 +553,7 @@ def main(
     # (VR) Call the main CM algorithm
 
     # (VR) Start the timer for the algorithmic stage of CM
-    if not quiet:
-        time1 = time.perf_counter()
+    time1 = time.perf_counter()
 
     labels, tree = algorithm_h(clusters, nk_graph, quiet, cores)
     labels = {hydrator[k]: v for k, v in labels.items()}
