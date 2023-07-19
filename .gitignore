@@ -1,3 +1,7 @@
+
+# Ignore working directories
+*_working_dir
+
 .vscode/*
 logs/*.log
 logs/executed-cmds/*.txt
