@@ -1,5 +1,5 @@
 [submodule "hm01/tools/python-mincut"]
-	path = hm01/tools/python-mincut
+	path = extern/python-mincut
 	url = https://github.com/vikramr2/python-mincut.git
 [submodule "cluster-statistics"]
 	path = cluster-statistics
