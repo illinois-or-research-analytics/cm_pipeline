@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Tuple, Union
+from functools import cache, cached_property
 from sys import path
+from typing import Dict, Iterator, List, Tuple, Union
 
 import networkit as nk
 
-import mincut
-
-from clusterers.abstract_clusterer import AbstractClusterer
-from context import context
-from functools import cache, cached_property
+import hm01.mincut as mincut
+from hm01.clusterers.abstract_clusterer import AbstractClusterer
+from hm01.context import context
 
 # (VR) Importing the C++/Python wrapped modules requires appending paths via sys
 path.append('tools/python-mincut/build')

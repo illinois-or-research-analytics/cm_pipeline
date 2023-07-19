@@ -1,35 +1,32 @@
-# pylint: disable=import-error
+from pathlib import Path
 
-import sys
-sys.path.append('../hm01')
-sys.path.append('../hm01/tools/python-mincut/build')
-sys.path.append('../hm01/tools/python-mincut/src')
-from graph import Graph, RealizedSubgraph
+from hm01.graph import Graph
 
-print("Loading graph...")
-G = Graph.from_edgelist('/shared/rsquared/vikrams_ikc_cluster_el.tsv')
-print("Done")
 
-print("Printing Graph details")
-print(f"Number of edges: {G.m()}")
-print(f"Number of nodes: {G.n()}")
+def test_cgraph():
+    graph_path = Path(
+        Path(__file__).parent,
+        'disconnected_dataset2_ikc',
+        'network.tsv',
+    )
 
-print("Converting to realized subgraph...")
-G = G.to_realized_subgraph()
-print("Done")
+    G = Graph.from_edgelist(str(graph_path))
 
-print("Printing Realized Subgraph details")
-print(f"Number of edges: {G.m()}")
-print(f"Number of nodes: {G.n()}")
+    assert G.m() == 12
+    assert G.n() == 11
 
-print("Computing Mincut...")
-mc = G.find_mincut()
-print("Done")
-print(f"Mincut Size: {mc.get_cut_size()}")
+    G = G.to_realized_subgraph()
 
-print("Splitting Graph by Mincut")
-light, heavy = G.cut_by_mincut(mc)
-print("Done")
+    assert G.m() == 12
+    assert G.n() == 11
 
-print(f"Graph L:\n\t{light.n()} nodes\n\t{light.m()} edges")
-print(f"Graph H:\n\t{heavy.n()} nodes\n\t{heavy.m()} edges")
+    mc = G.find_mincut()
+
+    assert mc.get_cut_size() == 0
+
+    light, heavy = G.cut_by_mincut(mc)
+
+    assert light.m() == 3
+    assert light.n() == 3
+    assert heavy.m() == 9
+    assert heavy.n() == 8

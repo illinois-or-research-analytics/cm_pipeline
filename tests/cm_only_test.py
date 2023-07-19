@@ -1,5 +1,6 @@
 from run_cm import *
 
+
 def test_clique1():
     test_dir = 'clique_dataset/'
     out_dict = run_cm(test_dir)
@@ -7,6 +8,7 @@ def test_clique1():
 
     assert count_nodes(final_tsv) == 9
     assert count_clusters(final_tsv) == 1
+
 
 def test_disconnected1():
     test_dir = 'disconnected_dataset/'
@@ -17,6 +19,7 @@ def test_disconnected1():
     assert count_clusters(final_tsv) == 3
     assert get_cluster_sizes(final_tsv) == [3, 3, 3]
 
+
 def test_disconnected2():
     test_dir = 'disconnected_dataset2/'
     out_dict = run_cm(test_dir)
@@ -26,6 +29,7 @@ def test_disconnected2():
     assert count_clusters(final_tsv) == 3
     assert get_cluster_sizes(final_tsv) == [3, 3, 5]
 
+
 def test_sun():
     test_dir = 'sun_dataset/'
     out_dict = run_cm(test_dir)
@@ -34,6 +38,7 @@ def test_sun():
     assert count_nodes(final_tsv) == 9
     assert count_clusters(final_tsv) == 1
 
+
 def test_tail():
     test_dir = 'tail_dataset/'
     out_dict = run_cm(test_dir)
@@ -41,6 +46,7 @@ def test_tail():
 
     assert count_nodes(final_tsv) == 9
     assert count_clusters(final_tsv) == 1
+
 
 def test_disconnected_ikc():
     test_dir = 'disconnected_dataset2_ikc/'
