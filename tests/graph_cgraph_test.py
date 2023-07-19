@@ -1,7 +1,9 @@
+# pylint: disable=import-error
+
 import sys
-sys.path.append('../')
-sys.path.append('../tools/python-mincut/build')
-sys.path.append('../tools/python-mincut/src')
+sys.path.append('../hm01')
+sys.path.append('../hm01/tools/python-mincut/build')
+sys.path.append('../hm01/tools/python-mincut/src')
 from graph import Graph, RealizedSubgraph
 
 print("Loading graph...")

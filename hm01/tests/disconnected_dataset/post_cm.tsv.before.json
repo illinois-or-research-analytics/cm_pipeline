@@ -1,4 +1,0 @@
-[
-	{"label": "0", "nodes": [0, 1, 2, 3, 4, 5], "connectivity": 0, "descendants": ["0b1", "0a1"], "cm_valid": false, "extant": false},
-	{"label": "1", "nodes": [8, 6, 7], "connectivity": 2, "descendants": [], "cm_valid": true, "extant": true}
-]
