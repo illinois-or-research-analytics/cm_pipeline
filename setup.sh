@@ -1,5 +1,5 @@
 git submodule update --init --recursive
-cd hm01/tools/python-mincut
+cd extern/python-mincut
 if [ -d 'build/' ]; then
     rm -r build/
 fi

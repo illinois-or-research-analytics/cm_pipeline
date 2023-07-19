@@ -13,10 +13,8 @@ from hm01.clusterers.abstract_clusterer import AbstractClusterer
 from hm01.context import context
 
 # (VR) Importing the C++/Python wrapped modules requires appending paths via sys
-path.append('tools/python-mincut/build')
-path.append('tools/python-mincut/src')
 from mincut_wrapper import MincutResult
-from pygraph import PyGraph
+from pymincut.pygraph import PyGraph
 
 
 class AbstractGraph:
