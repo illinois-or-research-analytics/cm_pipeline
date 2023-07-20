@@ -1,5 +1,5 @@
-
 # Ignore working directories
+sandbox/
 *_working_dir
 
 .vscode/*
