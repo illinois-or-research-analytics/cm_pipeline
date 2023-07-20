@@ -58,7 +58,14 @@ class ClusterInfo:
         MINCUT = 1
         CLUSTER = 2
 
-    def __init__(self, parent_id: str, cluster_id: str, begin: int, end: int, task: Task):
+    def __init__(
+        self,
+        parent_id: str,
+        cluster_id: str,
+        begin: int,
+        end: int,
+        task: Task,
+    ):
         self.parent_id = parent_id
         self.cluster_id = cluster_id
         self.begin = begin
@@ -187,7 +194,7 @@ def new_par_task(
                 parent_id = cluster_info.cluster_id
                 cluster_id = parent_id + 'δ'
                 end = begin + len(surviving_node_set)
-                
+
             else:
                 parent_id = cluster_info.parent_id
                 cluster_id = cluster_info.cluster_id
@@ -202,7 +209,10 @@ def new_par_task(
 
             # (VR) Compute the mincut and validity threshold of the cluster
             mincut_res = subgraph.find_mincut()
-            valid_threshold = requirement.validity_threshold(clusterer, subgraph)
+            valid_threshold = requirement.validity_threshold(
+                clusterer,
+                subgraph,
+            )
 
             # (VR) Set the current cluster's cut size
             cluster_info.cut_size = mincut_res.get_cut_size()
@@ -238,13 +248,13 @@ def new_par_task(
 
                 queue.put((parent_id, cluster_id_b, begin_b, end_b, task))
 
-        else:     
-            # Stash the parent into the jobs array       
+        else:
+            # Stash the parent into the jobs array
             local_jobs.append(cluster_info)
 
             # (VR) Cluster both partitions
             subp1 = list(clusterer.cluster_without_singletons(subgraph))
-            
+
             # For each subgraph resulting from a clustering operation,
             # create a new cluster info and
             # initialize sorted node lists
@@ -287,7 +297,7 @@ def new_par_task(
                     item.cluster_id,
                     item.begin,
                     item.end,
-                    item.task
+                    item.task,
                 ))
 
         queue.task_done()
