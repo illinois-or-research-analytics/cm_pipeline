@@ -4,6 +4,8 @@
 """The main CLI logic, containing also the main algorithm"""
 from __future__ import annotations
 
+import importlib
+import json
 import multiprocessing as mp
 import os
 import sys
@@ -39,6 +41,7 @@ class ClustererSpec(str, Enum):
     leiden = "leiden"
     ikc = "ikc"
     leiden_mod = "leiden_mod"
+    external = "external"
 
 
 def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
@@ -73,7 +76,6 @@ class ClusterInfo:
         self.task = task
         self.cut_size: int | None = None
         self.validity_threshold: float | None = None
-
 
 def initialize_subgraph(
     nodes_global,
@@ -459,6 +461,16 @@ def algorithm_h(
     return node2cids, tree
 
 
+def load_clusterer(module_file, clusterer_args_str):
+    spec=importlib.util.spec_from_file_location("clusterer", module_file)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    kwargs = json.loads(clusterer_args_str)
+    clusterer = module.get_clusterer(**kwargs)
+    return clusterer
+
+
+
 def main(
     input_: str = typer.Option(
         ...,
@@ -485,6 +497,18 @@ def main(
         "--clusterer",
         "-c",
         help="Clustering algorithm used to obtain the existing clustering.",
+    ),
+    clusterer_file: str = typer.Option(
+        "",
+        "--clusterer_file",
+        "-cfile",
+        help="If using an external clusterer, specify the file path to the clusterer object."
+    ),
+    clusterer_args: str = typer.Option(
+        "",
+        "--clusterer_args",
+        "-cargs",
+        help="If using an external clusterer, specify the arguments here.",
     ),
     k: int = typer.Option(
         -1,
@@ -542,13 +566,16 @@ def main(
     elif clusterer_spec == ClustererSpec.leiden_mod:
         assert resolution == -1, "Leiden with modularity does not support resolution"
         clusterer = LeidenClusterer(resolution, quality=Quality.modularity)
-    else:
+    elif clusterer_spec == ClustererSpec.ikc:
         assert k != -1, "IKC requires k"
         clusterer = IkcClusterer(k)
+    else:
+        assert clusterer_file != "", "File is required for external clusterers"
+        # It is an external clusterer, load it.
+        clusterer = load_clusterer(clusterer_file, clusterer_args)
 
     # (VR) Change get working dir iff IKC
-    if isinstance(clusterer, IkcClusterer):
-        context.with_working_dir(input_.split('/')[-1] + "_working_dir")
+    context.with_working_dir(input_.split('/')[-1] + "_working_dir")
 
     # (VR) Start hm01
     if not quiet:
