@@ -410,13 +410,32 @@ class RealizedSubgraph(AbstractGraph):
             self.recompact()
         return self.inv
 
-    def as_pygraph(self) -> CGraph:
+    def as_pygraph(self):
         edges = []
         nodes = list(self.nodeset)
         for u in nodes:
             for v in self.adj[u]:
                 edges.append((u, v))
         return PyGraph(nodes, edges)
+    
+    def as_compact_networkit(self):
+        # Recompact nodes if they are not currently
+        if self._dirty:
+            self.recompact()
+
+        # Initialize an empty graph
+        graph = nk.Graph(n=self.n())
+        
+        # Add edges in the graph
+        for u, adj in enumerate(self.compacted):
+            for v in adj:
+                if u < v:
+                    graph.addEdge(u, v)
+
+        # Preprocess the graph (e.g., compute properties, sort edges, etc.)
+        graph.indexEdges()
+
+        return graph
 
 
 @dataclass

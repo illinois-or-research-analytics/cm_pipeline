@@ -12,11 +12,41 @@ from clusterers.abstract_clusterer import AbstractClusterer
 from graph import Graph, IntangibleSubgraph, RealizedSubgraph
 from context import context
 
+from sys import path
+path.append('..')
+
+from tools.ikc_importable import ikc
 
 @dataclass
 class IkcClusterer(AbstractClusterer):
     k: int
 
+
+    def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
+        """Returns a list of (labeled) subgraphs on the graph"""
+        # cluster_id = graph.index  # the cluster id such as 5a6b2
+
+        old_to_new_node_id_mapping = graph.continuous_ids
+        new_to_old_node_id_mapping = {
+            v: k for k, v in old_to_new_node_id_mapping.items()
+        }
+
+        # Extract nk subgraph from subgraph
+        nk_subgraph = graph.as_compact_networkit()
+
+        # Compute the ikc clusters
+        clusters = ikc(nk_subgraph, self.k)
+
+        for local_cluster_id, (local_cluster_member_arr, _, _) in enumerate(clusters):
+            global_cluster_member_arr = [
+                int(new_to_old_node_id_mapping[local_id])
+                for local_id in local_cluster_member_arr
+            ]
+            yield graph.intangible_subgraph(
+                global_cluster_member_arr, str(local_cluster_id)
+            )
+
+    '''
     def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
         """Returns a list of (labeled) subgraphs on the graph"""
         cluster_id = graph.index  # the cluster id such as 5a6b2
@@ -54,6 +84,7 @@ class IkcClusterer(AbstractClusterer):
                 global_cluster_member_arr, str(local_cluster_id)
             )
         # return retarr
+    '''
 
     def run_ikc(self, edge_list_path, graph: Union[Graph, RealizedSubgraph], output_file):
         """Runs IKC given an edge list and writes a CSV"""
