@@ -14,7 +14,7 @@ def viecut(graph):
 
 def run_viecut_command(pygraph):
     """ (VR) Run the viecut command and return the mincut result object """
-    algorithm = 'noi'  # (VR) Mincut algorithm from Nagamochi et. al.
+    algorithm = 'cactus'  # (VR) Mincut algorithm from Nagamochi et. al.
     queue_implementation = 'bqueue'
     balanced = True
 

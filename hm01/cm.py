@@ -302,6 +302,7 @@ def new_par_task(
                     item.task,
                 ))
 
+        del subgraph
         queue.task_done()
 
     data_queue.put(local_jobs)
