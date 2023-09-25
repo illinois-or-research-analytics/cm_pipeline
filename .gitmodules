@@ -1,6 +1,3 @@
-[submodule "cluster-statistics"]
-	path = cluster-statistics
-	url = https://github.com/vikramr2/cluster-statistics.git
 [submodule "hm01/tests/mp-memprofile"]
 	path = hm01/tests/mp-memprofile
 	url = https://github.com/vikramr2/mp-memprofile.git
