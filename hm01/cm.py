@@ -32,8 +32,8 @@ from pruner import prune_graph
 from structlog import get_logger
 from enum import Enum
 
-from json2membership import json2membership
-from to_universal import cm2universal
+# from json2membership import json2membership
+# from to_universal import cm2universal
 
 
 class ClustererSpec(str, Enum):
@@ -356,7 +356,8 @@ def algorithm_h(
     cores: int,
 ) -> Tuple[List[IntangibleSubgraph], Dict[int, str], ts.Tree]:
 
-    print(f'process {os.getpid()} is the master')
+    if not quiet:
+        print(f'process {os.getpid()} is the master')
 
     num_nodes = nk_graph.numberOfNodes()
     num_edges = nk_graph.numberOfEdges()
@@ -585,13 +586,13 @@ def main(
         "-n",
         help="Number of cores to run in parallel.",
     ),
-    first_tsv: bool = typer.Option(
-        False,
-        "--firsttsv",
-        "-f",
-        help=
-        "Output the tsv file that comes before CM2Universal and json2membership.",
-    ),
+    # first_tsv: bool = typer.Option(
+    #     False,
+    #     "--firsttsv",
+    #     "-f",
+    #     help=
+    #     "Output the tsv file that comes before CM2Universal and json2membership.",
+    # ),
 ):
     """ (VR) Connectivity-Modifier (CM). 
     Take a network and cluster it ensuring cut validity."""
