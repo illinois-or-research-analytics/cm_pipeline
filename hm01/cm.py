@@ -479,7 +479,7 @@ def algorithm_h(
         parent_node = node_mapping[parent_id]
         child_node = node_mapping[child_id]
         parent_node.add_child(child_node)
-        parent_node.cm_valid = False                # TODO: Change this
+        parent_node.cm_valid = False                
 
         if entry.disintegrated:
             child_node.extant = False
@@ -487,7 +487,7 @@ def algorithm_h(
 
     # Mark extant clusters
     for child in root_node.children:
-        child.extant = child.cm_valid               # TODO: Change this
+        child.extant = child.cm_valid               
 
     # Make the node2cids dict.
     node2cids = {}
