@@ -116,7 +116,7 @@ class Graph(AbstractGraph):
             return 0
         return min(self._data.degree(n) for n in self._data.iterNodes())
 
-    def find_mincut(self) -> MincutResult:
+    def find_mincut(self):
         """ Find a mincut wrapped over Viecut """
         return mincut.viecut(self)
 
@@ -126,9 +126,7 @@ class Graph(AbstractGraph):
     def remove_node(self, u):
         self._data.removeNode(u)
 
-    def cut_by_mincut(
-        self, mincut_res: MincutResult
-    ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
+    def cut_by_mincut(self, mincut_res):
         """ (VR) Cut the graph by the mincut result """
         light = self.induced_subgraph(mincut_res.get_light_partition(), "a")
         heavy = self.induced_subgraph(mincut_res.get_heavy_partition(), "b")

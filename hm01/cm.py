@@ -217,38 +217,64 @@ def new_par_task(
             )
 
             # (VR) Set the current cluster's cut size
-            cluster_info.cut_size = mincut_res.get_cut_size()
+            cluster_info.cut_size = mincut_res[-1]
             cluster_info.validity_threshold = valid_threshold
             local_jobs.append(cluster_info)
 
             # (VR) If the cut size is above validity, we are done.
             # Else, split!
-            if mincut_res.get_cut_size() <= valid_threshold:
+            if mincut_res[-1] <= valid_threshold:
                 # (VR) Change: The current cluster has been changed,
                 # so its not extant or CM valid anymore
 
                 # (VR) Split partitions and set them as children nodes
-                p1, p2 = subgraph.cut_by_mincut(mincut_res)
+                partitions = mincut_res[:-1]
 
-                begin = cluster_info.begin
-                end = cluster_info.end
-                nodes_global[begin:end] = list(p1.nodeset) + list(p2.nodeset)
+                # For each subgraph resulting from a mincut/components operation,
+                # create a new cluster info and
+                # initialize sorted node lists
+                cluster_info_children = []
+                parent_node_set = subgraph.nodeset.copy()
+                sorted_node_list = []
 
                 parent_id = cluster_info.cluster_id
 
                 task = ClusterInfo.Task.CLUSTER
 
-                cluster_id_a = parent_id + 'a'
-                begin_a = cluster_info.begin
-                end_a = begin_a + len(p1.nodeset)
+                begin = cluster_info.begin
+                for k, child_graph in enumerate(partitions):
+                    child_node_set = set(child_graph)
 
-                queue.put((parent_id, cluster_id_a, begin_a, end_a, task))
+                    parent_node_set -= child_node_set
+                    sorted_node_list.extend(list(child_node_set))
 
-                cluster_id_b = parent_id + 'b'
-                begin_b = end_a
-                end_b = cluster_info.end
+                    cluster_id = parent_id + f'_{k}_'
+                    end = begin + len(child_node_set)
+                    child_cluster_info = ClusterInfo(
+                        parent_id,
+                        cluster_id,
+                        begin,
+                        end,
+                        task
+                    )
+                    cluster_info_children.append(child_cluster_info)
+                    begin = end
 
-                queue.put((parent_id, cluster_id_b, begin_b, end_b, task))
+                # There shouldn't be extra singletons, but just in case
+                sorted_node_list.extend(list(parent_node_set))
+                begin = cluster_info.begin
+                end = cluster_info.end
+                nodes_global[begin:end] = sorted_node_list
+
+                # Put clustering jobs in the queue
+                for item in cluster_info_children:
+                    queue.put((
+                        item.parent_id,
+                        item.cluster_id,
+                        item.begin,
+                        item.end,
+                        item.task
+                    ))
 
         else:
             # Stash the parent into the jobs array

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hm01.graph import Graph
+from hm01.graph import Graph, RealizedSubgraph, IntangibleSubgraph
 
 
 def test_cgraph():
@@ -22,9 +22,11 @@ def test_cgraph():
 
     mc = G.find_mincut()
 
-    assert mc.get_cut_size() == 0
+    assert mc[-1] == 0
 
-    light, heavy = G.cut_by_mincut(mc)
+    light, heavy = mc[:-1]
+    light = RealizedSubgraph(IntangibleSubgraph(light, 'a'), G)
+    heavy = RealizedSubgraph(IntangibleSubgraph(heavy, 'b'), G)
 
     assert light.m() == 3
     assert light.n() == 3

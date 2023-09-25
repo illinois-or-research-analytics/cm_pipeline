@@ -1,4 +1,4 @@
-from mincut_wrapper import MincutResult
+# from mincut_wrapper import MincutResult
 
 
 def viecut(graph):
@@ -6,7 +6,7 @@ def viecut(graph):
     if graph.n() == 2 and graph.m() == 1:
         # (VR) If we have a single edge, save the effort by splitting it
         nodes = list(graph.nodes())
-        return MincutResult([nodes[0]], [nodes[1]], 1)
+        return [nodes[0]], [nodes[1]], 1
     pygraph = graph.as_pygraph()
     cut_result = run_viecut_command(pygraph)
     return cut_result
@@ -18,10 +18,12 @@ def run_viecut_command(pygraph):
     queue_implementation = 'bqueue'
     balanced = True
 
-    light_partition, heavy_partition, cut_size = pygraph.mincut(
+    # light_partition, heavy_partition, cut_size = 
+    
+    return pygraph.mincut(
         algorithm,
         queue_implementation,
         balanced,
     )
 
-    return MincutResult(light_partition, heavy_partition, cut_size)
+    # return MincutResult(light_partition, heavy_partition, cut_size)
