@@ -76,6 +76,7 @@ class ClusterInfo:
         self.task = task
         self.cut_size: int | None = None
         self.validity_threshold: float | None = None
+        self.disintegrated = False
 
 def initialize_subgraph(
     nodes_global,
@@ -277,11 +278,14 @@ def new_par_task(
                     ))
 
         else:
-            # Stash the parent into the jobs array
-            local_jobs.append(cluster_info)
-
             # (VR) Cluster both partitions
             subp1 = list(clusterer.cluster_without_singletons(subgraph))
+
+            if len(subp1) == 0:
+                cluster_info.disintegrated = True
+
+            # Stash the parent into the jobs array
+            local_jobs.append(cluster_info)
 
             # For each subgraph resulting from a clustering operation,
             # create a new cluster info and
@@ -463,11 +467,15 @@ def algorithm_h(
         parent_node = node_mapping[parent_id]
         child_node = node_mapping[child_id]
         parent_node.add_child(child_node)
-        parent_node.cm_valid = False
+        parent_node.cm_valid = False                # TODO: Change this
+
+        if entry.disintegrated:
+            child_node.extant = False
+            child_node.cm_valid = False
 
     # Mark extant clusters
     for child in root_node.children:
-        child.extant = child.cm_valid
+        child.extant = child.cm_valid               # TODO: Change this
 
     # Make the node2cids dict.
     node2cids = {}
@@ -495,7 +503,6 @@ def load_clusterer(module_file, clusterer_args_str):
     kwargs = json.loads(clusterer_args_str)
     clusterer = module.get_clusterer(**kwargs)
     return clusterer
-
 
 
 def main(

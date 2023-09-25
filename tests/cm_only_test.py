@@ -51,7 +51,7 @@ def test_tail():
 def test_disconnected_ikc():
     test_dir = 'disconnected_dataset2_ikc/'
     out_dict = run_cm(test_dir)
-    final_tsv = get_final_tsv_ikc(out_dict, 10)
+    final_tsv = get_final_tsv_ikc(out_dict, 2)
 
     assert count_nodes(final_tsv) == 11
     assert count_clusters(final_tsv) == 3
@@ -60,7 +60,7 @@ def test_disconnected_ikc():
 def test_multi_component():
     test_dir = 'multi_component_test'
     out_dict = run_cm(test_dir)
-    final_tsv = get_final_tsv_ikc(out_dict, 10)
+    final_tsv = get_final_tsv_ikc(out_dict, 2)
 
     assert count_nodes(final_tsv) == 12
     assert count_clusters(final_tsv) == 4

@@ -4,9 +4,9 @@
     "input_file": "network.tsv",
     "output_dir": "samples/",
     "algorithm": "ikc",
-    "k": 10,
+    "k": 2,
     "existing": {
-        "10": "clustering.tsv"
+        "2": "clustering.tsv"
     },
     "stages": [
         {
