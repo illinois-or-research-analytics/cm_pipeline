@@ -56,3 +56,12 @@ def test_disconnected_ikc():
     assert count_nodes(final_tsv) == 11
     assert count_clusters(final_tsv) == 3
     assert get_cluster_sizes(final_tsv) == [3, 3, 5]
+
+def test_multi_component():
+    test_dir = 'multi_component_test'
+    out_dict = run_cm(test_dir)
+    final_tsv = get_final_tsv_ikc(out_dict, 10)
+
+    assert count_nodes(final_tsv) == 12
+    assert count_clusters(final_tsv) == 4
+    assert get_cluster_sizes(final_tsv) == [3, 3, 3, 3]
