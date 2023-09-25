@@ -596,6 +596,10 @@ def main(
     """ (VR) Connectivity-Modifier (CM). 
     Take a network and cluster it ensuring cut validity."""
 
+    # Edge case for empty output name
+    if len(output) == 0:
+        output = '.tsv'
+
     # (VR) Initialize shared global variables (TODO: Windows does not share
     # globalised variables between processes, adjust this to allow SM on Windows)
     global clusterer
@@ -685,18 +689,18 @@ def main(
         )
 
     # (VR) Retrieve output if we want the original tsv
-    if first_tsv:
-        with open(output, "w+", encoding='utf8') as f:
-            for n, cid in labels.items():
-                f.write(f"{n} {cid}\n")
+    # if first_tsv:
+    with open(output, "w+", encoding='utf8') as f:
+        for n, cid in labels.items():
+            f.write(f"{n}\t{cid}\n")
 
     # (VR) Output the json data
     with open(output + ".tree.json", "w+", encoding='utf8') as f:
         f.write(cast(str, jsonpickle.encode(tree)))
-    cm2universal(quiet, tree, labels, output)
+    # cm2universal(quiet, tree, labels, output)
 
     # (VR) Convert the 'after' json into a tsv file with columns (node_id, cluster_id)
-    json2membership(output + ".after.json", output + ".after.tsv")
+    # json2membership(output + ".after.json", output + ".after.tsv")
 
 
 def entry_point():
