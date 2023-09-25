@@ -52,6 +52,17 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
         return f"[{graphs[0].index}, ..., {graphs[-1].index}]({len(graphs)})"
     else:
         return f"[{', '.join([g.index for g in graphs])}]({len(graphs)})"
+    
+
+def encode_to_26_ary(n):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    result = ''
+
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        result = alphabet[remainder] + result
+
+    return result
 
 
 class ClusterInfo:
@@ -249,7 +260,7 @@ def new_par_task(
                     parent_node_set -= child_node_set
                     sorted_node_list.extend(list(child_node_set))
 
-                    cluster_id = parent_id + f'_{k}_'
+                    cluster_id = parent_id + encode_to_26_ary(k+1)
                     end = begin + len(child_node_set)
                     child_cluster_info = ClusterInfo(
                         parent_id,
@@ -262,7 +273,7 @@ def new_par_task(
                     begin = end
 
                 # There shouldn't be extra singletons, but just in case
-                sorted_node_list.extend(list(parent_node_set))
+                # sorted_node_list.extend(list(parent_node_set))
                 begin = cluster_info.begin
                 end = cluster_info.end
                 nodes_global[begin:end] = sorted_node_list
@@ -482,7 +493,7 @@ def algorithm_h(
     for tree_node in tree.traverse_leaves():
         if tree_node.cm_valid:
             for node_id in range(tree_node.begin, tree_node.end):
-                node2cids[node_id] = tree_node.graph_index
+                node2cids[nodes_array[node_id]] = tree_node.graph_index
 
     shm.close()
     shm.unlink()
