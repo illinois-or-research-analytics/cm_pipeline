@@ -20,15 +20,15 @@ import networkit as nk
 import numpy as np
 import treeswift as ts
 import typer
-from cluster_tree import ClusterTreeNode
-from clusterers.ikc_wrapper import IkcClusterer
-from clusterers.leiden_wrapper import LeidenClusterer, Quality
+from hm01.cluster_tree import ClusterTreeNode
+from hm01.clusterers.ikc_wrapper import IkcClusterer
+from hm01.clusterers.leiden_wrapper import LeidenClusterer, Quality
 # (VR) Change: I removed the context import since we do everything in memory
 # (VR) Change 2: I brought back context just for IKC
-from context import context
-from graph import IntangibleSubgraph, RealizedSubgraph
-from mincut_requirement import MincutRequirement
-from pruner import prune_graph
+from hm01.context import context
+from hm01.graph import IntangibleSubgraph, RealizedSubgraph
+from hm01.mincut_requirement import MincutRequirement
+from hm01.pruner import prune_graph
 from structlog import get_logger
 from enum import Enum
 

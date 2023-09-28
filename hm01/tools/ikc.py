@@ -1,7 +1,6 @@
 import argparse
 import networkit as nk
 import csv
-import heapq as hq
 
 
 def main(args):

@@ -1,21 +1,17 @@
 from dataclasses import dataclass
 from pathlib import Path
 import subprocess
-from typing import List, Iterator, Dict, Optional, Tuple, Union
-from collections import defaultdict
+from typing import List, Iterator, Dict, Union
 import csv
 
-import networkit as nk
+from hm01.clusterers.abstract_clusterer import AbstractClusterer
 
-from clusterers.abstract_clusterer import AbstractClusterer
-
-from graph import Graph, IntangibleSubgraph, RealizedSubgraph
-from context import context
+from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
+from hm01.context import context
 
 from sys import path
-path.append('..')
 
-from tools.ikc_importable import ikc
+from hm01.tools.ikc_importable import ikc
 
 @dataclass
 class IkcClusterer(AbstractClusterer):

@@ -1,8 +1,5 @@
-import argparse
 import networkit as nk
 import csv
-import heapq as hq
-import gc
 
 def ikc(graph1, k):
     # edge_list_reader = nk.graphio.EdgeListReader('\t',0, continuous=False, directed=True)

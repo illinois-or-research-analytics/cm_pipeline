@@ -8,9 +8,9 @@ from structlog import get_logger
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Sequence, Union, cast
 
-from graph import Graph, IntangibleSubgraph
-from cluster_tree import ClusterTreeNode
-from clusterers.leiden_wrapper import LeidenClusterer
+from hm01.graph import Graph, IntangibleSubgraph
+from hm01.cluster_tree import ClusterTreeNode
+from hm01.clusterers.leiden_wrapper import LeidenClusterer
 
 
 class ClusteringMetadata:
