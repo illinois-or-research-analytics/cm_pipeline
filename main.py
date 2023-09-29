@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 import json
-import os
 
 from source.workflow import Workflow
 

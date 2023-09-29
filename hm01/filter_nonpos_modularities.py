@@ -3,7 +3,7 @@ import typer
 import networkit as nk
 import pandas as pd
 
-from graph import Graph, IntangibleSubgraph
+from hm01.graph import Graph, IntangibleSubgraph
 from typing import Dict, List
 from os import path
 

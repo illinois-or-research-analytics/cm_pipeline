@@ -5,8 +5,8 @@ from typing import Optional
 
 import math
 
-from clusterers.abstract_clusterer import AbstractClusterer
-from clusterers.ikc_wrapper import IkcClusterer
+from hm01.clusterers.abstract_clusterer import AbstractClusterer
+from hm01.clusterers.ikc_wrapper import IkcClusterer
 
 
 @dataclass
