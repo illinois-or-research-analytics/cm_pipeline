@@ -32,6 +32,10 @@ from hm01.pruner import prune_graph
 from structlog import get_logger
 from enum import Enum
 
+from memory_profiler import profile
+
+from gc import collect
+
 # from json2membership import json2membership
 # from to_universal import cm2universal
 
@@ -118,7 +122,7 @@ def initialize_subgraph(
     subgraph = RealizedSubgraph.from_adjlist(node_set, edges, cluster_id)
     return subgraph, node_set
 
-
+@profile
 def new_par_task(
     queue,
     data_queue,
@@ -187,7 +191,6 @@ def new_par_task(
             # until there exists none
             num_pruned = prune_graph(subgraph, requirement, clusterer)
             if num_pruned > 0:
-                # TODO: Cut size might not actually be mcd, but just the degree
                 cluster_info.cut_size = original_mcd
 
                 # Now, rearrange the nodes to separate the pruned nodes from the
@@ -258,7 +261,7 @@ def new_par_task(
                     child_node_set = set(child_graph)
 
                     parent_node_set -= child_node_set
-                    sorted_node_list.extend(list(child_node_set))
+                    sorted_node_list.extend(child_node_set)
 
                     cluster_id = parent_id + encode_to_26_ary(k+1)
                     end = begin + len(child_node_set)
@@ -290,10 +293,9 @@ def new_par_task(
 
         else:
             # (VR) Cluster both partitions
-            subp1 = list(clusterer.cluster_without_singletons(subgraph))
+            subp1 = clusterer.cluster_without_singletons(subgraph)
 
-            if len(subp1) == 0:
-                cluster_info.disintegrated = True
+            cl_count = 0
 
             # Stash the parent into the jobs array
             local_jobs.append(cluster_info)
@@ -311,7 +313,7 @@ def new_par_task(
                 child_node_set = child_graph.nodeset
 
                 parent_node_set -= child_node_set
-                sorted_node_list.extend(list(child_node_set))
+                sorted_node_list.extend(child_node_set)
 
                 task = ClusterInfo.Task.PRUNE
 
@@ -327,8 +329,15 @@ def new_par_task(
                 cluster_info_children.append(child_cluster_info)
                 begin = end
 
+                cl_count += 1
+
+                del child_graph
+
+            if cl_count == 0:
+                cluster_info.disintegrated = True
+
             # Add the removed singletons to the original node list.
-            sorted_node_list.extend(list(parent_node_set))
+            sorted_node_list.extend(parent_node_set)
             begin = cluster_info.begin
             end = cluster_info.end
             nodes_global[begin:end] = sorted_node_list
@@ -343,7 +352,7 @@ def new_par_task(
                     item.task,
                 ))
 
-        del subgraph
+        del subgraph, node_set
         queue.task_done()
 
     data_queue.put(local_jobs)

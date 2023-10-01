@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from os import path
-from math import inf
+from typedict import stage_classes
 
 class Stage:
     def __init__(
@@ -24,13 +24,6 @@ class Stage:
         self.working_dir = working_dir
         self.resolutions = resolutions
         self.iterations = iterations
-
-        # Get scripts if this is a filtering stage
-        # if self.name == 'filtering':
-        #     try:
-        #         self.scripts = data['scripts']
-        #     except:
-        #         raise ValueError('Filtering stages need filtering scripts')
             
         # Check if this is a memprof stage
         try:
@@ -47,13 +40,6 @@ class Stage:
                 if type(val) != bool:
                     self.args = self.args + str(val) + ' '
 
-        # Set parallel limit if it exists
-        if self.name == 'stats' or self.name == 'clustering':
-            try:
-                self.parallel_limit = data['parallel_limit']
-            except:
-                self.parallel_limit = inf
-
         # Set universal before and summarize values if they exists
         try:
             self.universal_before = data['universal_before']
@@ -69,62 +55,19 @@ class Stage:
         if self.index == 1 and type(self.existing_clustering) != dict:
             self.output_file = f'S1_{self.network_name}_{self.name}.tsv'
         else:
-            self.get_output()
-            # if self.name == 'filtering':
-            #     filtering_operation = path.basename(self.scripts[-1])
-            #     if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-            #         self.output_file = {
-            #             frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{filtering_operation}.tsv'
-            #             for resolution in resolutions
-            #             for iteration in iterations
-            #         }
-            #     else:
-            #         self.output_file = {
-            #             k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{filtering_operation}.tsv'
-            #             for k in resolutions
-            #         }
-            # el
-            if self.name == 'connectivity_modifier':
-                if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                    self.output_file = {
-                        frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv.after.tsv'
-                        for resolution in resolutions
-                        for iteration in iterations
-                    }
-                else:
-                    self.output_file = {
-                        k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.tsv.after.tsv'
-                        for k in resolutions
-                    }
-            elif self.name == 'clustering' and self.algorithm == 'ikc':
+            if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
                 self.output_file = {
-                    k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}_reformatted.tsv'
+                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
+                    for resolution in resolutions
+                    for iteration in iterations
+                }
+            else:
+                self.output_file = {
+                    k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.csv'
                     for k in resolutions
                 }
-            elif self.name != 'stats':
-                if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                    self.output_file = {
-                        frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv'
-                        for resolution in resolutions
-                        for iteration in iterations
-                    }
-                else:
-                    self.output_file = {
-                        k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.tsv'
-                        for k in resolutions
-                    }
-            else:
-                if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                    self.output_file = {
-                        frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
-                        for resolution in resolutions
-                        for iteration in iterations
-                    }
-                else:
-                    self.output_file = {
-                        k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.csv'
-                        for k in resolutions
-                    }
+
+            self.get_output()
 
     def set_ub(self, cm_output):
         ''' Set the universal before file from CM2Universal dynamically '''
@@ -152,12 +95,7 @@ class Stage:
                 return self.network
             else:
                 return self.existing_clustering
-        else:
-            if self.prev.name == 'stats':
-                try:
-                    return self.prev.prev.output_file
-                except:
-                    return self.existing_clustering
+
         return self.prev.output_file
     
     def unpack(self, k):
@@ -203,201 +141,15 @@ class Stage:
         ]
 
         return cmd + stage_commands + end_cmd
-
-        # Get command depending on stage type
-        # if self.name == 'cleanup':
-        #     cmd.append(f'Rscript {project_root}/scripts/cleanup_el.R {prev_file} {self.output_file}')
-        if self.name == 'clustering':
-            if self.algorithm == 'leiden':
-                counter = 1
-                for k, v in self.output_file.items():
-                    res, niter = list(sorted(list(k)))
-                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
-                    output_file = v
-                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python3 {project_root}/scripts/run_leiden.py -i {input_file} -r {res} -o {output_file} -n {niter} &')
-                    if counter % self.parallel_limit == 0:
-                        cmd.append('wait')
-                    counter += 1
-                cmd.append('wait')
-            elif self.algorithm == 'leiden_mod':
-                counter = 1
-                for k, v in self.output_file.items():
-                    res, niter = self.unpack(k)
-                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
-                    output_file = v
-                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python3 {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
-                    if counter % self.parallel_limit == 0:
-                        cmd.append('wait')
-                    counter += 1
-                cmd.append('wait')
-            # TODO: Get support for IKC
-            else:
-                for k, v in self.output_file.items():
-                    cmd.append(f'echo "Currently on k={k}"')
-                    pre_output_file, ext = path.splitext(v)
-                    pre_output_file = pre_output_file[:-12] + '.tsv'
-                    output_file = v
-                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    cmd.append(f'python3 {project_root}/hm01/tools/ikc.py -e {input_file} -o {pre_output_file} -k {k}')
-                    cmd.append(f'python3 {project_root}/scripts/format_ikc_output.py {pre_output_file}')
-        elif self.name == 'stats':
-            counter = 1
-            if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                for k, v in self.output_file.items():
-                    res, niter = self.unpack(k)
-                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
-                    output_file = v
-                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
-                    
-                    # Set leiden param, TODO: IKC support for -k
-                    if self.algorithm == 'leiden':
-                        c = c + f'-g {res} '
-                    elif self.algorithm == 'ikc':
-                        raise ValueError('Come back later for IKC support!')
-                    c = c + self.args 
-
-                    # If there is a universal before parameter, set it
-                    if self.universal_before:
-                        try:
-                            c = c + ' --universal-before ' + self.ub[k]
-                        except:
-                            raise ValueError('Cannot find a before.json file: double check that this stats stage comes after a CM++ stage.')
-
-                    cmd.append(c + ' &')
-
-                    if counter % self.parallel_limit == 0:
-                        cmd.append('wait')
-                    
-                    counter += 1
-                cmd.append('wait')
-            else:
-                for k, v in self.output_file.items():
-                    cmd.append(f'echo "Currently on k={k}"')
-                    output_file = v
-                    input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                    c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} -k {k} '
-                    c = c + self.args 
-                    cmd.append(c)
-
-            # If the summarize value is set to true, output summary stats
-            if self.summarize:
-                for k, v in self.output_file.items():
-                    cmd.append(f'python3 {project_root}/cluster-statistics/summarize.py {v} {self.network}')
-        # elif self.name == 'filtering':
-        #     if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-        #         for k, v in self.output_file.items():
-        #             res, niter = self.unpack(k)
-        #             cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
-                    
-        #             # Iterate through filtering scripts
-        #             output_file = v
-        #             input_file = prev_file if type(prev_file) != dict else prev_file[k]
-        #             input_files = [input_file]
-        #             output_files = []
-        #             for i, script in enumerate(self.scripts):
-        #                 filtering_operation = path.basename(script)
-        #                 output_files.append(f'res-{res}-i{niter}/S{self.index}_{self.network_name}_{self.algorithm}.{res}_i{niter}_{filtering_operation}.tsv')
-        #                 if i != len(self.scripts) - 1:
-        #                     input_files.append(f'res-{res}-i{niter}/S{self.index}_{self.network_name}_{self.algorithm}.{res}_i{niter}_{filtering_operation}.tsv')
-        #             for script, input_file, output_file in zip(self.scripts, input_files, output_files):
-        #                 script_file = script.split('/')[-1]
-        #                 if script_file == "subset_graph_nonetworkit_treestar.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/subset_graph_nonetworkit_treestar.R {self.network} {input_file} {output_file}')
-        #                 elif script_file == "make_cm_ready.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
-        #                 elif script_file == "post_cm_filter.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
-        #                 cmd = cmd + [
-        #                     'exit_status=$?',
-        #                     'if [ $exit_status -ne 0 ]; then',
-        #                     f'\techo "{output_file} failed to generate"',
-        #                     f'\texit',
-        #                     'fi'
-        #                 ]
-        #     else:
-        #         for k, v in self.output_file.items():
-        #             cmd.append(f'echo "Currently on k={k}"')
-        #             output_file = v
-        #             input_file = prev_file if type(prev_file) != dict else prev_file[k]
-        #             input_files = [input_file]
-        #             output_files = []
-        #             for i, script in enumerate(self.scripts):
-        #                 filtering_operation = path.basename(script)
-        #                 output_files.append(f'k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{filtering_operation}.tsv')
-        #                 if i != len(self.scripts) - 1:
-        #                     input_files.append(f'k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{filtering_operation}.tsv')
-        #             for script, input_file, output_file in zip(self.scripts, input_files, output_files):
-        #                 script_file = script.split('/')[-1]
-        #                 if script_file == "subset_graph_nonetworkit_treestar.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/subset_graph_nonetworkit_treestar.R {self.network} {input_file} {output_file}')
-        #                 elif script_file == "make_cm_ready.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/make_cm_ready.R {input_files[0]} {input_file} {output_file}')
-        #                 elif script_file == "post_cm_filter.R":
-        #                     cmd.append(f'Rscript {project_root}/scripts/post_cm_filter.R {input_file} {output_file}')
-        #                 cmd = cmd + [
-        #                     'exit_status=$?',
-        #                     'if [ $exit_status -ne 0 ]; then',
-        #                     f'\techo "{output_file} failed to generate"',
-        #                     f'\texit',
-        #                     'fi'
-        #                 ]
-        elif self.name == 'connectivity_modifier':
-            if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                for k, v in self.output_file.items():
-                    res, niter = self.unpack(k)
-                    cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
-                    output_file = v
-
-                    c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
-
-                    c = c + f'python3 {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
-
-                    if self.algorithm == 'leiden':
-                        c = c + f'-g {res}'
-                    
-                    cmd.append(c)
-
-                    cmd = cmd + [
-                        'exit_status=$?',
-                        'if [ $exit_status -ne 0 ]; then',
-                        f'\techo "{output_file} failed to generate"',
-                        f'\texit',
-                        'fi'
-                    ]
-
-                    # Profile memory usage if the memprof param is true for cm
-                    if self.memprof:
-                        cmd.append(f'mv profile_* res-{res}-i{niter}')
-            else:
-                for k, v in self.output_file.items():
-                    cmd.append(f'echo "Currently on k={k}"')
-                    output_file = v
-
-                    c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
-                    c = c + f'python3 {project_root}/hm01/cm.py -i {self.network} -e {self.get_previous_file()[k]} -o {output_file[:-10]} -c {self.algorithm} {self.args}'
-                    c = c + f' -k {k}'
-
-                    cmd.append(c)
-
-                    cmd = cmd + [
-                        'exit_status=$?',
-                        'if [ $exit_status -ne 0 ]; then',
-                        f'\techo "{output_file} failed to generate"',
-                        f'\texit',
-                        'fi'
-                    ]
-
-                    # Profile memory usage if the memprof param is true for cm
-                    if self.memprof:
-                        cmd.append(f'mv profile_* k-{k}')
+    
+    def cast(self):
+        if self.name in stage_classes.keys():
+            self.__class__ = stage_classes[self.name]
     
     @abstractmethod
     def get_stage_commands(self, project_root, prev_file):
         pass
 
     @abstractmethod
-    def get_output():
+    def get_output(self):
         pass

@@ -33,6 +33,8 @@ class IkcClusterer(AbstractClusterer):
         # Compute the ikc clusters
         clusters = ikc(nk_subgraph, self.k)
 
+        del nk
+
         for local_cluster_id, (local_cluster_member_arr, _, _) in enumerate(clusters):
             global_cluster_member_arr = [
                 int(new_to_old_node_id_mapping[local_id])

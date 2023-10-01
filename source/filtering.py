@@ -48,6 +48,8 @@ class Filtering(Stage):
             }
     
     def get_stage_commands(self, project_root, prev_file):
+        cmd = []
+        
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
             for k, v in self.output_file.items():
                 res, niter = self.unpack(k)

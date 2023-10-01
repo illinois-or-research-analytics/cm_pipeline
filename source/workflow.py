@@ -105,9 +105,13 @@ class Workflow:
                 f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}',
                 i+1
             ) for i, stage in enumerate(data['stages'])]
+
         for i, stage in enumerate(self.stages):
             if i > 0:
                 stage.link_previous_stage(self.stages[i-1])
+
+        for stage in self.stages:
+            stage.cast()
 
         # Fetch cleaned network
         cleaned_file = None
