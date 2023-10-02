@@ -32,8 +32,6 @@ from hm01.pruner import prune_graph
 from structlog import get_logger
 from enum import Enum
 
-from memory_profiler import profile
-
 # from json2membership import json2membership
 # from to_universal import cm2universal
 
