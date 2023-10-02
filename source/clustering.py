@@ -27,13 +27,12 @@ class Clustering(Stage):
             working_dir,
             index)
         
+    def initialize(self, data):
         try:
             self.parallel_limit = data['parallel_limit']
         except:
             self.parallel_limit = inf
-
-        
-    def get_output(self):
+            
         if self.algorithm == 'ikc':
             self.output_file = {
                 k: f'{self.working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}_reformatted.tsv'

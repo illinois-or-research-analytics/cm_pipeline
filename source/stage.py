@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from os import path
 
 
@@ -24,6 +24,10 @@ class Stage:
         self.working_dir = working_dir
         self.resolutions = resolutions
         self.iterations = iterations
+
+        # A chainable stage is one whose output can be used for the next stage
+        # non-e.g. is stats
+        self.chainable = True
             
         # Check if this is a memprof stage
         try:
@@ -85,6 +89,12 @@ class Stage:
                 return self.network
             else:
                 return self.existing_clustering
+            
+        if not self.prev.chainable:
+            try:
+                return self.prev.prev.output_file
+            except:
+                return self.existing_clustering
 
         return self.prev.output_file
     
@@ -137,5 +147,5 @@ class Stage:
         pass
 
     @abstractmethod
-    def initialize(self):
+    def initialize(self, data):
         pass

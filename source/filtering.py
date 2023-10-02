@@ -26,13 +26,13 @@ class Filtering(Stage):
             working_dir,
             index)
         
+    def initialize(self, data):
         # Filtering stages require scripts
         try:
             self.scripts = data['scripts']
         except:
             raise ValueError('Filtering stages need filtering scripts')
         
-    def initialize(self):
         # Set the output file
         filtering_operation = path.basename(self.scripts[-1])
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':

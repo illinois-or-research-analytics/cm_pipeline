@@ -28,6 +28,8 @@ class Stats(Stage):
             index)
         
     def initialize(self, data):
+        self.chainable = False
+        
         try:
             self.parallel_limit = data['parallel_limit']
         except:
@@ -54,7 +56,7 @@ class Stats(Stage):
                 cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
                 output_file = v
                 input_file = prev_file if type(prev_file) != dict else prev_file[k]
-                c = f'python3 {project_root}/cluster-statistics/stats.py -i {self.network} -e {input_file} -c {self.algorithm} -o {output_file} '
+                c = f'python3 {project_root}/scripts/stats.py -i {self.network} -e {input_file} -o {output_file} '
                 
                 # Set leiden param, TODO: IKC support for -k
                 if self.algorithm == 'leiden':
@@ -93,10 +95,5 @@ class Stats(Stage):
 
         return cmd
     
-    def get_previous_file(self):
-        try:
-            return self.prev.prev.output_file
-        except:
-            return self.existing_clustering
         
         

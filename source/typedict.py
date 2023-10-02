@@ -6,7 +6,7 @@ from source.clustering import Clustering
 
 
 stage_classes = {
-    'connectivity_nodifier': CM,
+    'connectivity_modifier': CM,
     'stats': Stats,
     'filtering': Filtering,
     'cleanup': Cleanup,

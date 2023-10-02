@@ -25,7 +25,7 @@ class CM(Stage):
             working_dir,
             index)
         
-    def get_output(self):
+    def initialize(self, data):
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
             self.output_file = {
                 frozenset([resolution, iteration]): f'{self.working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv.after.tsv'

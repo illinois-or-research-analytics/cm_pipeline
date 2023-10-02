@@ -112,9 +112,9 @@ class Workflow:
             if i > 0:
                 stage.link_previous_stage(self.stages[i-1])
 
-        for stage in self.stages:
+        for stage, stage_data in zip(self.stages, data['stages']):
             td.cast(stage, stage.name)
-            stage.get_output()
+            stage.initialize(stage_data)
 
         # Fetch cleaned network
         cleaned_file = None
