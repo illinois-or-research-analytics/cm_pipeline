@@ -1,5 +1,12 @@
 citikc*
 
+tests/profiletest1.sh
+tests/test_par2.sh
+tests/test_simple1.sh
+tests/test_simple2.sh
+tests/test1.sh
+tests/test2.sh
+
 # Ignore working directories
 sandbox/
 *_working_dir
