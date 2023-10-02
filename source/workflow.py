@@ -116,6 +116,10 @@ class Workflow:
             td.cast(stage, stage.name)
             stage.initialize(stage_data)
 
+            if stage.name == 'clustering':
+                td.cast_clusterer(stage, self.algorithm)
+                stage.initialize_clustering()
+
         # Fetch cleaned network
         cleaned_file = None
         for stage in self.stages:

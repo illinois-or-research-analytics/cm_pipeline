@@ -44,3 +44,5 @@ class LeidenModClustering(Clustering):
                 cmd.append('wait')
             counter += 1
         cmd.append('wait')
+
+        return cmd
