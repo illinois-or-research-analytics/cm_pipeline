@@ -11,8 +11,6 @@ from typing import Dict, List
 from hm01.graph import Graph, IntangibleSubgraph
 from hm01.mincut import viecut
 
-import networkx as nx
-import matplotlib.pyplot as plt
 
 class ClustererSpec(str, Enum):
     """ (VR) Container for Clusterer Specification """  
