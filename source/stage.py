@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from os import path
-from typedict import stage_classes
+
 
 class Stage:
     def __init__(
@@ -35,7 +35,14 @@ class Stage:
         # TODO: Args field in json
         self.args = ''
         for key, val in data.items():
-            if key != 'scripts' and key != 'memprof' and key != 'name' and key != 'parallel_limit' and key != "universal_before" and key != 'summarize':
+            if \
+                key != 'scripts' and \
+                key != 'memprof' and \
+                key != 'name' and \
+                key != 'parallel_limit' and \
+                key != "universal_before" and \
+                key != 'summarize':
+
                 self.args = self.args + '--' + key + ' '
                 if type(val) != bool:
                     self.args = self.args + str(val) + ' '
@@ -51,23 +58,6 @@ class Stage:
         except:
             self.summarize = False
 
-        # Output file nomenclature
-        if self.index == 1 and type(self.existing_clustering) != dict:
-            self.output_file = f'S1_{self.network_name}_{self.name}.tsv'
-        else:
-            if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-                self.output_file = {
-                    frozenset([resolution, iteration]): f'{working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
-                    for resolution in resolutions
-                    for iteration in iterations
-                }
-            else:
-                self.output_file = {
-                    k: f'{working_dir}/k-{k}/S{self.index}_{self.network_name}_{self.algorithm}.{k}_{self.name}.csv'
-                    for k in resolutions
-                }
-
-            self.get_output()
 
     def set_ub(self, cm_output):
         ''' Set the universal before file from CM2Universal dynamically '''
@@ -142,14 +132,10 @@ class Stage:
 
         return cmd + stage_commands + end_cmd
     
-    def cast(self):
-        if self.name in stage_classes.keys():
-            self.__class__ = stage_classes[self.name]
-    
     @abstractmethod
     def get_stage_commands(self, project_root, prev_file):
         pass
 
     @abstractmethod
-    def get_output(self):
+    def initialize(self):
         pass

@@ -32,7 +32,7 @@ class Filtering(Stage):
         except:
             raise ValueError('Filtering stages need filtering scripts')
         
-    def get_output(self):
+    def initialize(self):
         # Set the output file
         filtering_operation = path.basename(self.scripts[-1])
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':

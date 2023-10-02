@@ -4,6 +4,8 @@ import os
 
 from source.stage import Stage
 
+import source.typedict as td
+
 class Workflow:
     def __init__(self, data, pipeline):
         # Load working dirs
@@ -111,7 +113,8 @@ class Workflow:
                 stage.link_previous_stage(self.stages[i-1])
 
         for stage in self.stages:
-            stage.cast()
+            td.cast(stage, stage.name)
+            stage.get_output()
 
         # Fetch cleaned network
         cleaned_file = None

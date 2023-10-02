@@ -63,6 +63,7 @@ class Clustering(Stage):
             cmd.append('wait')
         elif self.algorithm == 'leiden_mod':
             counter = 1
+            print(self.output_file)
             for k, v in self.output_file.items():
                 res, niter = self.unpack(k)
                 cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')

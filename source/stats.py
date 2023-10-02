@@ -26,13 +26,13 @@ class Stats(Stage):
             existing_clustering,
             working_dir,
             index)
-
+        
+    def initialize(self, data):
         try:
             self.parallel_limit = data['parallel_limit']
         except:
             self.parallel_limit = inf
-        
-    def get_output(self):
+
         if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
             self.output_file = {
                 frozenset([resolution, iteration]): f'{self.working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv'

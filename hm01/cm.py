@@ -122,7 +122,6 @@ def initialize_subgraph(
     subgraph = RealizedSubgraph.from_adjlist(node_set, edges, cluster_id)
     return subgraph, node_set
 
-@profile
 def new_par_task(
     queue,
     data_queue,
