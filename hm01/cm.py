@@ -34,8 +34,6 @@ from enum import Enum
 
 from memory_profiler import profile
 
-from gc import collect
-
 # from json2membership import json2membership
 # from to_universal import cm2universal
 
