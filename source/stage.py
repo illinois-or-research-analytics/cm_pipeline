@@ -8,8 +8,7 @@ class Stage:
             data, 
             input_file, 
             network_name, 
-            resolutions, 
-            iterations, 
+            params, 
             algorithm, 
             existing_clustering,
             working_dir,
@@ -22,8 +21,10 @@ class Stage:
         self.algorithm = algorithm
         self.existing_clustering = existing_clustering
         self.working_dir = working_dir
-        self.resolutions = resolutions
-        self.iterations = iterations
+        self.params = params
+
+        # For the analysis stage
+        self.outputs_clustering = True
 
         # A chainable stage is one whose output can be used for the next stage
         # non-e.g. is stats
@@ -34,43 +35,15 @@ class Stage:
             self.memprof = data['memprof']
         except:
             self.memprof = False
-        
-        # Get extra arguments
-        # TODO: Args field in json
-        self.args = ''
-        for key, val in data.items():
-            if \
-                key != 'scripts' and \
-                key != 'memprof' and \
-                key != 'name' and \
-                key != 'parallel_limit' and \
-                key != "universal_before" and \
-                key != 'summarize':
-
-                self.args = self.args + '--' + key + ' '
-                if type(val) != bool:
-                    self.args = self.args + str(val) + ' '
-
-        # Set universal before and summarize values if they exists
-        try:
-            self.universal_before = data['universal_before']
-        except:
-            self.universal_before = False
-
-        try:
-            self.summarize = data['summarize']
-        except:
-            self.summarize = False
-
 
     def set_ub(self, cm_output):
         ''' Set the universal before file from CM2Universal dynamically '''
 
         # Reformat filename to fetch before.json file
-        ub_output = {
-            k: f'{path.splitext(path.splitext(cm_output[k])[0])[0]}.before.json'
-            for k in cm_output
-        }
+        ub_output = [
+            f'{path.splitext(path.splitext(cm_output[k])[0])[0]}.before.json'
+            for k, _ in enumerate(cm_output)
+        ]
 
         self.ub = ub_output
 
@@ -108,6 +81,14 @@ class Stage:
                 else:
                     niter = val
         return res, niter
+    
+    def get_folder_name(self, param):
+        ret = self.algorithm
+
+        for k, v in param.items():
+            ret += f'_{k}{v}'
+
+        return ret
     
     def get_command(self):
         # Get the absolute path of the current script

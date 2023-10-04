@@ -12,7 +12,7 @@ def main():
     # Select columns 0 and 1
     selected_columns = df[[0, 1]]
     
-    selected_columns.to_csv(outfile, sep=' ', header=False, index=False)
+    selected_columns.to_csv(outfile, sep='\t', header=False, index=False)
 
 
 if __name__ == '__main__':

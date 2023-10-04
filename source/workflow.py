@@ -17,46 +17,15 @@ class Workflow:
         self.algorithm = data['algorithm']
         self.network_name = data['name']
         self.output_dir = data['output_dir']
-        self.input_file = data['input_file'] if data['input_file'][0] == '/' else f'{self.working_dir}/{data["input_file"]}'
-        
-        # Load and process existing clustering
-        self.existing_clustering = {}
-        try:
-            if self.algorithm == 'leiden':
-                for k, v in data['existing'].items():
-                    res, i = k.split(", ")
-                    if v[0] == '/':
-                        self.existing_clustering[frozenset([float(res), int(i)])] = v
-                    else:
-                        self.existing_clustering[frozenset([float(res), int(i)])] = f'{self.working_dir}/{v}'
-            elif self.algorithm == 'leiden_mod':
-                for k, v in data['existing'].items():
-                    i = int(k)
-                    if v[0] == '/':
-                        self.existing_clustering[frozenset(['mod', int(i)])] = v
-                    else:
-                        self.existing_clustering[frozenset(['mod', int(i)])] = f'{self.working_dir}/{v}'
-            else:
-                for k, v in data['existing'].items():
-                    i = int(k)
-                    if v[0] == '/':
-                        self.existing_clustering[int(i)] = v
-                    else:
-                        self.existing_clustering[int(i)] = f'{self.working_dir}/{v}'
-        except KeyError:
-            self.existing_clustering = None
+        self.input_file = data['input_file'] \
+            if data['input_file'][0] == '/' \
+                else f'{self.working_dir}/{data["input_file"]}'
 
-        if self.algorithm == 'leiden' or self.algorithm == 'leiden_mod':
-            self.iterations = data['iterations'] if type(data['iterations']) == list else [data['iterations']]
-        else:
-            self.iterations = None
+        # Initialize existing clustering array if there exists one
+        self.existing_clustering = []
 
-        if self.algorithm == 'leiden':
-            self.resolution = data['resolution'] if type(data['resolution']) == list else [data['resolution']]
-        elif self.algorithm == 'leiden_mod':
-            self.resolution = ['mod']
-        else:
-            self.resolution = data['k'] if type(data['k']) == list else [data['k']]
+        # Get clustering parameters
+        self.params = data['params']
 
         # Get timestamp of algo run
         self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
@@ -72,13 +41,18 @@ class Workflow:
             'echo "Stage,Time (HH:MM:SS)" >> execution_times.csv'
         ]
 
-        # Create directories for the resolutions and iterations
-        for res in self.resolution:
-            if self.iterations:
-                for niter in self.iterations:
-                    self.commands.append(f'mkdir -p res-{res}-i{niter}')
-            else:
-                self.commands.append(f'mkdir -p k-{res}')
+        # Create directories for each parameter set
+        for param in self.params:
+            directory = f'{self.algorithm}'
+            for k, v in param.items():
+                if k != 'existing_clustering':
+                    directory += f'_{k}{v}'
+                else:
+                    self.existing_clustering.append(v)
+            self.commands.append(f'mkdir -p {directory}')
+
+        if len(self.existing_clustering) == 0:
+            self.existing_clustering = None
 
         # Output the initialization stage finished
         self.commands = self.commands + [
@@ -100,8 +74,7 @@ class Workflow:
                 stage, 
                 self.input_file, 
                 self.network_name, 
-                self.resolution, 
-                self.iterations,
+                self.params,
                 self.algorithm,
                 self.existing_clustering,
                 f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}',
@@ -140,7 +113,9 @@ class Workflow:
         post_cm = False
         for stage in self.stages:
             if post_cleaned:
-                stage.set_network(f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}/{cleaned_file}')
+                stage.set_network(
+                    f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}/{cleaned_file}'
+                )
             if post_cm:
                 stage.set_ub(cm_out)
             if stage.name == 'cleanup':
@@ -157,29 +132,24 @@ class Workflow:
         self.commands.append('mkdir analysis')
         self.commands.append('stage_start_time=$SECONDS')
 
-        # Fetch other arguments and run commands
-        ind = 0
-        for res in self.resolution:
-            if self.iterations:
-                for iter in self.iterations:
-                    other_files = []
-                    k = frozenset([res, iter])
-                    for stage in self.stages:
-                        if stage.name != 'cleanup' and stage.name != 'stats':
-                            other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[k])
-                    other_args = ' '.join(other_files)
-                    self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_{res}_n{iter}_analysis.csv {other_args} &')
-            else:
-                other_files = []
-                for stage in self.stages:
-                    if stage.name != 'cleanup' and stage.name != 'stats':
-                        other_files.append(stage.output_file if type(stage.output_file) != dict else stage.output_file[res])
-                    other_args = ' '.join(other_files)
-                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{self.network_name}_k{res}_analysis.csv {other_args} &')
+        for i, param in enumerate(self.params):
+            other_files = []
+            filename = ''.join([
+                f'{k}{v}_' for k, v in param.items() if k != 'existing_clustering'
+            ])
+            filename = filename[:-1]
+
+            for stage in self.stages:
+                if stage.outputs_clustering:
+                    other_files.append(stage.output_file \
+                                       if type(stage.output_file) != list \
+                                        else stage.output_file[i])
+                
+                other_args = ' '.join(other_files)
+                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{filename}_analysis.csv {other_args} &')
             
             # Get PIDs
-            self.commands.append(f'pids[{ind}]=$!')
-            ind += 1
+            self.commands.append(f'pids[{i}]=$!')
 
         # Finish stage with timing
         self.commands = self.commands + [

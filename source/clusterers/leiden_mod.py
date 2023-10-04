@@ -24,21 +24,22 @@ class LeidenModClustering(Clustering):
             index)
         
     def initialize_clustering(self):
-        self.output_file = {
-            frozenset([resolution, iteration]): f'{self.working_dir}/res-{resolution}-i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
-            for resolution in self.resolutions
-            for iteration in self.iterations
-        }
+        iterations = [param['i'] for param in self.params]
+
+        self.output_file = [
+            f'{self.working_dir}/{self.algorithm}_i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.i{iteration}_{self.name}.csv'
+            for iteration in iterations
+        ]
 
     def get_stage_commands(self, project_root, prev_file):
+        iterations = [param['i'] for param in self.params]
         cmd = []
 
         counter = 1
-        for k, v in self.output_file.items():
-            res, niter = self.unpack(k)
-            cmd.append(f'echo "Currently on resolution {res}, running {niter} iterations"')
+        for i, (niter, v) in enumerate(zip(iterations, self.output_file)):
+            cmd.append(f'echo "Currently running {niter} iterations"')
             output_file = v
-            input_file = prev_file if type(prev_file) != dict else prev_file[k]
+            input_file = prev_file if type(prev_file) != list else prev_file[i]
             cmd.append(f'python3 {project_root}/scripts/run_leiden_mod.py -i {input_file} -o {output_file} -n {niter} &')
             if counter % self.parallel_limit == 0:
                 cmd.append('wait')

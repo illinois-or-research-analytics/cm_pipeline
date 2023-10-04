@@ -28,6 +28,16 @@ class Clustering(Stage):
             index)
         
     def initialize(self, data):
+        for key, val in data.items():
+            if \
+                key != 'name' and \
+                key != 'parallel_limit' and \
+                key != 'memprof':
+
+                self.args = self.args + '--' + key + ' '
+                if type(val) != bool:
+                    self.args = self.args + str(val) + ' '
+
         try:
             self.parallel_limit = data['parallel_limit']
         except:
