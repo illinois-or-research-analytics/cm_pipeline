@@ -23,6 +23,11 @@ class Stage:
         self.working_dir = working_dir
         self.params = params
 
+        # Exclude the passed in existing clustering from the params
+        for i, param in enumerate(self.params):
+            if 'existing_clustering' in param:
+                del self.params[i]['existing_clustering']
+
         # For the analysis stage
         self.outputs_clustering = True
 
