@@ -28,6 +28,7 @@ class Cleanup(Stage):
         
     def initialize(self, data):
         self.outputs_clustering = False
+        self.output_file = f'{self.working_dir}/S{self.index}_{self.network_name}_{self.algorithm}.cleaned.tsv'
     
     def get_stage_commands(self, project_root, prev_file):
         return [f'Rscript {project_root}/scripts/cleanup_el.R {prev_file} {self.output_file}']

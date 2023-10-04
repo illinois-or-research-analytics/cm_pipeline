@@ -61,7 +61,7 @@ class CM(Stage):
 
             c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
 
-            c = c + f'python3 {project_root}/hm01/cm.py \
+            c = c + f'python3 -m hm01.cm \
                 -i {self.network} \
                     -e {self.get_previous_file()[i]} \
                         -o {output_file} \

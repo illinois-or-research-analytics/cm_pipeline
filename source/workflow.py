@@ -113,9 +113,7 @@ class Workflow:
         post_cm = False
         for stage in self.stages:
             if post_cleaned:
-                stage.set_network(
-                    f'{project_root}/{self.output_dir}/{self.title}-{self.timestamp}/{cleaned_file}'
-                )
+                stage.set_network(cleaned_file)
             if post_cm:
                 stage.set_ub(cm_out)
             if stage.name == 'cleanup':
