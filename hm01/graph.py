@@ -10,7 +10,6 @@ import networkit as nk
 import networkx as nx
 
 import hm01.mincut as mincut
-from hm01.clusterers.abstract_clusterer import AbstractClusterer
 from hm01.context import context
 
 # (VR) Importing the C++/Python wrapped modules requires appending paths via sys
@@ -61,7 +60,7 @@ class AbstractGraph:
 
     def find_clusters(
             self,
-            clusterer: AbstractClusterer,
+            clusterer,
             with_singletons: bool = True) -> Iterator[IntangibleSubgraph]:
         """ (VR) Find clusters using the given clusterer """
         if with_singletons:

@@ -131,28 +131,3 @@ class IkcClusterer(AbstractClusterer):
             "cluster_to_id_dict": cluster_to_id_dict,
             "id_to_cluster_dict": id_to_cluster_dict,
         }
-
-    def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
-        clusters = {}
-        with open(filepath, newline="") as csvfile:
-            #if 
-            reader = csv.reader(csvfile, delimiter=",")
-            for row in reader:
-                node_id = int(row[0])
-                cluster_id = row[1]
-                if cluster_id not in clusters:
-                    clusters[cluster_id] = IntangibleSubgraph([], cluster_id)
-                clusters[cluster_id].subset.append(node_id)
-        return list(clusters.values())
-
-    # TODO: Need to factor in if .tsv
-    def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
-        # node_id cluster_id format
-        clusters: Dict[str, IntangibleSubgraph] = {}
-        with open(filepath) as f:
-            for line in f:
-                node_id, cluster_id = line.split()
-                clusters.setdefault(
-                    cluster_id, IntangibleSubgraph([], cluster_id)
-                ).subset.append(int(node_id))
-        return list(v for v in clusters.values() if v.n() > 1)

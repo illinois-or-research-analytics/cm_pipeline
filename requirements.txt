@@ -30,5 +30,6 @@ typer==0.6.1
 typing-extensions==4.5.0
 networkx==3.1
 psutil==5.9.5
+infomap==2.7.1
 git+https://github.com/vikramr2/python-mincut
 .

@@ -512,11 +512,18 @@ def algorithm_h(
     return node2cids, tree
 
 
-def load_clusterer(module_file, clusterer_args_str):
+def load_clusterer(module_file, clusterer_args_file):
     spec=importlib.util.spec_from_file_location("clusterer", module_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    kwargs = json.loads(clusterer_args_str)
+
+    try:
+        with open(clusterer_args_file, 'r') as f:
+            kwargs = json.loads(f)
+    except:
+        kwargs = {}
+
+    print(module)
     clusterer = module.get_clusterer(**kwargs)
     return clusterer
 
