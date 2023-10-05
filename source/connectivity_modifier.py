@@ -1,4 +1,6 @@
 from source.stage import Stage
+from json import dumps
+from os import path
 
 
 class CM(Stage):
@@ -31,7 +33,8 @@ class CM(Stage):
             if \
                 key != 'name' and \
                 key != 'memprof' and \
-                key != 'universal_before':
+                key != 'universal_before' and \
+                key != 'cfile':
 
                 self.args = self.args + '--' + key + ' '
                 if type(val) != bool:
@@ -42,6 +45,11 @@ class CM(Stage):
             self.universal_before = data['universal_before']
         except:
             self.universal_before = False
+
+        try:
+            self.cfile = path.realpath(data['cfile'])
+        except:
+            self.cfile = None
 
         self.output_file = []
         for param in self.params:
@@ -144,9 +152,43 @@ class CM(Stage):
 
             # Profile memory usage if the memprof param is true for cm
             if self.memprof:
-                cmd.append(f'mv profile_* k-{k}')
+                cmd.append(f'mv profile_* {self.algorithm}_k{k}')
 
         return cmd
+    
+    def stage_commands_other(self, project_root, prev_file):
+        cmd = []
+
+        for i, (param, output_file) in enumerate(zip(self.params, self.output_file)):
+            cmd.append(f'echo "Currently on param set {i}"')
+
+            cmd.append(f'echo "{dumps(param)}" > cargs.json')
+
+            c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
+            c = c + f'python3 {project_root}/hm01/cm.py \
+                -i {self.network} \
+                    -e {prev_file[i] if type(prev_file) == list else prev_file} \
+                        -o {output_file} \
+                            -c external \
+                                -cfile {self.cfile} \
+                                    -cargs cargs.json'
+            
+            cmd.append(c)
+
+            cmd = cmd + [
+                'exit_status=$?',
+                'if [ $exit_status -ne 0 ]; then',
+                f'\techo "{output_file} failed to generate"',
+                f'\texit',
+                'fi'
+            ]
+
+            # Profile memory usage if the memprof param is true for cm
+            if self.memprof:
+                cmd.append(f'mv profile_* {self.get_folder_name(param)}')
+
+        return cmd
+
 
     def get_stage_commands(self, project_root, prev_file):
         if self.algorithm == 'leiden':
@@ -156,4 +198,4 @@ class CM(Stage):
         elif self.algorithm == 'ikc':
             return self.stage_commands_ikc(project_root)
         else:
-            raise NotImplementedError('Come back soon for more clusterer implementations')
+            return self.stage_commands_other(project_root, prev_file)

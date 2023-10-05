@@ -7,6 +7,7 @@ from source.clustering import Clustering
 from source.clusterers.ikc import IKCClustering
 from source.clusterers.leiden import LeidenClustering
 from source.clusterers.leiden_mod import LeidenModClustering
+from source.clusterers.infomap import InfomapClustering
 
 
 stage_classes = {
@@ -20,7 +21,8 @@ stage_classes = {
 clusterer_classes = {
     'ikc': IKCClustering,
     'leiden': LeidenClustering,
-    'leiden_mod': LeidenModClustering
+    'leiden_mod': LeidenModClustering,
+    'infomap': InfomapClustering
 }
 
 def cast(stage, name):

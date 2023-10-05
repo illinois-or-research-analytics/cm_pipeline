@@ -1,28 +1,27 @@
 {
-    "title": "cit-new-pp-output-leiden",
-    "name": "cit_patents",
-    "input_file": "./samples/cit-new-pp-output-leiden-20231004-18:06:54/S1_cit_patents_leiden.cleaned.tsv",
+    "title": "cit-infomap",
+    "name": "cit_hepph",
+    "input_file": "/shared/files_for_mcl_infomap/S1_cit_hepph_cleanup.tsv",
     "output_dir": "samples/",
-    "algorithm": "leiden",
-    "params": [
-        {
-            "res": 0.1,
-            "i": 2,
-            "existing_clustering": "./samples/cit-new-pp-output-leiden-20231004-18:06:54/leiden_res0.1_i2/S3_cit_patents_leiden.res0.1_i2_make_cm_ready.R.tsv"
-        }
-    ],
+    "algorithm": "infomap",
+    "params": [{}],
     "stages": [
         {
-            "name": "connectivity_modifier",
-            "memprof": true,
-            "threshold": "1log10",
-            "nprocs": 1
+            "name": "clustering",
+            "parallel_limit": 2
         },
         {
-            "name": "filtering",
-            "scripts": [
-                "./scripts/post_cm_filter.R"
-            ]
+            "name": "stats",
+            "noktruss": true,
+            "parallel_limit": 2
+        },
+        {
+            "name": "connectivity_modifier",
+            "memprof": false,
+            "threshold": "1log10",
+            "nprocs": 1,
+            "quiet": true,
+            "cfile": "hm01/clusterers/external_clusterers/infomap_wrapper.py"
         },
         {
             "name": "stats",
