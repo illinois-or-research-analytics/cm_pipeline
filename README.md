@@ -24,7 +24,7 @@ Modular pipeline for testing and using an improved version of CM for generating 
 ### How to Clone CM for any particular version
 Simply run the following
 ```
-git clone -b v<version #> https://github.com/illinois-or-research-analytics/cm_pipeline.git .
+git clone -b <<<version>>> https://github.com/illinois-or-research-analytics/cm_pipeline.git .
 ```
 ### Setup via pip install (Beta)
 Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline`
