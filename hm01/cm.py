@@ -396,6 +396,8 @@ def algorithm_h(
     ]
     endpoints_list_content = list(chain.from_iterable(node_neighbors))
 
+    del nk_graph
+
     endpoints = np.ndarray(
         shape=(len_endpoints, ),
         dtype=dtype,
@@ -677,6 +679,8 @@ def main(
     clusters = clusterer.from_existing_clustering(existing_clustering)
     for cluster in clusters:
         cluster.subset = list(dehydrator[item] for item in cluster.subset)
+
+    del dehydrator
 
     if not quiet:
         log.info(
