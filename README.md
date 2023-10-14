@@ -1,6 +1,21 @@
 # cm_pipeline
 
-Modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
+Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
+
+- [cm\_pipeline](#cm_pipeline)
+  - [Overview](#overview)
+  - [Setup and Running Instructions](#setup-and-running-instructions)
+    - [Setup via Cloning](#setup-via-cloning)
+    - [Setup via pip install (Beta)](#setup-via-pip-install-beta)
+  - [Input and Usage Instructions](#input-and-usage-instructions)
+  - [Documentation](#documentation)
+    - [JSON Input Documentation](#json-input-documentation)
+    - [Customizing the Pipeline](#customizing-the-pipeline)
+  - [Requirements](#requirements)
+    - [UIUC EngrIT Systems](#uiuc-engrit-systems)
+  - [Output Files](#output-files)
+  - [Archive](#archive)
+  - [Citation](#citation)
 
 ## Overview
 
