@@ -41,7 +41,7 @@ def getclusterer(args):
     # Ex. Leiden-CPM's clusterer would be getclusterer(resolution)
 ```
 
-3. Then when you call CM++, you will create a JSON file mapping arguments to their values. Here is a template/example
+1. Then when you call CM++, you will create a JSON file mapping arguments to their values. Here is a template/example
 
 ```json
 {
@@ -124,7 +124,122 @@ class LeidenModClustering(Clustering):
 
 ### Example: Infomap
 
+1. First, I created the infomap wrapper as shown in [this file](../hm01/clusterers/external_clusterers/infomap_wrapper.py).
+   1. The cluster method simply uses python's Infomap library, and converts the outputs into hm01 `IntangibleSubgraph` objects.
+   2. The `get_clusterer` method doesn't take any arguments since InfoMap doesn't require any parameters
+2. Second, in [this clusterer object](../source/clusterers/infomap.py), I created a clusterer object for the pipeline.
+   1. InfoMap is quite simple, it doesn't take any parameters and it doesn't have any extra requirements, so the `__init__` method doesn't need any more than it has.
+   2. The `initialize_clustering` method simply sets its output file name.
+      1. You want output in the relevant directory. For infomap, that was `f{self.working_dir}/infomap/`.
+      2. For your method, you should refer to the `self.get_folder_name(param)` method, where `param` is the current parameter dictionary.
+   3. The `get_stage_commands` method converts the stage object data into a runnable shell command by the pipeline. I have made a [run_infomap](../scripts/run_infomap.py) script that the CM pipeline can call.
+3. In the [typedict file](../source/typedict.py), I have added keys for infomap
+
 ## Creating your own pipeline stage
+
+1. Navigate to `source/`
+2. Create an empty stage object. Start with this template. Replace names according to your preferences:
+
+```python
+from source.stage import Stage
+
+
+class MyStage(Stage):
+    def __init__(
+            self,
+            data,
+            input_file,
+            network_name,
+            resolutions,
+            iterations,
+            algorithm,
+            existing_clustering,
+            working_dir,
+            index
+    ):
+        super().__init__(
+            data, 
+            input_file, 
+            network_name,
+            resolutions,
+            iterations,
+            algorithm,
+            existing_clustering,
+            working_dir,
+            index)
+    
+    def initialize(self, data):        
+        # This method sets required parameters of your stage
+        # The data argument is the stage data in the json (dict)
+
+        self.chainable = # Can the outputs of this stage be used as an input for the next?
+        self.outputs_clustering = # Does this stage output a clustering or something else?
+
+        self.output_file = # What filename does this stage output?
+
+    def get_stage_commands(self, project_root, prev_file):
+        # Return an array of commands that the pipeline will execute when it reaches this stage
+```
+
+3. Navigate to `source/typedict.py`
+4. In `stage_classes`, modify the disctionary to map a string representing your stage, to the object you created. Make sure to import your code!
+5. Now, when writing your `pipeline.json`, simply add your stage in the `"stages"` array. Use the name specified in the previous step, and the arguments processed in your code.
+
+### Mincut Filter
+
+**TODO: This should be tested, and documented here**
+
+## The Stage and Clusterer Objects
+
+### Extensions of `AbstractClusterer`
+
+To view source code for the abstract class, see [here](../hm01/clusterers/abstract_clusterer.py). Objects extending the `AbstractClusterer` object must have the following:
+
+- Object variables containing the clusterer parameters:
+
+```python
+@dataclass
+class IkcClusterer(AbstractClusterer):
+    k: int
+```
+
+- A `cluster` method that runs the clustering algorithm and returns clusters in the form of `IntangibleSubgraph` objects in hm01. This is really just a set of vertices.
+  - This method can also call other class helper methods
+
+- Your file containing the object extending the `AbstractClusterer` must contain a `get_clusterer` method taking in arguments for the clusterer, and returning the clusterer object. This is so that CM can generalize to use your clustering method
+
+### Extensions of `Stage`
+
+To view the abstract class, click [here](../source/stage.py). Any extension of Stage must contain the following:
+
+- The `__init__` can simply super the abstract class.
+- An `initialize(self, data)` method to set the following:
+  - The `data` parameter is a dictionary representing the stage object in the json.
+  - `self.outputs_clustering`: A boolean on whether your stage outputs a cluatering or something else
+    - For example `cleanup` and `stats` outputs a graph and statistics respectively, both of which are not clusterings.
+  - `self.chainable`: A boolean on whether you stage's outputs can be used by the next stage
+    - For example, if your stage outputs an aggregated graph that can be reclustered, it is chainable
+  - `self.output_file`
+    - If your stage outputs one file, this is a string
+    - If your stage outputs a file per parameter set, this is an array following the same order as the params specified in the json.
+    - Output files should be stored in the appropriate directory.
+      - Use `self.get_folder_name(param)` to get the folder name for the parameter dictionary used.
+      - This means that the correct folder for a param set `param` would be in `f'{self.working_dir}/{self.get_folder_name(param)}/`
+  - Any parameters that are specific to your clusterer can be assigned here
+    - E.g. `self.scripts` for the filtration stage
+- A `get_stage_commands(self, project_root, prev_file)`.
+  - The `project_root` is the root folder for this repository
+  - The `prev_file` is the filename (as a string or array of strings per parameter set).
+  - This command should return an array of commands to execute when this stage is reached. These command must address all the parameter sets, and return files per each parameter set.
+
+### Extensions of `Clustering`
+
+Clustering is already an extension of Stage. To view the parent object, see the code [here](../source/clustering.py). Any extension of the clustering object should have:
+
+- `__init__` can simply super the clustering object
+- `initialize_clustering(self)`. Set the output file when this clusterer is run. This is similar to setting the stage output file.
+- `get_stage_commands(self, project_root, previous file)`. This returns a set of commands when your clustering method is run. 
+  - You should have an executable for your clustering that is runnable via shell. If it is a python module (like infomap or Leiden), please make a runnable script [(like this one)](../scripts/run_leiden.py). If you want to submit your changes, keep your scripts in the [scripts/](../scripts/) folder.
 
 ## Submitting your Changes
 
