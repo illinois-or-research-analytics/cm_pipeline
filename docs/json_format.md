@@ -17,9 +17,6 @@ The following document will go over the different parameters for each stage as w
     - [Connectivity Modifier](#connectivity-modifier)
     - [Stats](#stats)
   - [Using an Existing Clustering](#using-an-existing-clustering)
-    - [Using an Existing Leiden Clustering](#using-an-existing-leiden-clustering)
-    - [Using an Existing Leiden-Mod Clustering](#using-an-existing-leiden-mod-clustering)
-    - [Using an Existing IKC Clustering](#using-an-existing-ikc-clustering)
   - [Examples](#examples)
 
 ## Overall Parameters
@@ -238,8 +235,6 @@ This stage reports statistics of a clustering that was outputted by a stage prec
 
 ## Using an Existing Clustering
 
-### Using an Existing Leiden Clustering
-
 ```json
 {
     "title": "cit-new-pp-output-leiden-skipstage",
@@ -251,54 +246,19 @@ This stage reports statistics of a clustering that was outputted by a stage prec
         {
             "res": 0.5,
             "i": 2,
-            "": ""
+            "existing_clustering": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv"
+        },
+        {
+            "res": 0.1,
+            "i": 2,
+            "existing_clustering": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
         }
     ],
-    "existing": {
-        "0.5, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv",
-        "0.1, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
-    },
     "stages": ["..."]
 }
 ```
 
-To use an existing clustering, use a json value `"existing"` that stores a dictionary mapping a `"(resolution), (iterations)"` string to the corresponding clustering file path that uses those parameters.
-
-### Using an Existing Leiden-Mod Clustering
-
-```json
-{
-    "title": "cit-new-pp-output-leiden_mod",
-    "name": "cit_patents",
-    "input_file": "cit_patents_cleaned.tsv",
-    "output_dir": "samples/",
-    "algorithm": "leiden_mod",
-    "iterations": 2,
-    "existing": {
-        "2": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
-    },
-    "stages": ["..."]
-}
-```
-
-The mapping on the `"existing"` field maps just the iterations value (stored as a string) to the corresponding leiden-mod clustering that used that number of iterations.
-
-### Using an Existing IKC Clustering
-
-```json
-    "title": "cit-new-pp-output-ikc-skipstage",
-    "name": "cit_patents",
-    "input_file": "cit_patents_cleaned.tsv",
-    "output_dir": "samples/",
-    "algorithm": "ikc",
-    "k": 10,
-    "existing": {
-        "10": "samples/cit-new-pp-output-ikc-20230616-05:03:59/k-10/S2_cit_patents_ikc.10_clustering_reformatted.tsv"
-    },
-    "stages": ["..."]
-```
-
-Likewise the `"existing"` field maps k values to clustering files using that k value.
+To use an existing clustering, add a value `"existing_clustering"` per parameter entry in your json header. This is applicable for any clustering method.
 
 ## Examples
 
