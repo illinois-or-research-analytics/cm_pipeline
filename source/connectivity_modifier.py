@@ -103,7 +103,7 @@ class CM(Stage):
 
             c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
 
-            c = c + f'python3 {project_root}/hm01/cm.py \
+            c = c + f'python3 -m hm01.cm \
                 -i {self.network} \
                     -e {self.get_previous_file()[i]} \
                         -o {output_file} \
@@ -133,7 +133,7 @@ class CM(Stage):
             cmd.append(f'echo "Currently on k={k}"')
 
             c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
-            c = c + f'python3 {project_root}/hm01/cm.py \
+            c = c + f'python3 -m hm01.cm \
                 -i {self.network} \
                     -e {self.get_previous_file()[i]} \
                         -o {output_file} \
@@ -165,13 +165,13 @@ class CM(Stage):
             cmd.append(f'echo "{dumps(param)}" > cargs.json')
 
             c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
-            c = c + f'python3 {project_root}/hm01/cm.py \
+            c = c + f'python3 -m hm01.cm \
                 -i {self.network} \
                     -e {prev_file[i] if type(prev_file) == list else prev_file} \
                         -o {output_file} \
                             -c external \
                                 -cfile {self.cfile} \
-                                    -cargs cargs.json'
+                                    -cargs cargs.json {self.args}'
             
             cmd.append(c)
 

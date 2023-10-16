@@ -12,7 +12,6 @@
         },
         {
             "name": "stats",
-            "noktruss": true,
             "parallel_limit": 2
         },
         {
@@ -20,12 +19,11 @@
             "memprof": false,
             "threshold": "1log10",
             "nprocs": 1,
-            "quiet": true,
+            "quiet": false,
             "cfile": "hm01/clusterers/external_clusterers/infomap_wrapper.py"
         },
         {
             "name": "stats",
-            "noktruss": true,
             "parallel_limit": 2
         }
     ]
