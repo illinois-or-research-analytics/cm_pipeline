@@ -19,7 +19,6 @@
         },
         {
             "name": "stats",
-            "noktruss": true,
             "parallel_limit": 2
         },
         {
@@ -44,7 +43,6 @@
         },
         {
             "name": "stats",
-            "noktruss": true,
             "parallel_limit": 2
         }
     ]
