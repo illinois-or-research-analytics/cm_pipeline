@@ -4,6 +4,12 @@ The following document will go over the different parameters for each stage as w
 
 - [JSON Input Documentation](#json-input-documentation)
   - [Overall Parameters](#overall-parameters)
+  - [Algorithmic Parameters](#algorithmic-parameters)
+    - [Leiden-CPM](#leiden-cpm)
+    - [Leiden-Mod](#leiden-mod)
+    - [IKC](#ikc)
+    - [Infomap](#infomap)
+    - [Your Own Clustering Method](#your-own-clustering-method)
   - [Stages](#stages)
     - [Cleanup](#cleanup)
     - [Clustering](#clustering)
@@ -26,8 +32,20 @@ The following is a general overview of the overall parameters that don't belong 
     "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
-    "resolution": [0.5, 0.01],
-    "iterations": 2,
+    "params": [
+        {
+            "res": 0.5,
+            "i": 2
+        },
+        {  
+            "res": 0.1,
+            "i": 2
+        },
+        {
+            "res": 0.01,
+            "i": 2
+        }
+    ]
     "stages": ["..."]
 ```
 
@@ -39,20 +57,71 @@ All of the following parameter values are required:
 - **output_dir**: The directory to store pipeline outputs.
 - **algorithm**: The name of the algorithm. Can choose from `"leiden"`, `"leiden_mod"`, and `"ikc"`.
 - **stages**: An array of [stage](#stages) objects.
-  
-The following is only required if the algorithm is `"leiden"`:
+- **params**: A list of dictionaries mapping algorithm parameters to their values.
 
-- **resolution**: The resolution parameters for Leiden. Can either be a single float or an array of floats. If it is an array, the pipeline will generate multiple clusterings for each resolution value. If iterations is also an array, the pipeline will generate a clustering for every iteration-resolution pair.
-  
-The following is only required if the algorithm is `"leiden"` or `"leiden_mod"`
-
-- **iterations**: The number of iterations to run the clustering algorithm, Can either be an int or an array of ints. If it is an array, the pipeline will generate multiple clusterings for each iteration value.
-
-The following is only required if the algorithm is `"ikc"`
-
-- **k**: The k parameter used for ikc. This can be a single integer or an array where the clustering will be repeated using the different `k` values.  
-  
 **NOTE** Paths must be relative to the json file, or absolute.  
+
+## Algorithmic Parameters
+
+The `params` field contains dictionaries mapping parameter values to their values. These field names will vary based on the algorithm being used.
+
+### Leiden-CPM
+
+As shown above, Leiden-CPM takes resolution and iterations parameters. Designated in the json as `"res"` and `"i"` fields.
+
+```json
+{
+    "res": 0.5,
+    "i": 2
+}
+```
+
+### Leiden-Mod
+
+Leiden-Mod doesn't need to use a resolution parameter since it optimizes modularity and not CPM. Therefore, only an iterations parameter needs to be passed.
+
+```json
+{
+    "i": 2
+}
+```
+
+### IKC
+
+IKC only needs a k-core value passed as a parameter, designated as `"k"`.
+
+```json
+{
+    "k": 10
+}
+```
+
+### Infomap
+
+Infomap doesn't take ay parameters, so its dictionary is always empty. However, to fit the style constraints of the pipeline, any algorithm that doesnt take any parameters should use an empty dictionary as follows.
+
+```json
+{}
+```
+
+Since you can't have multiple runs of the same parameter set, the overall `"params"` field in the json will look like this:
+
+```json
+"params": [{}]
+```
+
+### Your Own Clustering Method
+
+Refer to the [customization documentation](pipeline_customization.md) for more details on how to create your own clustering. You will be able to assign parameter names for your own clustering using this pipeline.
+
+Supposing you create a pipeline with two parameters `"a"` and `"b"` with integer values, you will be able to designate them in the pipeline file.
+
+```json
+{
+    "a": 1,
+    "b": 2
+}
+```
 
 ## Stages
 
@@ -104,9 +173,9 @@ This stage takes a clustering and filters it according to a script, or series of
 **Required Paramters**:
 
 - **scripts**: This is an array of script file names. If you only want to run one script, the array will have one element with the script name. The following are scripts in the repository that can be used for filtration:
-  - `"./scripts/subset_graph_nonetworkit_treestar.R"`
-  - `"./scripts/make_cm_ready.R"`
-  - `"./scripts/post_cm_filter.R"`
+  - `"subset_graph_nonetworkit_treestar.R"`
+  - `"make_cm_ready.R"`
+  - `"post_cm_filter.R"`
   
 **Limitations**: This stage must come after a stage that outputs a clustering.
 
@@ -121,7 +190,6 @@ This is the stage that applies CM++ to a clustering to ensure connectivity requi
     "threshold": "1log10",
     "nprocs": 32,
     "quiet": true,
-    "firsttsv": true
 }
 ```
 
@@ -137,7 +205,6 @@ This is the stage that applies CM++ to a clustering to ensure connectivity requi
 - **memprof**: Profile the memory usage per process over time as CM++ is running. If this is ommitted or set to false, memory profiling will not run.
 - **nprocs**: Number of cores to run CM++. If omitted, this defaults to 4.
 - **quiet**: Silence output to terminal. If omitted, this defaults to false.
-- **firsttsv**: Output the original clustering output before CM2Universal is run. If omitted, this defaults to false.
   
 **Limitations**: This must come after a stage that outputs a clustering.  
 
@@ -145,14 +212,14 @@ This is the stage that applies CM++ to a clustering to ensure connectivity requi
 
 ### Stats
 
-This stage reports statistics of a clustering that was outputted by a stage preceding it. For more information on the statistics reporting ans its outputs. Refer to the following [repository](https://github.com/vikramr2/cluster-statistics). The code for the stage is the following:
+This stage reports statistics of a clustering that was outputted by a stage preceding it. For more information on the statistics reporting ans its outputs. The code for the stage is the following:
 
 ```json
 {
     "name": "stats",
     "noktruss": true,
-    "parallel_limit": 2
-    "universal_before": false
+    "parallel_limit": 2,
+    "universal_before": false,
     "summarize": false
 }
 ```
@@ -174,18 +241,25 @@ This stage reports statistics of a clustering that was outputted by a stage prec
 ### Using an Existing Leiden Clustering
 
 ```json
+{
     "title": "cit-new-pp-output-leiden-skipstage",
     "name": "cit_patents",
     "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
-    "resolution": [0.5, 0.1],
-    "iterations": 2,
+    "params": [
+        {
+            "res": 0.5,
+            "i": 2,
+            "": ""
+        }
+    ],
     "existing": {
         "0.5, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv",
         "0.1, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
     },
     "stages": ["..."]
+}
 ```
 
 To use an existing clustering, use a json value `"existing"` that stores a dictionary mapping a `"(resolution), (iterations)"` string to the corresponding clustering file path that uses those parameters.
@@ -193,6 +267,7 @@ To use an existing clustering, use a json value `"existing"` that stores a dicti
 ### Using an Existing Leiden-Mod Clustering
 
 ```json
+{
     "title": "cit-new-pp-output-leiden_mod",
     "name": "cit_patents",
     "input_file": "cit_patents_cleaned.tsv",
@@ -203,6 +278,7 @@ To use an existing clustering, use a json value `"existing"` that stores a dicti
         "2": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
     },
     "stages": ["..."]
+}
 ```
 
 The mapping on the `"existing"` field maps just the iterations value (stored as a string) to the corresponding leiden-mod clustering that used that number of iterations.

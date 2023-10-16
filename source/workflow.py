@@ -164,8 +164,8 @@ class Workflow:
             'minutes=$(($elapsed_time % 3600 / 60))',
             'seconds=$(($elapsed_time % 60))',
             'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
-            f'echo "Analysis Time Elapsed: $formatted_time"',
-            f'echo "Analysis,$formatted_time" >> execution_times.csv',
+            'echo "Analysis Time Elapsed: $formatted_time"',
+            'echo "Analysis,$formatted_time" >> execution_times.csv',
             'echo "*** DONE ***"'
         ]
 
@@ -177,13 +177,13 @@ class Workflow:
             'minutes=$(($elapsed_time % 3600 / 60))',
             'seconds=$(($elapsed_time % 60))',
             'formatted_time=$(printf "%02d:%02d:%02d" $hours $minutes $seconds)',
-            f'echo "Overall Time Elapsed: $formatted_time"',
+            'echo "Overall Time Elapsed: $formatted_time"',
             'echo "*** PIPELINE DONE ***"'
         ]
     
     def write_script(self):
         os.system(f'mkdir -p {self.working_dir}/{self.output_dir}')
-        with open(f"{self.working_dir}/{self.output_dir}/commands.sh", "w") as file:
+        with open(f"{self.working_dir}/{self.output_dir}/commands.sh", "w", encoding='utf-8') as file:
             file.writelines(line + "\n" for line in self.commands)
 
     def execute(self):
