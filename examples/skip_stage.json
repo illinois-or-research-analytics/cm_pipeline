@@ -4,12 +4,18 @@
     "input_file": "/data3/chackoge/networks/cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
-    "resolution": [0.5, 0.1],
-    "iterations": 2,
-    "existing": {
-        "0.5, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv",
-        "0.1, 2": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
-    },
+    "params": [
+        {
+            "res": 0.5,
+            "i": 2,
+            "existing_clustering": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv"
+        },
+        {
+            "res": 0.1,
+            "i": 2,
+            "existing_clustering": "samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv"
+        }
+    ],
     "stages": [
         {
             "name": "stats",

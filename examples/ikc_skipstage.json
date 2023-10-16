@@ -4,10 +4,12 @@
     "input_file": "cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "ikc",
-    "k": 10,
-    "existing": {
-        "10": "samples/cit-new-pp-output-ikc-20230616-05:03:59/k-10/S2_cit_patents_ikc.10_clustering_reformatted.tsv"
-    },
+    "params": [
+        {
+            "k": 10,
+            "existing_clustering": "samples/cit-new-pp-output-ikc-20230616-05:03:59/k-10/S2_cit_patents_ikc.10_clustering_reformatted.tsv"
+        }
+    ],
     "stages": [
         {
             "name": "stats",

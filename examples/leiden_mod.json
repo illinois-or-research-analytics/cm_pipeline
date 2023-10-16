@@ -4,7 +4,11 @@
     "input_file": "cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden_mod",
-    "iterations": 2,
+    "params": [
+        {
+            "i": 2
+        }
+    ],
     "stages": [
         {
             "name": "cleanup"

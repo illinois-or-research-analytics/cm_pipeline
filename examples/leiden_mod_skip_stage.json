@@ -4,10 +4,12 @@
     "input_file": "cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden_mod",
-    "iterations": 2,
-    "existing": {
-        "2": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
-    },
+    "params": [
+        {
+            "i": 2,
+            "existing_clustering": "samples/cit-new-pp-output-leiden_mod-20230619-20:22:46/res-mod-i2/S2_cit_patents_leiden_mod.mod_i2_clustering.tsv"
+        }
+    ],
     "stages": [
         {
             "name": "stats",

@@ -4,7 +4,14 @@
     "input_file": "cit_patents_cleaned.tsv",
     "output_dir": "samples/",
     "algorithm": "ikc",
-    "k": [10, 5],
+    "params": [
+        {
+            "k": 10
+        },
+        {
+            "k": 5
+        }
+    ],
     "stages": [
         {
             "name": "cleanup"
@@ -29,7 +36,7 @@
             "name": "connectivity_modifier",
             "memprof": true,
             "threshold": "1log10",
-            "nprocs": 32,
+            "nprocs": 4,
             "quiet": true
         },
         {
