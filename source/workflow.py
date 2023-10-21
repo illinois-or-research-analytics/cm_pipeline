@@ -48,7 +48,7 @@ class Workflow:
                 if k != 'existing_clustering':
                     directory += f'_{k}{v}'
                 else:
-                    self.existing_clustering.append(path.realpath(v))
+                    self.existing_clustering.append(f'{self.working_dir}/{v}')
             self.commands.append(f'mkdir -p {directory}')
 
         if len(self.existing_clustering) == 0:
