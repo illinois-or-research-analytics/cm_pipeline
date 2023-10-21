@@ -4,11 +4,10 @@
     "input_file": "network.tsv",
     "output_dir": "samples/",
     "algorithm": "leiden",
-    "resolution": 0.5,
-    "iterations": 2,
     "params": [{
         "res": 0.5,
-        "i": 2
+        "i": 2,
+        "existing_clustering": "clustering.tsv"
     }],
     "stages": [
         {

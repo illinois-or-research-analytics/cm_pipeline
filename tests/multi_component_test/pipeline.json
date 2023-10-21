@@ -4,10 +4,10 @@
     "input_file": "network.tsv",
     "output_dir": "samples/",
     "algorithm": "ikc",
-    "k": 2,
-    "existing": {
-        "2": "clustering.tsv"
-    },
+    "params": [{
+        "k": 2,
+        "existing_clustering": "clustering.tsv"
+    }],
     "stages": [
         {
             "name": "connectivity_modifier",

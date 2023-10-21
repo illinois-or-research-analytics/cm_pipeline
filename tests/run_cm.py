@@ -83,13 +83,13 @@ def get_cluster_sizes(file):
 
 def get_final_tsv_leiden(files, res, iter):
     ''' Get the final clustering output for a leiden clustering '''
-    tsvs = [f for f in files[f'res-{res}-i{iter}'] if f.endswith('.tsv')]
+    tsvs = [f for f in files[f'leiden_res{res}_i{iter}'] if f.endswith('.tsv')]
     return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
 
 
 def get_final_tsv_ikc(files, k):
     ''' Get the final clustering for an ikc output '''
-    tsvs = [f for f in files[f'k-{k}'] if f.endswith('.tsv')]
+    tsvs = [f for f in files[f'ikc_k{k}'] if f.endswith('.tsv')]
     return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
 
 
@@ -116,7 +116,7 @@ def run_cm(data_dir: str):
     # Navigate to the directory where the cm_pipeline final output is stored
     output_dir = get_recent_run(dirs, run_name)
     output_dirs = os.listdir(f'{full_path}/samples/{output_dir}/')
-    data_output_dir = [d for d in output_dirs if d.startswith(('res', 'k'))]
+    data_output_dir = [d for d in output_dirs if d.startswith(('leiden', 'ikc'))]
     stage_outputs = {
         d: [
             f"{full_path}/samples/{output_dir}/{d}/{f}"
