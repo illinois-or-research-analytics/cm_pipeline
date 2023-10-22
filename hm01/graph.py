@@ -1,13 +1,13 @@
+# pyright: reportMissingImports=false
+
 from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass
 from functools import cache, cached_property
-from sys import path
 from typing import Dict, Iterator, List, Tuple, Union
 
 import networkit as nk
-import networkx as nx
 
 import hm01.mincut as mincut
 from hm01.context import context
@@ -16,6 +16,15 @@ from hm01.context import context
 from mincut_wrapper import MincutResult
 from pymincut.pygraph import PyGraph
 
+def encode_to_26_ary(n):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    result = ''
+
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        result = alphabet[remainder] + result
+
+    return result
 
 class AbstractGraph:
     """ (VR) Inheritable abstract class for the different graph classes """
@@ -134,9 +143,13 @@ class Graph(AbstractGraph):
 
     def cut_by_mincut(self, mincut_res):
         """ (VR) Cut the graph by the mincut result """
-        light = self.induced_subgraph(mincut_res.get_light_partition(), "a")
-        heavy = self.induced_subgraph(mincut_res.get_heavy_partition(), "b")
-        return light, heavy
+        partitions = []
+
+        for i, partition in enumerate(mincut_res):
+            if i < len(mincut_res) - 1:
+                partitions.append(self.induced_subgraph(partition, encode_to_26_ary(i+1)))
+
+        return partitions
 
     @cached_property
     def continuous_ids(self):
@@ -392,21 +405,19 @@ class RealizedSubgraph(AbstractGraph):
         self, mincut_res: MincutResult
     ) -> Tuple[Union[Graph, RealizedSubgraph], Union[Graph, RealizedSubgraph]]:
         """Cut the graph by the mincut result"""
-        light = RealizedSubgraph(
-            IntangibleSubgraph(
-                mincut_res.get_light_partition(),
-                self.index + "a",
-            ),
-            self,
-        )
-        heavy = RealizedSubgraph(
-            IntangibleSubgraph(
-                mincut_res.get_heavy_partition(),
-                self.index + "b",
-            ),
-            self,
-        )
-        return light, heavy
+        partitions = []
+
+        for i, partition in enumerate(mincut_res):
+            if i < len(mincut_res) - 1:
+                partitions.append(RealizedSubgraph(
+                    IntangibleSubgraph(
+                        partition,
+                        self.index + encode_to_26_ary(i+1)
+                    ),
+                    self._graph
+                ))
+
+        return partitions
     
     def internal_degree(self, u, graph: Graph) -> int:
         return sum(1 for v in graph._data.iterNeighbors(u) if v in self.nodeset)

@@ -3,10 +3,8 @@
     "name": "tail",
     "input_file": "network.tsv",
     "output_dir": "samples/",
-    "algorithm": "leiden",
+    "algorithm": "infomap",
     "params": [{
-        "res": 0.5,
-        "i": 2,
         "existing_clustering": "clustering.tsv"
     }],
     "stages": [
@@ -15,7 +13,8 @@
             "memprof": false,
             "threshold": "1log10",
             "nprocs": 1,
-            "quiet": true
+            "quiet": true,
+            "cfile": "hm01/clusterers/external_clusterers/infomap_wrapper.py"
         }
     ]
 }
