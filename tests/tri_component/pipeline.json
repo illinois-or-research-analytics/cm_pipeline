@@ -1,0 +1,21 @@
+{
+    "title": "multi_component_run",
+    "name": "multi_component",
+    "input_file": "network.tsv",
+    "output_dir": "samples/",
+    "algorithm": "leiden",
+    "params": [{
+        "i": 1,
+        "res": 0.001,
+        "existing_clustering": "clustering.tsv"
+    }],
+    "stages": [
+        {
+            "name": "connectivity_modifier",
+            "memprof": false,
+            "threshold": 1,
+            "nprocs": 1,
+            "quiet": true
+        }
+    ]
+}
