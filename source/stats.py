@@ -104,7 +104,7 @@ class Stats(Stage):
         # If the summarize value is set to true, output summary stats
         if self.summarize:
             for v in self.output_file:
-                cmd.append(f'python3 {project_root}/cluster-statistics/summarize.py {v} {self.network}')
+                cmd.append(f'python3 {project_root}/scripts/summarize.py {v} {self.network}')
 
         return cmd
     
