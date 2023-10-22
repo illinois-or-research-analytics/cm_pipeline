@@ -61,7 +61,7 @@ def summarize_stats(filename):
     conductance_max = conductances.max()
 
     mincuts = stats.iloc[:-1]['connectivity']
-    mincuts_normalized = stats.iloc[:-1]['connectivity_normalized']
+    mincuts_normalized = stats.iloc[:-1]['connectivity_normalized_log10(n)']
 
     mincuts_min = mincuts.min()
     mincuts_max = mincuts.max()
