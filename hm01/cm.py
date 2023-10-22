@@ -42,6 +42,7 @@ class ClustererSpec(str, Enum):
     leiden_mod = "leiden_mod"
     external = "external"
 
+
 def annotate_tree_node(
     node: ClusterTreeNode, 
     graph: Union[
@@ -60,6 +61,7 @@ def annotate_tree_node(
     # (VR) Def CM_Valid: A cluster that is in the final result, must have connectivity that fits the threshold
     node.cm_valid = True    
 
+
 def update_cid_membership(
     subgraph: Union[Graph, IntangibleSubgraph, RealizedSubgraph],
     node2cids: Dict[int, str],
@@ -67,6 +69,7 @@ def update_cid_membership(
     """ (VR) Set nodes within current cluster to its respective cluster id """
     for n in subgraph.nodes():
         node2cids[n] = subgraph.index
+
 
 def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
     """ (VR) Summarize graphs for logging purposes """
@@ -76,6 +79,7 @@ def summarize_graphs(graphs: List[IntangibleSubgraph]) -> str:
         return f"[{graphs[0].index}, ..., {graphs[-1].index}]({len(graphs)})"
     else:
         return f"[{', '.join([g.index for g in graphs])}]({len(graphs)})"
+
 
 def initialize_subgraph(
     nodes_global,
@@ -105,6 +109,7 @@ def initialize_subgraph(
 
     subgraph = RealizedSubgraph.from_adjlist(node_set, edges, cluster_id)
     return subgraph, node_set
+
 
 def par_task(stack, node_mapping, node2cids):
     # (VR) Main algorithm loop: Recursively cut clusters in stack until they have mincut above threshold
@@ -236,6 +241,7 @@ def par_task(stack, node_mapping, node2cids):
                 log.info("cut valid, not splitting anymore")
 
     return (node_mapping, node2cids)
+
 
 def algorithm_g(
     graphs: List[IntangibleSubgraph],
