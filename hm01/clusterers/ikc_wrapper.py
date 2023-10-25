@@ -60,9 +60,6 @@ class IkcClusterer(AbstractClusterer):
             with open(stdout_p, "w") as f_out:
                 subprocess.run(
                     [
-                        "/usr/bin/time",
-                        "-v",
-                        "/usr/bin/env",
                         "python3",
                         ikc_path,
                         "-e",

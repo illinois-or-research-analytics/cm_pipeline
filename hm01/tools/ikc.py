@@ -4,10 +4,12 @@ import csv
 
 
 def main(args):
+    global quiet
 
     edge_list = args.edgeList
     out_dir = args.outDir
     k = args.kvalue
+    quiet = args.quiet
 
     edge_list_reader = nk.graphio.EdgeListReader('\t',0, continuous=False, directed=True)
     graph1 = edge_list_reader.read(edge_list)
@@ -70,7 +72,8 @@ def iterative_k_core_decomposition_MCS_ES(graph, k, inverted_orig_node_ids):
         # run kc on the graph to get the smallest kcore
         subgraph, max_k, kcore = kc(graph)
         if subgraph == None:
-            print ("no available subgraph")
+            if not quiet:
+                print ("no available subgraph")
             break
 
         # if b. above is true, add all singletons and nodes left in the graph as individual clusters
@@ -104,13 +107,15 @@ def iterative_k_core_decomposition_MCS_ES(graph, k, inverted_orig_node_ids):
                 if modularity > 0:
                     sub_components = [(component, modularity)]
                 else:
-                    print('failed modularity')
+                    if not quiet:
+                        print('failed modularity')
                     nbr_failed_modularity += 1
                     sub_components = []
                     nodes_to_remove.update(component)
                     singletons.extend(orig_id_component(component, inverted_orig_node_ids))
             else:
-                print('failed k-valid')
+                if not quiet:
+                    print('failed k-valid')
                 nbr_failed_k_valid += 1
                 sub_components = []
                 nodes_to_remove.update(component)
@@ -122,7 +127,8 @@ def iterative_k_core_decomposition_MCS_ES(graph, k, inverted_orig_node_ids):
                 cluster = []
                 for node in sub_component:
                     cluster.append(inverted_orig_node_ids[node])
-                print ('adding cluster length', len(cluster))
+                if not quiet:
+                    print ('adding cluster length', len(cluster))
                 clusters.append((cluster, max_k, modularity))
 
             final_clusters.extend(clusters)
@@ -135,8 +141,9 @@ def iterative_k_core_decomposition_MCS_ES(graph, k, inverted_orig_node_ids):
             if size > 100:
                 nbr_large_components += 1
                 large_components[nbr] = size
-        print ('nbr components:', len(components),
-               ',  nbr components with more than 100 nodes:', nbr_large_components)
+        if not quiet:
+            print ('nbr components:', len(components),
+                ',  nbr components with more than 100 nodes:', nbr_large_components)
 
         # remove nodes marked for removal 
         # (either already clustered or when a large cluster is not validly broken up)
@@ -154,10 +161,13 @@ def iterative_k_core_decomposition_MCS_ES(graph, k, inverted_orig_node_ids):
             temp_dict[new_id] = orig_id
         inverted_orig_node_ids = temp_dict
         graph = nk.graphtools.getCompactedGraph(graph, node_id_dict)
-        print ('nodes left in graph: ', graph.numberOfNodes())
 
-    print ("nbr of clusters which were rejected since they were not k-valid : ", nbr_failed_k_valid)
-    print ("nbr of clusters which were rejected since they were not modular : ", nbr_failed_modularity)
+        if not quiet:
+            print ('nodes left in graph: ', graph.numberOfNodes())
+
+    if not quiet:
+        print ("nbr of clusters which were rejected since they were not k-valid : ", nbr_failed_k_valid)
+        print ("nbr of clusters which were rejected since they were not modular : ", nbr_failed_modularity)
 
     return final_clusters
 
@@ -199,7 +209,8 @@ def kc(graph, k=None):
         k += 1
 
     # return the subgraph with nodes from kcore members
-    print ("k value", save_k,'nbr core members', len(kcore_members))
+    if not quiet:
+        print ("k value", save_k,'nbr core members', len(kcore_members))
     return nk.graphtools.subgraphFromNodes(graph, kcore_members), max_k, kc
 
 
@@ -244,7 +255,8 @@ def format_graph(graph1):
     graph1 = nk.graphtools.getCompactedGraph(graph1, origNodeIdDict)
 
     if graph1.isWeighted() == False:
-        print ("not weighted")
+        if not quiet:
+            print ("not weighted")
         weighted = nk.Graph(n=0, weighted=True, directed=True)
 
         for node in graph1.iterNodes():
@@ -262,7 +274,8 @@ def format_graph(graph1):
 
     graph.removeSelfLoops()
 
-    print (graph.numberOfNodes())
+    if not quiet:
+        print (graph.numberOfNodes())
     return graph, invertedOrigNodeIdDict
 
 
@@ -280,9 +293,14 @@ def parseArgs():
     parser.add_argument("-k", "--kvalue", type=int,
                         help="non-negative integer value of the minimum required adjacent nodes for each node",
                         required=False, default=0)
+    
+    parser.add_argument("-q", "--quiet", type=bool,
+                        help="silence ikc outputs",
+                        required=False, default=False)
 
     parser.add_argument("-v", "--version", action="version", version="1.0.0",
                         help="show the version number and exit")
+    
 
     return parser.parse_args()
 
