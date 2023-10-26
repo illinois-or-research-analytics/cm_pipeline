@@ -93,6 +93,12 @@ def get_final_tsv_ikc(files, k):
     return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
 
 
+def get_final_tsv_infomap(files):
+    ''' Get the final clustering for an ikc output '''
+    tsvs = [f for f in files['infomap'] if f.endswith('.tsv')]
+    return max(tsvs, key=lambda x: int(x.rsplit("/", 1)[-1][1]))
+
+
 def run_cm(data_dir: str):
     ''' Wrapper for running the cm pipeline and fetching outputs
     
@@ -116,7 +122,7 @@ def run_cm(data_dir: str):
     # Navigate to the directory where the cm_pipeline final output is stored
     output_dir = get_recent_run(dirs, run_name)
     output_dirs = os.listdir(f'{full_path}/samples/{output_dir}/')
-    data_output_dir = [d for d in output_dirs if d.startswith(('leiden', 'ikc'))]
+    data_output_dir = [d for d in output_dirs if d.startswith(('leiden', 'ikc', 'infomap'))]
     stage_outputs = {
         d: [
             f"{full_path}/samples/{output_dir}/{d}/{f}"

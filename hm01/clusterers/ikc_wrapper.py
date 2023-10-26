@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pathlib import Path
 import subprocess
 from typing import List, Iterator, Dict, Union
 import csv
@@ -9,42 +8,11 @@ from hm01.clusterers.abstract_clusterer import AbstractClusterer
 from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
 from hm01.context import context
 
-from sys import path
-
-from hm01.tools.ikc_importable import ikc
 
 @dataclass
 class IkcClusterer(AbstractClusterer):
     k: int
 
-
-    def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
-        """Returns a list of (labeled) subgraphs on the graph"""
-        # cluster_id = graph.index  # the cluster id such as 5a6b2
-
-        old_to_new_node_id_mapping = graph.continuous_ids
-        new_to_old_node_id_mapping = {
-            v: k for k, v in old_to_new_node_id_mapping.items()
-        }
-
-        # Extract nk subgraph from subgraph
-        nk_subgraph = graph.as_compact_networkit()
-
-        # Compute the ikc clusters
-        clusters = ikc(nk_subgraph, self.k)
-
-        del nk_subgraph
-
-        for local_cluster_id, (local_cluster_member_arr, _, _) in enumerate(clusters):
-            global_cluster_member_arr = [
-                int(new_to_old_node_id_mapping[local_id])
-                for local_id in local_cluster_member_arr
-            ]
-            yield graph.intangible_subgraph(
-                global_cluster_member_arr, str(local_cluster_id)
-            )
-
-    '''
     def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
         """Returns a list of (labeled) subgraphs on the graph"""
         cluster_id = graph.index  # the cluster id such as 5a6b2
@@ -82,7 +50,6 @@ class IkcClusterer(AbstractClusterer):
                 global_cluster_member_arr, str(local_cluster_id)
             )
         # return retarr
-    '''
 
     def run_ikc(self, edge_list_path, graph: Union[Graph, RealizedSubgraph], output_file):
         """Runs IKC given an edge list and writes a CSV"""
@@ -93,9 +60,6 @@ class IkcClusterer(AbstractClusterer):
             with open(stdout_p, "w") as f_out:
                 subprocess.run(
                     [
-                        "/usr/bin/time",
-                        "-v",
-                        "/usr/bin/env",
                         "python3",
                         ikc_path,
                         "-e",
@@ -104,6 +68,7 @@ class IkcClusterer(AbstractClusterer):
                         output_file,
                         "-k",
                         str(self.k),
+                        "-q"
                     ]
                 )
 
@@ -131,3 +96,28 @@ class IkcClusterer(AbstractClusterer):
             "cluster_to_id_dict": cluster_to_id_dict,
             "id_to_cluster_dict": id_to_cluster_dict,
         }
+
+    def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
+        clusters = {}
+        with open(filepath, newline="") as csvfile:
+            #if 
+            reader = csv.reader(csvfile, delimiter=",")
+            for row in reader:
+                node_id = int(row[0])
+                cluster_id = row[1]
+                if cluster_id not in clusters:
+                    clusters[cluster_id] = IntangibleSubgraph([], cluster_id)
+                clusters[cluster_id].subset.append(node_id)
+        return list(clusters.values())
+
+    # TODO: Need to factor in if .tsv
+    def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
+        # node_id cluster_id format
+        clusters: Dict[str, IntangibleSubgraph] = {}
+        with open(filepath) as f:
+            for line in f:
+                node_id, cluster_id = line.split()
+                clusters.setdefault(
+                    cluster_id, IntangibleSubgraph([], cluster_id)
+                ).subset.append(int(node_id))
+        return list(v for v in clusters.values() if v.n() > 1)

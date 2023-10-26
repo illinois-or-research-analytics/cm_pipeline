@@ -1,20 +1,21 @@
 {
-    "title": "tail_run",
-    "name": "tail",
+    "title": "multi_component_run",
+    "name": "multi_component",
     "input_file": "network.tsv",
     "output_dir": "samples/",
-    "algorithm": "infomap",
+    "algorithm": "leiden",
     "params": [{
+        "i": 1,
+        "res": 0.001,
         "existing_clustering": "clustering.tsv"
     }],
     "stages": [
         {
             "name": "connectivity_modifier",
             "memprof": false,
-            "threshold": "1log10",
+            "threshold": 1,
             "nprocs": 1,
-            "quiet": true,
-            "cfile": "hm01/clusterers/external_clusterers/infomap_wrapper.py"
+            "quiet": true
         }
     ]
 }
