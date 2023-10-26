@@ -68,6 +68,7 @@ class IkcClusterer(AbstractClusterer):
                         output_file,
                         "-k",
                         str(self.k),
+                        "-q"
                     ]
                 )
 

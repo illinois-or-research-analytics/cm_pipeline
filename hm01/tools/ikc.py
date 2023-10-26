@@ -294,9 +294,8 @@ def parseArgs():
                         help="non-negative integer value of the minimum required adjacent nodes for each node",
                         required=False, default=0)
     
-    parser.add_argument("-q", "--quiet", type=bool,
-                        help="silence ikc outputs",
-                        required=False, default=False)
+    parser.add_argument("-q", "--quiet", action="store_true",
+                        help="silence ikc outputs")
 
     parser.add_argument("-v", "--version", action="version", version="1.0.0",
                         help="show the version number and exit")
