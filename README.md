@@ -91,7 +91,7 @@ module load openmpi/4.0.1
 
 ```bibtex
 @misc{cm_pipe2023,
-  author = {Vidya Kamath and Vikram Ramavarapu and Fabio Ayres, and George Chacko},
+  author = {Vikram Ramavarapu, Vidya Kamath, Fabio Ayres, and George Chacko},
   title = {Connectivity Modifier Pipeline},
   howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
   year={2023},
