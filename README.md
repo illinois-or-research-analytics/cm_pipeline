@@ -1,6 +1,7 @@
 # CM++ Pipeline
 
 - [CM++ Pipeline](#cm-pipeline)
+  - [Requirements](#requirements)
   - [Setup](#setup)
     - [Setup via Cloning](#setup-via-cloning)
     - [Setup via pip install](#setup-via-pip-install)
@@ -9,7 +10,6 @@
   - [For Developers](#for-developers)
     - [Loading a Developer Environment](#loading-a-developer-environment)
     - [Customizing the Pipeline](#customizing-the-pipeline)
-  - [Requirements](#requirements)
   - [Output Files](#output-files)
   - [Archive](#archive)
   - [Citations](#citations)
@@ -17,6 +17,13 @@
 Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters. Image below from Park et. al. (2023).
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
+
+## Requirements
+
+- `python3.9` or higher
+- `cmake 3.2.0` or higher
+- `openmpi` and `gcc` of any version
+  - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used
 
 ## Setup
 
@@ -57,13 +64,6 @@ conda activate
 
 - The CM++ Pipeline also allows for users to add their own pipeline stages and clustering methods.
 - Please refer to the [customization documentation](docs/pipeline_customization.md) on how to modify the code to allow for your own pipeline stages and .
-
-## Requirements
-
-- `python3.9` or higher
-- `cmake 3.2.0` or higher
-- `openmpi` and `gcc` of any version
-  - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used
 
 ## Output Files
 
