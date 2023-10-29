@@ -24,7 +24,7 @@ authors:
       orcid: 0009-0000-0987-5901
       affiliation: 1
     - name: João Alfredo Cardoso Lamy
-      orcid: 0000-0000-0000-0000
+      orcid: 0009-0005-4744-4754
       affiliation: 2
     - name: Tandy Warnow
       orcid: 0000-0001-7717-3514
