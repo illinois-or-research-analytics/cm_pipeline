@@ -1,10 +1,7 @@
 # CM++ Pipeline
 
-Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
+Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters. Image below from Park et. al. (2023).
 
-## Overview
-
-**TODO: Change this figure**
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
 ## Setup
@@ -49,26 +46,10 @@ conda activate
 
 ## Requirements
 
-- Create a python venv with 3.9 or above version. We are using python3.9
-  - Activate the venv and run "pip install -r requirements.txt"
-- `cmake` version `3.2.0` and above should be installed.
-- `python39-devel` or higher should be installed, e.g., dnf install python39-devel
+- `python3.9` or higher
+- `cmake 3.2.0` or higher
 - `openmpi` and `gcc` of any version
-  - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used. The code works with gcc 8.5 too in an Oracle Linux 8 environment.
-
-### UIUC EngrIT Systems
-
-- These instructions are specific for users on an EngrIT cluster (such as Valhalla or the Campus Cluster) under the University of Illinois at Urbana-Champaign
-- You can get all the needed packages to run the pipeline via the following commands
-
-```bash
-module load python3/3.10.0
-module load cmake/3.25.1
-module load gcc/9.2.0
-module load openmpi/4.0.1
-```
-
-- **NOTE: These need to be loaded not just on installation but on execution of the CM++ pipeline**
+  - In our analysis, `openmpi 4.2.0` and `gcc 9.2.0` were used
 
 ## Output Files
 
