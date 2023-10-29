@@ -11,26 +11,26 @@ tags:
     - clustering
 authors:
     - name: Vikram Ramavarapu
-      orcid:
+      orcid: 0009-0001-8875-7213
       affiliation: 1
       email: vikramr2@illinois.edu
     - name: Fábio Jose Ayres
-      orcid:
+      orcid: 0009-0000-6821-4687
       affiliation: 2
     - name: Minhyuk Park
-      orcid:
+      orcid: 0000-0002-8676-7565
       affiliation: 1
     - name: Vidya Kamath Pailodi
-      orcid:
+      orcid: 0009-0000-0987-5901
       affiliation: 1
     - name: João Alfredo Cardoso Lamy
-      orcid:
+      orcid: 0000-0000-0000-0000
       affiliation: 2
     - name: Tandy Warnow
-      orcid:
+      orcid: 0000-0001-7717-3514
       affiliation: 1
     - name: George Chacko
-      orcid:
+      orcid: 0000-0002-2127-1892
       affiliation: 1
       corresponding: true
 affiliations:
