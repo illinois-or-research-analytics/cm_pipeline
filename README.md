@@ -1,5 +1,19 @@
 # CM++ Pipeline
 
+- [CM++ Pipeline](#cm-pipeline)
+  - [Setup](#setup)
+    - [Setup via Cloning](#setup-via-cloning)
+    - [Setup via pip install](#setup-via-pip-install)
+  - [Input and Usage](#input-and-usage)
+    - [JSON Input Documentation](#json-input-documentation)
+  - [For Developers](#for-developers)
+    - [Loading a Developer Environment](#loading-a-developer-environment)
+    - [Customizing the Pipeline](#customizing-the-pipeline)
+  - [Requirements](#requirements)
+  - [Output Files](#output-files)
+  - [Archive](#archive)
+  - [Citations](#citations)
+
 Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters. Image below from Park et. al. (2023).
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
