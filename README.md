@@ -1,57 +1,50 @@
-# cm_pipeline
+# CM++ Pipeline
 
 Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters.
-
-- [cm\_pipeline](#cm_pipeline)
-  - [Overview](#overview)
-  - [Setup and Running Instructions](#setup-and-running-instructions)
-    - [Setup via Cloning](#setup-via-cloning)
-    - [Setup via pip install (Beta)](#setup-via-pip-install-beta)
-  - [Input and Usage Instructions](#input-and-usage-instructions)
-  - [Documentation](#documentation)
-    - [JSON Input Documentation](#json-input-documentation)
-    - [Customizing the Pipeline](#customizing-the-pipeline)
-  - [Requirements](#requirements)
-    - [UIUC EngrIT Systems](#uiuc-engrit-systems)
-  - [Output Files](#output-files)
-  - [Archive](#archive)
-  - [Citation](#citation)
 
 ## Overview
 
 **TODO: Change this figure**
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
-## Setup and Running Instructions
+## Setup
 
 ### Setup via Cloning
 
 - Clone the cm_pipeline repository
 - Activate the venv which has the necessary packages
 - Run `pip install -r requirements.txt`
-- Edit the fields of the `pipeline.json` file to reflect your inputs and requirements. Please refer to the documentation on how to write the `pipeline.json` file.
-- Run `python -m main pipeline.json`
+- Make sure everything installed properly by running `cd tests && pytest`
 
-### Setup via pip install (Beta)
+### Setup via pip install
 
-Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline`
+Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline`. This will install CM++, but to use pipeline functionality, please setup via cloning.
 
-## Input and Usage Instructions
+## Input and Usage
 
 - The input to the pipeline script is a [pipeline.json](pipeline.json) file. **NOTE** that you can use any other json file as input as long as it fits the requirements in the documentation.
 - Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
 - Run `python -m main pipeline.json`
 
-## Documentation
-
 ### JSON Input Documentation
 
 - Please refer to the [json format documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
+## For Developers
+
+### Loading a Developer Environment
+
+To quickly set up a developer environment for the CM++ Pipeline, simply run the following commands. (**NOTE: Make sure you have Conda installed**)
+
+```bash
+conda env create -f environment.yml
+conda activate 
+```
+
 ### Customizing the Pipeline
 
-- The CM Pipeline also allows for users to add their own pipeline stages and clustering methods.
+- The CM++ Pipeline also allows for users to add their own pipeline stages and clustering methods.
 - Please refer to the [customization documentation](docs/pipeline_customization.md) on how to modify the code to allow for your own pipeline stages and .
 
 ## Requirements
@@ -75,7 +68,7 @@ module load gcc/9.2.0
 module load openmpi/4.0.1
 ```
 
-- **NOTE: These need to be loaded not just on installation but on execution of the CM pipeline**
+- **NOTE: These need to be loaded not just on installation but on execution of the CM++ pipeline**
 
 ## Output Files
 
@@ -87,20 +80,22 @@ module load openmpi/4.0.1
 
 - [View Old Release Notes](https://github.com/illinois-or-research-analytics/cm_pipeline/releases)
 
-## Citation
+## Citations
 
 ```bibtex
 @misc{cm_pipe2023,
-  author = {Vikram Ramavarapu, Vidya Kamath, Fabio Ayres, and George Chacko},
-  title = {Connectivity Modifier Pipeline},
-  howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
-  year={2023},
+    author = {Vikram Ramavarapu and Vidya Kamath and Minhyuk Park and Fabio Ayres and George Chacko},
+    title = {Connectivity Modifier Pipeline},
+    howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
+    year={2023},
+}
+
+@misc{park2023wellconnected,
+    title={Well-Connected Communities in Real-World and Synthetic Networks}, 
+    author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
+    year={2023},
+    eprint={2303.02813},
+    archivePrefix={arXiv},
+    primaryClass={cs.SI}
 }
 ```
-
-<!--
-## TODOs:
-- Add fraction of clusters untouched by the central CM module of pipeline in the analysis file.
-- Mechanism to sync the scripts used within cm_pipeline with the latest changes.
-- Add more log messages in the source code for different levels (Currently INFO, DEBUG, ERROR log messages are added). 
--->
