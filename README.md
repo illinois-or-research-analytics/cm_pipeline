@@ -14,7 +14,7 @@
   - [Archive](#archive)
   - [Citations](#citations)
 
-Customizable modular pipeline for testing and using an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
+Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
