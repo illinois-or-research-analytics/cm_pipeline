@@ -1,0 +1,370 @@
+@article{Traag2019,
+    author={Traag, V. A.
+    and Waltman, L.
+    and {van Eck}, N. J.},
+    title={From {L}ouvain to {L}eiden: guaranteeing well-connected communities},
+    journal={Scientific Reports},
+    year={2019},
+    month={Mar},
+    day={26},
+    volume={9},
+    number={1},
+    pages={5233},
+    abstract={Community detection is often used to understand the structure of large and complex networks. One of the most popular algorithms for uncovering community structure is the so-called Louvain algorithm. We show that this algorithm has a major defect that largely went unnoticed until now: the Louvain algorithm may yield arbitrarily badly connected communities. In the worst case, communities may even be disconnected, especially when running the algorithm iteratively. In our experimental analysis, we observe that up to 25{\%} of the communities are badly connected and up to 16{\%} are disconnected. To address this problem, we introduce the Leiden algorithm. We prove that the Leiden algorithm yields communities that are guaranteed to be connected. In addition, we prove that, when the Leiden algorithm is applied iteratively, it converges to a partition in which all subsets of all communities are locally optimally assigned. Furthermore, by relying on a fast local move approach, the Leiden algorithm runs faster than the Louvain algorithm. We demonstrate the performance of the Leiden algorithm for several benchmark and real-world networks. We find that the Leiden algorithm is faster than the Louvain algorithm and uncovers better partitions, in addition to providing explicit guarantees.},
+    issn={2045-2322},
+    doi={10.1038/s41598-019-41695-z}
+}
+
+@article{10.1162/qss_a_00184,
+    author = {Wedell, Eleanor and Park, Minhyuk and Korobskiy, Dmitriy and Warnow, Tandy and Chacko, George},
+    title = "{Center–periphery structure in research communities}",
+    journal = {Quantitative Science Studies},
+    volume = {3},
+    number = {1},
+    pages = {289-314},
+    year = {2022},
+    month = {04},
+    abstract = "{Clustering and community detection in networks are of broad interest and have been the subject of extensive research that spans several fields. We are interested in the relatively narrow question of detecting communities of scientific publications that are linked by citations. These publication communities can be used to identify scientists with shared interests who form communities of researchers. Building on the well-known k-core algorithm, we have developed a modular pipeline to find publication communities with center–periphery structure. Using a quantitative and qualitative approach, we evaluate community finding results on a citation network consisting of over 14 million publications relevant to the field of extracellular vesicles. We compare our approach to communities discovered by the widely used Leiden algorithm for community finding.}",
+    issn = {2641-3337},
+    doi = {10.1162/qss_a_00184},
+    eprint = {https://direct.mit.edu/qss/article-pdf/3/1/289/2008300/qss\_a\_00184.pdf},
+}
+
+@article{doi:10.1073/pnas.0706851105,
+    author = {Martin Rosvall  and Carl T. Bergstrom },
+    title = {Maps of random walks on complex networks reveal community structure},
+    journal = {Proceedings of the National Academy of Sciences},
+    volume = {105},
+    number = {4},
+    pages = {1118-1123},
+    year = {2008},
+    doi = {10.1073/pnas.0706851105},
+    eprint = {https://www.pnas.org/doi/pdf/10.1073/pnas.0706851105},
+    abstract = {To comprehend the multipartite organization of large-scale biological and social systems, we introduce an information theoretic approach that reveals community structure in weighted and directed networks. We use the probability flow of random walks on a network as a proxy for information flows in the real system and decompose the network into modules by compressing a description of the probability flow. The result is a map that both simplifies and highlights the regularities in the structure and their relationships. We illustrate the method by making a map of scientific communication as captured in the citation patterns of \&gt;6,000 journals. We discover a multicentric organization with fields that vary dramatically in size and degree of integration into the network of science. Along the backbone of the network—including physics, chemistry, molecular biology, and medicine—information flows bidirectionally, but the map reveals a directional pattern of citation from the applied fields to the basic sciences.}
+}
+
+@inproceedings{park2023wellconnected,
+    title={Well-Connected Communities in Real-World and Synthetic Networks}, 
+    author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
+    year={2023},
+    eprint={2303.02813},
+    archivePrefix={arXiv},
+    primaryClass={cs.SI},
+    booktitle={To appear, Proceedings of COMPLEX Networks 2023}
+}
+
+@article{Fortunato2022,
+    author={Fortunato, Santo
+    and Newman, Mark E. J.},
+    title={20 years of network community detection},
+    journal={Nature Physics},
+    year={2022},
+    month={Aug},
+    day={01},
+    volume={18},
+    number={8},
+    pages={848-850},
+    abstract={A fundamental technical challenge in the analysis of network data is the automated discovery of communities --- groups of nodes that are strongly connected or that share similar features or roles. In this Comment we review progress in the field over the past 20 years.},
+    issn={1745-2481},
+    doi={10.1038/s41567-022-01716-7}
+}
+
+@article{BONCHI202134,
+    title = {Finding densest k-connected subgraphs},
+    journal = {Discrete Applied Mathematics},
+    volume = {305},
+    pages = {34-47},
+    year = {2021},
+    issn = {0166-218X},
+    doi = {10.1016/j.dam.2021.08.032},
+    author = {Francesco Bonchi and David García-Soriano and Atsushi Miyauchi and Charalampos E. Tsourakakis},
+    keywords = {Graphs, Dense subgraph discovery, Densest subgraph problem, Connectivity, Approximation algorithms},
+    abstract = {Dense subgraph discovery is an important graph-mining primitive with a variety of real-world applications. One of the most well-studied optimization problems for dense subgraph discovery is the densest subgraph problem, where given an edge-weighted undirected graph G=(V,E,w), we are asked to find S⊆V that maximizes the density d(S), i.e., half the weighted average degree of the induced subgraph G[S]. This problem can be solved exactly in polynomial time and well-approximately in almost linear time. However, a densest subgraph has a structural drawback, namely, the subgraph may not be robust to vertex/edge failure. Indeed, a densest subgraph may not be well-connected, which implies that the subgraph may be disconnected by removing only a few vertices/edges within it. In this paper, we provide an algorithmic framework to find a dense subgraph that is well-connected in terms of vertex/edge connectivity. Specifically, we introduce the following problems: given a graph G=(V,E,w) and a positive integer/real k, we are asked to find S⊆V that maximizes the density d(S) under the constraint that G[S] is k-vertex/edge-connected. For both problems, we propose polynomial-time (bicriteria and ordinary) approximation algorithms, using classic Mader’s theorem in graph theory and its extensions.}
+}
+
+@article{doi:10.1126/sciadv.1602548,
+    author = {Leto Peel  and Daniel B. Larremore  and Aaron Clauset },
+    title = {The ground truth about metadata and community detection in networks},
+    journal = {Science Advances},
+    volume = {3},
+    number = {5},
+    pages = {e1602548},
+    year = {2017},
+    doi = {10.1126/sciadv.1602548},
+    eprint = {https://www.science.org/doi/pdf/10.1126/sciadv.1602548},
+    abstract = {Troubles with community detection in networks: No ground truth, no free lunch, and the complex coupling of metadata with structure. Across many scientific domains, there is a common need to automatically extract a simplified view or coarse-graining of how a complex system’s components interact. This general task is called community detection in networks and is analogous to searching for clusters in independent vector data. It is common to evaluate the performance of community detection algorithms by their ability to find so-called ground truth communities. This works well in synthetic networks with planted communities because these networks’ links are formed explicitly based on those known communities. However, there are no planted communities in real-world networks. Instead, it is standard practice to treat some observed discrete-valued node attributes, or metadata, as ground truth. We show that metadata are not the same as ground truth and that treating them as such induces severe theoretical and practical problems. We prove that no algorithm can uniquely solve community detection, and we prove a general No Free Lunch theorem for community detection, which implies that there can be no algorithm that is optimal for all possible community detection tasks. However, community detection remains a powerful tool and node metadata still have value, so a careful exploration of their relationship with network structure can yield insights of genuine worth. We illustrate this point by introducing two statistical techniques that can quantify the relationship between metadata and community structure for a broad class of models. We demonstrate these techniques using both synthetic and real-world networks, and for multiple types of metadata and community structures.}
+}
+
+@article{https://doi.org/10.1002/asi.22990,
+    author = {Boyack, Kevin W. and Klavans, Richard},
+    title = {Creation of a highly detailed, dynamic, global model and map of science},
+    journal = {Journal of the Association for Information Science and Technology},
+    volume = {65},
+    number = {4},
+    pages = {670-685},
+    keywords = {citation networks, co-citation analysis, dynamic systems},
+    doi = {10.1002/asi.22990},
+    eprint = {https://asistdl.onlinelibrary.wiley.com/doi/pdf/10.1002/asi.22990},
+    abstract = {The majority of the effort in metrics research has addressed research evaluation. Far less research has addressed the unique problems of research planning. Models and maps of science that can address the detailed problems associated with research planning are needed. This article reports on the creation of an article-level model and map of science covering 16 years and nearly 20 million articles using cocitation-based techniques. The map is then used to define discipline-like structures consisting of natural groupings of articles and clusters of articles. This combination of detail and high-level structure can be used to address planning-related problems such as identification of emerging topics and the identification of which areas of science and technology are innovative and which are simply persisting. In addition to presenting the model and map, several process improvements that result in greater accuracy structures are detailed, including a bibliographic coupling approach for assigning current papers to cocitation clusters and a sequential hybrid approach to producing visual maps from models.},
+    year = {2014}
+}
+
+@article{https://doi.org/10.1002/asi.22748,
+    author = {Waltman, Ludo and {van Eck}, Nees Jan},
+    title = {A new methodology for constructing a publication-level classification system of science},
+    journal = {Journal of the American Society for Information Science and Technology},
+    volume = {63},
+    number = {12},
+    pages = {2378-2392},
+    keywords = {citation analysis, bibliometrics},
+    doi = {10.1002/asi.22748},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/asi.22748},
+    abstract = {Classifying journals or publications into research areas is an essential element of many bibliometric analyses. Classification usually takes place at the level of journals, where the Web of Science subject categories are the most popular classification system. However, journal-level classification systems have two important limitations: They offer only a limited amount of detail, and they have difficulties with multidisciplinary journals. To avoid these limitations, we introduce a new methodology for constructing classification systems at the level of individual publications. In the proposed methodology, publications are clustered into research areas based on citation relations. The methodology is able to deal with very large numbers of publications. We present an application in which a classification system is produced that includes almost 10 million publications. Based on an extensive analysis of this classification system, we discuss the strengths and the limitations of the proposed methodology. Important strengths are the transparency and relative simplicity of the methodology and its fairly modest computing and memory requirements. The main limitation of the methodology is its exclusive reliance on direct citation relations between publications. The accuracy of the methodology can probably be increased by also taking into account other types of relations–for instance, based on bibliographic coupling.},
+    year = {2012}
+}
+
+@article{Haggerty2013,
+    doi = {10.1093/molbev/mst228},
+    year = {2013},
+    month = nov,
+    publisher = {Oxford University Press ({OUP})},
+    volume = {31},
+    number = {3},
+    pages = {501--516},
+    author = {Leanne S. Haggerty and Pierre-Alain Jachiet and William P. Hanage and David A. Fitzpatrick and Philippe Lopez and Mary J. O'Connell and Davide Pisani and Mark Wilkinson and Eric Bapteste and James O. McInerney},
+    title = {A Pluralistic Account of Homology: Adapting the Models to the Data},
+    journal = {Molecular Biology and Evolution}
+}
+
+@article{Guimerà2005,
+    author={Guimer{\`a}, Roger
+    and Nunes Amaral, Lu{\'i}s A.},
+    title={Functional cartography of complex metabolic networks},
+    journal={Nature},
+    year={2005},
+    month={Feb},
+    day={01},
+    volume={433},
+    number={7028},
+    pages={895-900},
+    abstract={High-throughput techniques are leading to an explosive growth in the size of biological databases and creating the opportunity to revolutionize our understanding of life and disease. Interpretation of these data remains, however, a major scientific challenge. Here, we propose a methodology that enables us to extract and display information contained in complex networks1,2,3. Specifically, we demonstrate that we can find functional modules4,5 in complex networks, and classify nodes into universal roles according to their pattern of intra- and inter-module connections. The method thus yields a `cartographic representation' of complex networks. Metabolic networks6,7,8 are among the most challenging biological networks and, arguably, the ones with most potential for immediate applicability9. We use our method to analyse the metabolic networks of twelve organisms from three different superkingdoms. We find that, typically, 80{\%} of the nodes are only connected to other nodes within their respective modules, and that nodes with different roles are affected by different evolutionary constraints and pressures. Remarkably, we find that metabolites that participate in only a few reactions but that connect different modules are more conserved than hubs whose links are mostly within a single module.},
+    issn={1476-4687},
+    doi={10.1038/nature03288},
+}
+
+@article{Holme2003-ke,
+  title     = "Subnetwork hierarchies of biochemical pathways",
+  author    = "Holme, Petter and Huss, Mikael and Jeong, Hawoong",
+  abstract  = "MOTIVATION: The vastness and complexity of the biochemical
+               networks that have been mapped out by modern genomics calls for
+               decomposition into subnetworks. Such networks can have inherent
+               non-local features that require the global structure to be taken
+               into account in the decomposition procedure. Furthermore, basic
+               questions such as to what extent the network (graph
+               theoretically) can be said to be built by distinct subnetworks
+               are little studied. RESULTS: We present a method to decompose
+               biochemical networks into subnetworks based on the global
+               geometry of the network. This method enables us to analyze the
+               full hierarchical organization of biochemical networks and is
+               applied to 43 organisms from the WIT database. Two types of
+               biochemical networks are considered: metabolic networks and
+               whole-cellular networks (also including for example information
+               processes). Conceptual and quantitative ways of describing the
+               hierarchical ordering are discussed. The general picture of the
+               metabolic networks arising from our study is that of a few
+               core-clusters centred around the most highly connected
+               substances enclosed by other substances in outer shells, and a
+               few other well-defined subnetworks. AVAILABILITY: An
+               implementation of our algorithm and other programs for analyzing
+               the data is available from
+               http://www.tp.umu.se/forskning/networks/meta/ SUPPLEMENTARY
+               INFORMATION: Supplementary material is available at
+               http://www.tp.umu.se/forskning/networks/meta/",
+  journal   = "Bioinformatics",
+  publisher = "Oxford University Press (OUP)",
+  volume    =  19,
+  number    =  4,
+  pages     = "532--538",
+  month     =  mar,
+  year      =  2003,
+  language  = "en"
+}
+
+@inproceedings{10.1145/1134271.1134277,
+    author = {Adamic, Lada A. and Glance, Natalie},
+    title = {The Political Blogosphere and the 2004 U.S. Election: Divided They Blog},
+    year = {2005},
+    isbn = {1595932151},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    doi = {10.1145/1134271.1134277},
+    abstract = {In this paper, we study the linking patterns and discussion topics of political bloggers. Our aim is to measure the degree of interaction between liberal and conservative blogs, and to uncover any differences in the structure of the two communities. Specifically, we analyze the posts of 40 "A-list" blogs over the period of two months preceding the U.S. Presidential Election of 2004, to study how often they referred to one another and to quantify the overlap in the topics they discussed, both within the liberal and conservative communities, and also across communities. We also study a single day snapshot of over 1,000 political blogs. This snapshot captures blogrolls (the list of links to other blogs frequently found in sidebars), and presents a more static picture of a broader blogosphere. Most significantly, we find differences in the behavior of liberal and conservative blogs, with conservative blogs linking to each other more frequently and in a denser pattern.},
+    booktitle = {Proceedings of the 3rd International Workshop on Link Discovery},
+    pages = {36–43},
+    numpages = {8},
+    keywords = {social networks, link analysis, political blogs},
+    location = {Chicago, Illinois},
+    series = {LinkKDD '05}
+}
+
+@misc{zhao2021community,
+    title={Community detection and portfolio optimization}, 
+    author={Longfeng Zhao and Chao Wang and Gang-Jin Wang and H. Eugene Stanley and Lin Chen},
+    year={2021},
+    eprint={2112.13383},
+    archivePrefix={arXiv},
+    primaryClass={q-fin.PM}
+}
+
+@article{10.1371/journal.pcbi.1008239,
+    doi = {10.1371/journal.pcbi.1008239},
+    author = {Singhal, Akshat AND Cao, Song AND Churas, Christopher AND Pratt, Dexter AND Fortunato, Santo AND Zheng, Fan AND Ideker, Trey},
+    journal = {PLOS Computational Biology},
+    publisher = {Public Library of Science},
+    title = {Multiscale community detection in Cytoscape},
+    year = {2020},
+    month = {10},
+    volume = {16},
+    pages = {1-10},
+    abstract = {Detection of community structure has become a fundamental step in the analysis of biological networks with application to protein function annotation, disease gene prediction, and drug discovery. This recent impact creates a need to make these techniques and their accompanying visualization schemes available to a broad range of biologists. Here we present a service-oriented, end-to-end software framework, CDAPS (Community Detection APplication and Service), that integrates the identification, annotation, visualization, and interrogation of multiscale network communities, accessible within the popular Cytoscape network analysis platform. With novel design principles, CDAPS addresses unmet new challenges, such as identifying hierarchical community structures, comparison of outputs generated from diverse network resources, and easy deployment of new algorithms, to facilitate community-sourced science. We demonstrate that the CDAPS framework can be applied to high-throughput protein-protein interaction networks to gain novel insights, such as the identification of putative new members of known protein complexes.},
+    number = {10},
+
+}
+
+@article{Shannon2003-qs,
+  title     = "Cytoscape: a software environment for integrated models of
+               biomolecular interaction networks",
+  author    = "Shannon, Paul and Markiel, Andrew and Ozier, Owen and Baliga,
+               Nitin S and Wang, Jonathan T and Ramage, Daniel and Amin, Nada
+               and Schwikowski, Benno and Ideker, Trey",
+  abstract  = "Cytoscape is an open source software project for integrating
+               biomolecular interaction networks with high-throughput
+               expression data and other molecular states into a unified
+               conceptual framework. Although applicable to any system of
+               molecular components and interactions, Cytoscape is most
+               powerful when used in conjunction with large databases of
+               protein-protein, protein-DNA, and genetic interactions that are
+               increasingly available for humans and model organisms.
+               Cytoscape's software Core provides basic functionality to layout
+               and query the network; to visually integrate the network with
+               expression profiles, phenotypes, and other molecular states; and
+               to link the network to databases of functional annotations. The
+               Core is extensible through a straightforward plug-in
+               architecture, allowing rapid development of additional
+               computational analyses and features. Several case studies of
+               Cytoscape plug-ins are surveyed, including a search for
+               interaction pathways correlating with changes in gene
+               expression, a study of protein complexes involved in cellular
+               recovery to DNA damage, inference of a combined
+               physical/functional interaction network for Halobacterium, and
+               an interface to detailed stochastic/kinetic gene regulatory
+               models.",
+  journal   = "Genome Res.",
+  publisher = "Cold Spring Harbor Laboratory",
+  volume    =  13,
+  number    =  11,
+  pages     = "2498--2504",
+  month     =  nov,
+  year      =  2003,
+  language  = "en"
+}
+
+
+@InProceedings{SciPyProceedings_11,
+  author =       {Aric A. Hagberg and Daniel A. Schult and Pieter J. Swart},
+  title =        {Exploring Network Structure, Dynamics, and Function using NetworkX},
+  booktitle =   {Proceedings of the 7th Python in Science Conference},
+  pages =     {11 - 15},
+  address = {Pasadena, CA USA},
+  year =      {2008},
+  editor =    {Ga\"el Varoquaux and Travis Vaught and Jarrod Millman},
+}
+
+@article{Blondel_2008,
+    doi = {10.1088/1742-5468/2008/10/P10008},
+    year = {2008},
+    month = {oct},
+    publisher = {},
+    volume = {2008},
+    number = {10},
+    pages = {P10008},
+    author = {Vincent D Blondel and Jean-Loup Guillaume and Renaud Lambiotte and Etienne Lefebvre},
+    title = {Fast unfolding of communities in large networks},
+    journal = {Journal of Statistical Mechanics: Theory and Experiment},
+    abstract = {We propose a simple method to extract the community structure of large networks. Our method is a heuristic method that is based on modularity optimization. It is shown to outperform all other known community detection methods in terms of computation time. Moreover, the quality of the communities detected is very good, as measured by the so-called modularity. This is shown first by identifying language communities in a Belgian mobile phone network of 2 million customers and by analysing a web graph of 118 million nodes and more than one billion links. The accuracy of our algorithm is also verified on ad hoc modular networks.}
+}
+
+@article{doi:10.1073/pnas.122653799,
+    author = {M. Girvan  and M. E. J. Newman },
+    title = {Community structure in social and biological networks},
+    journal = {Proceedings of the National Academy of Sciences},
+    volume = {99},
+    number = {12},
+    pages = {7821-7826},
+    year = {2002},
+    doi = {10.1073/pnas.122653799},
+    eprint = {https://www.pnas.org/doi/pdf/10.1073/pnas.122653799},
+    abstract = {A number of recent studies have focused on the statistical properties of networked systems such as social networks and the Worldwide Web. Researchers have concentrated particularly on a few properties that seem to be common to many networks: the small-world property, power-law degree distributions, and network transitivity. In this article, we highlight another property that is found in many networks, the property of community structure, in which network nodes are joined together in tightly knit groups, between which there are only looser connections. We propose a method for detecting such communities, built around the idea of using centrality indices to find community boundaries. We test our method on computer-generated and real-world graphs whose community structure is already known and find that the method detects this known structure with high sensitivity and reliability. We also apply the method to two networks whose community structure is not well known—a collaboration network and a food web—and find that it detects significant and informative community divisions in both cases.}
+}
+
+@article{https://doi.org/10.1002/sam.10133,
+    author = {Coscia, Michele and Giannotti, Fosca and Pedreschi, Dino},
+    title = {A classification for community discovery methods in complex networks},
+    journal = {Statistical Analysis and Data Mining: The ASA Data Science Journal},
+    volume = {4},
+    number = {5},
+    pages = {512-546},
+    keywords = {community discovery, social network, groups, complex network, graph partitioning, graph clustering, graph mining, information propagation},
+    doi = {10.1002/sam.10133},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/sam.10133},
+    abstract = {Abstract Many real-world networks are intimately organized according to a community structure. Much research effort has been devoted to develop methods and algorithms that can efficiently highlight this hidden structure of a network, yielding a vast literature on what is called today community detection. Since network representation can be very complex and can contain different variants in the traditional graph model, each algorithm in the literature focuses on some of these properties and establishes, explicitly or implicitly, its own definition of community. According to this definition, each proposed algorithm then extracts the communities, which typically reflect only part of the features of real communities. The aim of this survey is to provide a ‘user manual’ for the community discovery problem. Given a meta definition of what a community in a social network is, our aim is to organize the main categories of community discovery methods based on the definition of community they adopt. Given a desired definition of community and the features of a problem (size of network, direction of edges, multidimensionality, and so on) this review paper is designed to provide a set of approaches that researchers could focus on. The proposed classification of community discovery methods is also useful for putting into perspective the many open directions for further research. © 2011 Wiley Periodicals, Inc. Statistical Analysis and Data Mining 4: 512–546, 2011},
+    year = {2011}
+}
+
+@misc{snapnets,
+    author       = {Jure Leskovec and Andrej Krevl},
+    title        = {{SNAP Datasets}: {Stanford} Large Network Dataset Collection},
+    howpublished = {\url{http://snap.stanford.edu/data}},
+    month        = jun,
+    year         = 2014
+}
+
+@misc{henzinger2020finding,
+    title={Finding All Global Minimum Cuts In Practice}, 
+    author={Monika Henzinger and Alexander Noe and Christian Schulz and Darren Strash},
+    year={2020},
+    eprint={2002.06948},
+    archivePrefix={arXiv},
+    primaryClass={cs.DS}
+}
+
+@inproceedings{Karatas2018,
+  doi = {10.1109/ibigdelft.2018.8625349},
+  url = {https://doi.org/10.1109/ibigdelft.2018.8625349},
+  year = {2018},
+  month = dec,
+  publisher = {{IEEE}},
+  author = {Arzum Karatas and Serap Sahin},
+  title = {Application Areas of Community Detection: A Review},
+  booktitle = {2018 International Congress on Big Data,  Deep Learning and Fighting Cyber Terrorism ({IBIGDELFT})}
+}
+
+@article{https://doi.org/10.1002/wics.1566,
+    author = {Dey, Asim K. and Tian, Yahui and Gel, Yulia R.},
+    title = {Community detection in complex networks: From statistical foundations to data science applications},
+    journal = {WIREs Computational Statistics},
+    volume = {14},
+    number = {2},
+    pages = {e1566},
+    keywords = {classification, clustering, community detection, complex networks, multilayer and multiscale networks, network motifs},
+    doi = {10.1002/wics.1566},
+    year = {2022}
+}
+
+
+@misc{cm_pipe2023,
+    author = {Vikram Ramavarapu and Vidya Kamath and Minhyuk Park and Fabio Ayres and George Chacko},
+    title = {Connectivity Modifier Pipeline},
+    howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
+    year={2023},
+}
