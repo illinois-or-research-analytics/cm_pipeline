@@ -1,5 +1,7 @@
 # CM++ Pipeline
 
+Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
+
 - [CM++ Pipeline](#cm-pipeline)
   - [Requirements](#requirements)
   - [Setup](#setup)
@@ -15,8 +17,6 @@
   - [Output Files](#output-files)
   - [Archive](#archive)
   - [Citations](#citations)
-
-Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
