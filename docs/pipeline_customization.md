@@ -1,6 +1,6 @@
 # Pipeline Modification Documentation
 
-The CM Pipline allows for macros and modifications that developers can insert. You will be able to modify the pipeline in the two following ways:
+The CM Pipeline allows for macros and modifications that developers can insert. You will be able to modify the pipeline in the two following ways:
 
 - Use your own clustering method
 - Build your own pipeline stages
