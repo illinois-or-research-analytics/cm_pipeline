@@ -6,7 +6,9 @@
     - [Setup via Cloning](#setup-via-cloning)
     - [Setup via pip install](#setup-via-pip-install)
   - [Input and Usage](#input-and-usage)
-    - [JSON Input Documentation](#json-input-documentation)
+    - [CM++ Usage](#cm-usage)
+    - [Pipeline Usage](#pipeline-usage)
+      - [JSON Input Documentation](#json-input-documentation)
   - [For Developers](#for-developers)
     - [Loading a Developer Environment](#loading-a-developer-environment)
     - [Customizing the Pipeline](#customizing-the-pipeline)
@@ -31,7 +33,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
 
 - Clone the cm_pipeline repository
 - Activate the venv which has the necessary packages
-- Run `pip install -r requirements.txt`
+- Run `pip install -r requirements.txt && pip install .`
 - Make sure everything installed properly by running `cd tests && pytest`
 
 ### Setup via pip install
@@ -40,12 +42,18 @@ Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm
 
 ## Input and Usage
 
+### CM++ Usage
+
+To refer to usage instructions on CM++, see the following [documentation](docs/cmpp.md).
+
+### Pipeline Usage
+
 - The input to the pipeline script is a [pipeline.json](pipeline.json) file. **NOTE** that you can use any other json file as input as long as it fits the requirements in the documentation.
 - Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
 - Run `python -m main pipeline.json`
 
-### JSON Input Documentation
+#### JSON Input Documentation
 
 - Please refer to the [json format documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
