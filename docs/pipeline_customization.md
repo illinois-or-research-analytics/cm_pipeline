@@ -11,7 +11,7 @@ First, to use your own clustering method, follow both of these procedures:
 
 ### I. Inserting your clustering method into CM++
 
-1. Navigate to `hm01/clusterers/external_clusterers/` in the repository
+1. From root, navigate to the `hm01/clusterers/external_clusterers/` directory
 2. Create a clusterer object that calls your clustering method. Here is a template:
 
 ```python
