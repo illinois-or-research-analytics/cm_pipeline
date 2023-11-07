@@ -93,6 +93,7 @@ conda activate
     title = {Connectivity Modifier Pipeline},
     howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
     year={2023},
+    doi={10.5281/zenodo.10076514}
 }
 
 @misc{park2023wellconnected,
