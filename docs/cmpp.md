@@ -25,7 +25,7 @@ python -m hm01.cm
 
 For example, you can run:
 
-`python -m hm01.cm -i network.tsv -e clustering.tsv -c leiden -t 1log10 -n 32 -o output.tsv`
+`python -m hm01.cm -i network.tsv -e clustering.tsv -c leiden -g 0.01 -t 1log10 -n 32 -o output.tsv`
 
 ## External Clusterers
 
