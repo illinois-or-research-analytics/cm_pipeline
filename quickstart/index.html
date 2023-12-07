@@ -11,7 +11,7 @@
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     
-    <title>Installation - CM++ Pipeline Documentation</title>
+    <title>Quick Start Guide - CM++ Pipeline Documentation</title>
     
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
@@ -80,14 +80,14 @@
 
                         
                             
-<li class="active">
-    <a href="./">Installation</a>
+<li >
+    <a href="../installation/">Installation</a>
 </li>
 
                         
                             
-<li >
-    <a href="../quickstart/">Quick Start Guide</a>
+<li class="active">
+    <a href="./">Quick Start Guide</a>
 </li>
 
                         
@@ -152,12 +152,12 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="../features/">
+                        <a rel="prev" href="../installation/">
                             <i class="fas fa-arrow-left"></i> Previous
                         </a>
                     </li>
                     <li >
-                        <a rel="next" href="../quickstart/">
+                        <a rel="next" href="../examples/">
                             Next <i class="fas fa-arrow-right"></i>
                         </a>
                     </li>
@@ -171,35 +171,18 @@
         
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="first-level active"><a href="#installation-and-setup">Installation and Setup</a></li>
-            <li class="second-level"><a href="#requirements">Requirements</a></li>
-                
-            <li class="second-level"><a href="#installation-via-cloning">Installation via Cloning</a></li>
-                
-            <li class="second-level"><a href="#installation-via-pip-install">Installation via pip install</a></li>
-                
+        <li class="first-level active"><a href="#quick-start-guide">Quick Start Guide</a></li>
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
-<h1 id="installation-and-setup">Installation and Setup</h1>
-<p>There are several strategies for installation. First, be sure to confirm that your system meets the requirements for installation.</p>
-<h2 id="requirements">Requirements</h2>
+<h1 id="quick-start-guide">Quick Start Guide</h1>
+<p>Suppose we have a network that we want to cluster and refine using the pipeline. For this tutorial, I will use the following network and clustering.</p>
 <ul>
-<li>MacOS or Linux operating system</li>
-<li><code>python3.9</code> or higher</li>
-<li><code>cmake 3.2.0</code> or higher</li>
-<li><code>gcc</code> of any version (In our analysis, <code>gcc 9.2.0</code> was used)</li>
+<li><a href="">network.tsv</a></li>
+<li><a href="">clustering.tsv</a></li>
 </ul>
-<h2 id="installation-via-cloning">Installation via Cloning</h2>
-<ul>
-<li>Clone the cm_pipeline repository</li>
-<li>Activate the venv which has the necessary packages</li>
-<li>Run <code>pip install -r requirements.txt &amp;&amp; pip install .</code></li>
-<li>Make sure everything installed properly by running <code>cd tests &amp;&amp; pytest</code></li>
-</ul>
-<h2 id="installation-via-pip-install">Installation via pip install</h2>
-<p>Simply run <code>pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline</code>. <strong>This will install CM++, but to use pipeline functionality, please setup via cloning.</strong></p></div>
+<p>First, let's visualize the graph and clustering</p></div>
         
         
     </div>
