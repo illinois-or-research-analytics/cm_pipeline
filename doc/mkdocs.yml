@@ -11,4 +11,5 @@ nav:
     - CM Pipeline Usage: pipeline_usage.md
     - JSON Format Tutorial: json_format.md
   - Contributing:
+    - Contributing: contributions.md
     - Developer Setup: dev_setup.md
