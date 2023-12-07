@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'CM++ Pipeline'
-copyright = '2023, Vikram Ramavarapu, Fabio Jose Ayres, Minhyuk Park, Vidya Kamath Pailodi, Joao Alfredo Cardoso Lamy, Tandy Warnow, George Chacko'
+copyright = '2023, Illinois OR Research Analytics (GPL-3.0 License)'
 author = 'Vikram Ramavarapu, Fabio Jose Ayres, Minhyuk Park, Vidya Kamath Pailodi, Joao Alfredo Cardoso Lamy, Tandy Warnow, George Chacko'
 release = 'v4.0.0'
 
