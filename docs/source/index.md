@@ -4,27 +4,6 @@
 
 Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
 
-- [CM++ Pipeline](#cm-pipeline)
-  - [Quick Start Guide](#quick-start-guide)
-    - [Features](#features)
-    - [Requirements](#requirements)
-    - [Installation and Setup](#installation-and-setup)
-      - [Installation via Cloning](#installation-via-cloning)
-      - [Installation via pip install](#installation-via-pip-install)
-  - [Input and Usage](#input-and-usage)
-    - [Example Commands](#example-commands)
-      - [CM++](#cm)
-      - [CM Pipeline](#cm-pipeline-1)
-    - [CM++ Usage](#cm-usage)
-    - [Pipeline Usage](#pipeline-usage)
-      - [JSON Input Documentation](#json-input-documentation)
-  - [For Developers](#for-developers)
-    - [Loading a Developer Environment](#loading-a-developer-environment)
-    - [Customizing the Pipeline](#customizing-the-pipeline)
-  - [Output Files](#output-files)
-  - [Archive](#archive)
-  - [Citations](#citations)
-
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
 ## Quick Start Guide
@@ -70,24 +49,18 @@ Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm
 
 #### CM Pipeline
 
-- Suppose you have a pipeline like the one [here](examples/leiden.json). Call it `pipeline.json`
 - Then from the root of this repository run:
   - `python -m main pipeline.json`
 
 ### CM++ Usage
 
-To refer to usage instructions on CM++, see the following [documentation](docs/cmpp.md).
-
 ### Pipeline Usage
 
-- The input to the pipeline script is a [pipeline.json](pipeline.json) file. **NOTE** that you can use any other json file as input as long as it fits the requirements in the documentation.
-- Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
 - Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
 - Run `python -m main pipeline.json`
 
 #### JSON Input Documentation
 
-- Please refer to the [json format documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
 ## For Developers
 
@@ -103,7 +76,6 @@ conda activate
 ### Customizing the Pipeline
 
 - The CM++ Pipeline also allows for users to add their own pipeline stages and clustering methods.
-- Please refer to the [customization documentation](docs/pipeline_customization.md) on how to modify the code to allow for your own pipeline stages and .
 
 ## Output Files
 
