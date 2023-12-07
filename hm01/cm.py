@@ -511,4 +511,5 @@ def entry_point():
 
 
 if __name__ == "__main__":
+    mp.set_start_method('fork')
     entry_point()
