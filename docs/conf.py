@@ -33,8 +33,10 @@ extensions = ['myst_parser']
 
 master_doc = 'index'
 source_suffix = {
+    '.rst': 'restructuredtext',
     '.md': 'markdown',
 }
+
 
 html_baseurl = 'cm_pipeline'
 
