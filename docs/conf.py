@@ -35,3 +35,5 @@ source_suffix = {
 }
 
 html_baseurl = 'cm_pipeline'
+
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
