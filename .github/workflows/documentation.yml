@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install mkdocs
-        pip install mkdocs-material  # or use your preferred theme
+        pip install mkdocs-cinder  # or use your preferred theme
 
     - name: Build MkDocs
       run: mkdocs build --config-file doc/mkdocs.yml
