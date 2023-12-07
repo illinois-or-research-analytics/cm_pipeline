@@ -66,6 +66,13 @@ Key Features:
 - **Dynamic Thresholding:** In order to allow the enforcement of connectivity to be flexible, connectivity thresholds can be constants, or functions of the number of nodes in the cluster, or the minimum node degree of the cluster.
 - **Multi-processing:** For better performance, users can specify a larger number of cores to process clusters concurrently.
 
+## Example Commands
+
+- `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c leiden -g 0.5 --threshold 1log10 --nprocs 4 --quiet`
+- `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c ikc -k 10 --threshold 1log10 --nprocs 4 --quiet`
+
+These commands run on Leiden with resolution 0.5 and IKC with k-core value 10 clusterings respectively. They both use four cores and sets a dynamic threshold of $log_{10}(n)$ where every cluster with a minimum cut above the base-10 logarithm of the number of nodes is considered "well-connected".
+
 # CM++ Pipeline: A Flexible and User-Friendly Community Detection Pipeline
 
 Key Features:
