@@ -1,1 +1,13 @@
-site_name: My Docs
+site_name: CM++ Pipeline Documentation
+
+nav:
+  - Quick Start Guide:
+    - Features: features.md
+    - Installation: installation.md
+    - Quick Start Guide: quickstart.md
+  - Input and Usage:
+    - Example Commands: examples.md
+    - CM++ Usage: cmpp.md
+    - CM Pipeline Usage: pipeline_usage.md
+  - Contributing:
+    - Developer Setup: dev_setup.md

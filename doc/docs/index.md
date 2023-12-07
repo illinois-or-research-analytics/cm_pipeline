@@ -15,7 +15,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
 ## Input and Usage
 
 - [Example Commands](examples.md)
-- [CM++ Usage](cmpp_usage.md)
+- [CM++ Usage](cmpp.md)
 - [CM Pipeline Usage](pipeline_usage.md)
 
 ## Contributing
