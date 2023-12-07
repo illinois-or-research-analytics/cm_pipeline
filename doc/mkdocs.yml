@@ -1,7 +1,7 @@
 site_name: CM++ Pipeline Documentation
-
+theme: cinder
 nav:
-  - Quick Start Guide:
+  - Quick Start:
     - Features: features.md
     - Installation: installation.md
     - Quick Start Guide: quickstart.md
@@ -9,5 +9,6 @@ nav:
     - Example Commands: examples.md
     - CM++ Usage: cmpp.md
     - CM Pipeline Usage: pipeline_usage.md
+    - JSON Format Tutorial: json_format.md
   - Contributing:
     - Developer Setup: dev_setup.md

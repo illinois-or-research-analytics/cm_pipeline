@@ -17,6 +17,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
 - [Example Commands](examples.md)
 - [CM++ Usage](cmpp.md)
 - [CM Pipeline Usage](pipeline_usage.md)
+- [JSON Format Tutorial](json_format.md)
 
 ## Contributing
 
