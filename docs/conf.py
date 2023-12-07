@@ -1,4 +1,3 @@
-# pylint: disable=W0622
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -33,8 +32,9 @@ html_static_path = ['_static']
 extensions = ['myst_parser']
 
 master_doc = 'index'
-source_suffix = '.rst'
-
+source_suffix = {
+    '.md': 'markdown',
+}
 
 html_baseurl = 'cm_pipeline'
 

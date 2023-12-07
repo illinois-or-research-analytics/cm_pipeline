@@ -46,17 +46,3 @@ Customizable modular pipeline for testing an improved version of CM for generati
     primaryClass={cs.SI}
 }
 ```
-
-```eval_rst
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   features.md
-   installation.md
-   quickstart.md
-   examples.md
-   cmpp_usage.md
-   pipeline_usage.md
-   dev_setup.md
-```
