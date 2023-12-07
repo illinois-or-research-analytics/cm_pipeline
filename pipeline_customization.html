@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pipeline Modification Documentation &#8212; CM++ Pipeline v4.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=c8b016cb"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="canonical" href="cm_pipeline/pipeline_customization.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pipeline-modification-documentation">
+<h1>Pipeline Modification Documentation<a class="headerlink" href="#pipeline-modification-documentation" title="Link to this heading">¶</a></h1>
+<p>The CM Pipeline allows for macros and modifications that developers can insert. You will be able to modify the pipeline in the two following ways:</p>
+<ul class="simple">
+<li><p>Use your own clustering method</p></li>
+<li><p>Build your own pipeline stages</p></li>
+</ul>
+<section id="using-your-own-clustering-method">
+<h2>Using your own clustering method<a class="headerlink" href="#using-your-own-clustering-method" title="Link to this heading">¶</a></h2>
+<p>First, to use your own clustering method, follow both of these procedures:</p>
+<section id="i-inserting-your-clustering-method-into-cm">
+<h3>I. Inserting your clustering method into CM++<a class="headerlink" href="#i-inserting-your-clustering-method-into-cm" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>From root, navigate to the <code class="docutils literal notranslate"><span class="pre">hm01/clusterers/external_clusterers/</span></code> directory</p></li>
+<li><p>Create a clusterer object that calls your clustering method. Here is a template:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">hm01.clusterers.abstract_clusterer</span> <span class="kn">import</span> <span class="n">AbstractClusterer</span>
+
+<span class="kn">from</span> <span class="nn">hm01.graph</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">IntangibleSubgraph</span><span class="p">,</span> <span class="n">RealizedSubgraph</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TemplateClusterer</span><span class="p">(</span><span class="n">AbstractClusterer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="c1"># Create a clusterer object. Args is the arguments of the clusterer</span>
+        <span class="c1"># Ex. Leiden-CPM would have resolution as an arg</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Graph</span><span class="p">,</span> <span class="n">RealizedSubgraph</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">IntangibleSubgraph</span><span class="p">]:</span>
+        <span class="c1"># Return an iterator of intangible subgraphs representing your resultant clusters</span>
+        <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">getclusterer</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1"># Construct the clusterer object from the args</span>
+    <span class="k">return</span> <span class="n">TemplateClusterer</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c1"># Ex. Leiden-CPM&#39;s clusterer would be getclusterer(resolution)</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Then when you call CM++, you will create a JSON file mapping arguments to their values. Here is a template/example</p></li>
+</ol>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;arg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Then, when you call CM++, you can do the following:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>hm01.cm<span class="w"> </span>
+<span class="w">    </span>-i<span class="w"> </span>network.tsv<span class="w"> </span>
+<span class="w">    </span>-e<span class="w"> </span>clustering.tsv
+<span class="w">    </span>-cfile<span class="w"> </span>hm01/clusterers/MyWrapper.py
+<span class="w">    </span>-cargs<span class="w"> </span>MyArguments.json
+<span class="w">    </span>-t<span class="w"> </span>1log10
+</pre></div>
+</div>
+</section>
+<section id="ii-inserting-your-clustering-method-into-the-pipeline">
+<h3>II. Inserting your clustering method into the pipeline<a class="headerlink" href="#ii-inserting-your-clustering-method-into-the-pipeline" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">source/clusterers/</span></code></p></li>
+<li><p>Create a python object file to wrap your clustering method. Here is a template:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">source.clustering</span> <span class="kn">import</span> <span class="n">Clustering</span>
+
+<span class="k">class</span> <span class="nc">LeidenModClustering</span><span class="p">(</span><span class="n">Clustering</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">data</span><span class="p">,</span> 
+            <span class="n">input_file</span><span class="p">,</span> 
+            <span class="n">network_name</span><span class="p">,</span> 
+            <span class="n">resolutions</span><span class="p">,</span> 
+            <span class="n">iterations</span><span class="p">,</span> 
+            <span class="n">algorithm</span><span class="p">,</span> 
+            <span class="n">existing_clustering</span><span class="p">,</span> 
+            <span class="n">working_dir</span><span class="p">,</span> 
+            <span class="n">index</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> 
+            <span class="n">input_file</span><span class="p">,</span> 
+            <span class="n">network_name</span><span class="p">,</span> 
+            <span class="n">resolutions</span><span class="p">,</span> 
+            <span class="n">iterations</span><span class="p">,</span> 
+            <span class="n">algorithm</span><span class="p">,</span> 
+            <span class="n">existing_clustering</span><span class="p">,</span> 
+            <span class="n">working_dir</span><span class="p">,</span> 
+            <span class="n">index</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">initialize_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># process list of parameter sets into output file names</span>
+            <span class="c1"># For example, if Leiden CPM has parameter set </span>
+            <span class="c1">#   [{</span>
+            <span class="c1">#       &quot;res&quot;: 0.5,</span>
+            <span class="c1">#       &quot;i&quot;: 2</span>
+            <span class="c1">#   }, {</span>
+            <span class="c1">#       &quot;res&quot;: 0.1,</span>
+            <span class="c1">#       &quot;i&quot;: 1</span>
+            <span class="c1">#   }]</span>
+            <span class="c1"># You will need two output files. One for res-0.5-i2 and one for res-0.1-i1</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
+        <span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">get_stage_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_root</span><span class="p">,</span> <span class="n">prev_file</span><span class="p">):</span>
+        <span class="c1"># Write code that returns an array of shell commands that run your clustering method.</span>
+        <span class="c1"># The array of commands needs to be per, and in the same order, as your params set</span>
+        <span class="c1"># Refer to self.params</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">source/typedict.py</span></code>. In the <code class="docutils literal notranslate"><span class="pre">cluster_classes</span></code> dictionary.</p></li>
+<li><p>Add a mapping from your clustering algorithm name to the object that you had created. Remember to import your clusterer! E. <code class="docutils literal notranslate"><span class="pre">'mcl':</span> <span class="pre">MCL</span></code>.</p></li>
+<li><p>To run the pipeline with your new clusterer. Do the following:</p>
+<ol class="arabic simple">
+<li><p>Create a json file (refer to <code class="docutils literal notranslate"><span class="pre">pipeline.json</span></code> for an example) containing the parameter set that you would like to run for your method. This set will have multiple sets of parameters if you want to have multiple runs of your pipeline.</p></li>
+<li><p>If your clusterer doesnt take any parameters, your <code class="docutils literal notranslate"><span class="pre">&quot;params&quot;</span></code> field will look like: <code class="docutils literal notranslate"><span class="pre">&quot;params&quot;:</span> <span class="pre">[{}]</span></code></p></li>
+<li><p>In the case that CM++ is in your pipeline, make sure your stage has <code class="docutils literal notranslate"><span class="pre">&quot;cfile&quot;</span></code> in the parameters. Note that you do not need a <code class="docutils literal notranslate"><span class="pre">&quot;cargs&quot;</span></code> parameter as the pipeline will automatically create an args json.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">main</span> <span class="pre">pipeline.json</span></code> from root.</p></li>
+</ol>
+</li>
+</ol>
+</section>
+<section id="example-infomap">
+<h3>Example: Infomap<a class="headerlink" href="#example-infomap" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>First, I created the infomap wrapper as shown in <a class="reference download internal" download="" href="_downloads/8250d4695cb56a817379f3a5129239b4/infomap_wrapper.py"><span class="xref download myst">this file</span></a>.</p>
+<ol class="arabic simple">
+<li><p>The cluster method simply uses python’s Infomap library, and converts the outputs into hm01 <code class="docutils literal notranslate"><span class="pre">IntangibleSubgraph</span></code> objects.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">get_clusterer</span></code> method doesn’t take any arguments since InfoMap doesn’t require any parameters</p></li>
+</ol>
+</li>
+<li><p>Second, in <a class="reference download internal" download="" href="_downloads/e217c1b53e4aff7df4cfa18e699ee0c6/infomap.py"><span class="xref download myst">this clusterer object</span></a>, I created a clusterer object for the pipeline.</p>
+<ol class="arabic simple">
+<li><p>InfoMap is quite simple, it doesn’t take any parameters and it doesn’t have any extra requirements, so the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method doesn’t need any more than it has.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">initialize_clustering</span></code> method simply sets its output file name.</p>
+<ol class="arabic simple">
+<li><p>You want output in the relevant directory. For infomap, that was <code class="docutils literal notranslate"><span class="pre">f{self.working_dir}/infomap/</span></code>.</p></li>
+<li><p>For your method, you should refer to the <code class="docutils literal notranslate"><span class="pre">self.get_folder_name(param)</span></code> method, where <code class="docutils literal notranslate"><span class="pre">param</span></code> is the current parameter dictionary.</p></li>
+</ol>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">get_stage_commands</span></code> method converts the stage object data into a runnable shell command by the pipeline. I have made a <a class="reference download internal" download="" href="_downloads/1b66885216acd9c843ba1a2cbfcee580/run_infomap.py"><span class="xref download myst">run_infomap</span></a> script that the CM pipeline can call.</p></li>
+</ol>
+</li>
+<li><p>In the <a class="reference download internal" download="" href="_downloads/78c57ea343640f96a6cc8b3f65261607/typedict.py"><span class="xref download myst">typedict file</span></a>, I have added keys for infomap</p></li>
+</ol>
+</section>
+</section>
+<section id="creating-your-own-pipeline-stage">
+<h2>Creating your own pipeline stage<a class="headerlink" href="#creating-your-own-pipeline-stage" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">source/</span></code></p></li>
+<li><p>Create an empty stage object. Start with this template. Replace names according to your preferences:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">source.stage</span> <span class="kn">import</span> <span class="n">Stage</span>
+
+
+<span class="k">class</span> <span class="nc">MyStage</span><span class="p">(</span><span class="n">Stage</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">input_file</span><span class="p">,</span>
+            <span class="n">network_name</span><span class="p">,</span>
+            <span class="n">resolutions</span><span class="p">,</span>
+            <span class="n">iterations</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="p">,</span>
+            <span class="n">existing_clustering</span><span class="p">,</span>
+            <span class="n">working_dir</span><span class="p">,</span>
+            <span class="n">index</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> 
+            <span class="n">input_file</span><span class="p">,</span> 
+            <span class="n">network_name</span><span class="p">,</span>
+            <span class="n">resolutions</span><span class="p">,</span>
+            <span class="n">iterations</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="p">,</span>
+            <span class="n">existing_clustering</span><span class="p">,</span>
+            <span class="n">working_dir</span><span class="p">,</span>
+            <span class="n">index</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>        
+        <span class="c1"># This method sets required parameters of your stage</span>
+        <span class="c1"># The data argument is the stage data in the json (dict)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chainable</span> <span class="o">=</span> <span class="c1"># Can the outputs of this stage be used as an input for the next?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs_clustering</span> <span class="o">=</span> <span class="c1"># Does this stage output a clustering or something else?</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="c1"># What filename does this stage output?</span>
+
+    <span class="k">def</span> <span class="nf">get_stage_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_root</span><span class="p">,</span> <span class="n">prev_file</span><span class="p">):</span>
+        <span class="c1"># Return an array of commands that the pipeline will execute when it reaches this stage</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">source/typedict.py</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">stage_classes</span></code>, modify the disctionary to map a string representing your stage, to the object you created. Make sure to import your code!</p></li>
+<li><p>Now, when writing your <code class="docutils literal notranslate"><span class="pre">pipeline.json</span></code>, simply add your stage in the <code class="docutils literal notranslate"><span class="pre">&quot;stages&quot;</span></code> array. Use the name specified in the previous step, and the arguments processed in your code.</p></li>
+</ol>
+<section id="mincut-filter">
+<h3>Mincut Filter<a class="headerlink" href="#mincut-filter" title="Link to this heading">¶</a></h3>
+<p><strong>TODO: This should be tested, and documented here</strong></p>
+</section>
+</section>
+<section id="the-stage-and-clusterer-objects">
+<h2>The Stage and Clusterer Objects<a class="headerlink" href="#the-stage-and-clusterer-objects" title="Link to this heading">¶</a></h2>
+<section id="extensions-of-abstractclusterer">
+<h3>Extensions of <code class="docutils literal notranslate"><span class="pre">AbstractClusterer</span></code><a class="headerlink" href="#extensions-of-abstractclusterer" title="Link to this heading">¶</a></h3>
+<p>To view source code for the abstract class, see <a class="reference download internal" download="" href="_downloads/4ca7b52910468372b44a0f7edf0cd003/abstract_clusterer.py"><span class="xref download myst">here</span></a>. Objects extending the <code class="docutils literal notranslate"><span class="pre">AbstractClusterer</span></code> object must have the following:</p>
+<ul class="simple">
+<li><p>Object variables containing the clusterer parameters:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">IkcClusterer</span><span class="p">(</span><span class="n">AbstractClusterer</span><span class="p">):</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">cluster</span></code> method that runs the clustering algorithm and returns clusters in the form of <code class="docutils literal notranslate"><span class="pre">IntangibleSubgraph</span></code> objects in hm01. This is really just a set of vertices.</p>
+<ul>
+<li><p>This method can also call other class helper methods</p></li>
+</ul>
+</li>
+<li><p>Your file containing the object extending the <code class="docutils literal notranslate"><span class="pre">AbstractClusterer</span></code> must contain a <code class="docutils literal notranslate"><span class="pre">get_clusterer</span></code> method taking in arguments for the clusterer, and returning the clusterer object. This is so that CM can generalize to use your clustering method</p></li>
+</ul>
+</section>
+<section id="extensions-of-stage">
+<h3>Extensions of <code class="docutils literal notranslate"><span class="pre">Stage</span></code><a class="headerlink" href="#extensions-of-stage" title="Link to this heading">¶</a></h3>
+<p>To view the abstract class, click <a class="reference download internal" download="" href="_downloads/03edaa5f2aa9f7adbec8facd5ef9f19a/stage.py"><span class="xref download myst">here</span></a>. Any extension of Stage must contain the following:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> can simply super the abstract class.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">initialize(self,</span> <span class="pre">data)</span></code> method to set the following:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter is a dictionary representing the stage object in the json.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.outputs_clustering</span></code>: A boolean on whether your stage outputs a cluatering or something else</p>
+<ul>
+<li><p>For example <code class="docutils literal notranslate"><span class="pre">cleanup</span></code> and <code class="docutils literal notranslate"><span class="pre">stats</span></code> outputs a graph and statistics respectively, both of which are not clusterings.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.chainable</span></code>: A boolean on whether you stage’s outputs can be used by the next stage</p>
+<ul>
+<li><p>For example, if your stage outputs an aggregated graph that can be reclustered, it is chainable</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.output_file</span></code></p>
+<ul>
+<li><p>If your stage outputs one file, this is a string</p></li>
+<li><p>If your stage outputs a file per parameter set, this is an array following the same order as the params specified in the json.</p></li>
+<li><p>Output files should be stored in the appropriate directory.</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">self.get_folder_name(param)</span></code> to get the folder name for the parameter dictionary used.</p></li>
+<li><p>This means that the correct folder for a param set <code class="docutils literal notranslate"><span class="pre">param</span></code> would be in <code class="docutils literal notranslate"><span class="pre">f'{self.working_dir}/{self.get_folder_name(param)}/</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Any parameters that are specific to your clusterer can be assigned here</p>
+<ul>
+<li><p>E.g. <code class="docutils literal notranslate"><span class="pre">self.scripts</span></code> for the filtration stage</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">get_stage_commands(self,</span> <span class="pre">project_root,</span> <span class="pre">prev_file)</span></code>.</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">project_root</span></code> is the root folder for this repository</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">prev_file</span></code> is the filename (as a string or array of strings per parameter set).</p></li>
+<li><p>This command should return an array of commands to execute when this stage is reached. These command must address all the parameter sets, and return files per each parameter set.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="extensions-of-clustering">
+<h3>Extensions of <code class="docutils literal notranslate"><span class="pre">Clustering</span></code><a class="headerlink" href="#extensions-of-clustering" title="Link to this heading">¶</a></h3>
+<p>Clustering is already an extension of Stage. To view the parent object, see the code <a class="reference download internal" download="" href="_downloads/c6daa44e05ae123c2bfc4519cf977815/clustering.py"><span class="xref download myst">here</span></a>. Any extension of the clustering object should have:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code> can simply super the clustering object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">initialize_clustering(self)</span></code>. Set the output file when this clusterer is run. This is similar to setting the stage output file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_stage_commands(self,</span> <span class="pre">project_root,</span> <span class="pre">previous</span> <span class="pre">file)</span></code>. This returns a set of commands when your clustering method is run.</p>
+<ul>
+<li><p>You should have an executable for your clustering that is runnable via shell. If it is a python module (like infomap or Leiden), please make a runnable script <a class="reference download internal" download="" href="_downloads/c19f9856e309e5aa2898a7a97941575a/run_leiden.py"><span class="xref download myst">(like this one)</span></a>. If you want to submit your changes, keep your scripts in the <a class="reference internal" href="#../scripts/"><span class="xref myst">scripts/</span></a> folder.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="submitting-your-changes">
+<h2>Submitting your Changes<a class="headerlink" href="#submitting-your-changes" title="Link to this heading">¶</a></h2>
+<p>To make your new stages and clustering methods a  part of the official repo:</p>
+<ol class="arabic simple">
+<li><p>Create a fork of this repository</p></li>
+<li><p>Insert your new clustering methods and stages</p></li>
+<li><p>Create a pull request and we will review and approve it</p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">CM++ Pipeline</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Illinois OR Research Analytics (GPL-3.0 License).
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/pipeline_customization.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
