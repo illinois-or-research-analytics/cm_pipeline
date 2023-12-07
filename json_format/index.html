@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>JSON Input Documentation - My Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">My Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">CM++ Pipeline</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp_usage/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../dev_setup/" class="nav-link">For Developers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../examples/" class="nav-link">Example Commands</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../features/" class="nav-link">Features</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../installation/" class="nav-link">Installation and Setup</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">JSON Input Documentation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../pipeline_customization/" class="nav-link">Pipeline Modification Documentation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../pipeline_usage/" class="nav-link">Pipeline Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../quickstart/" class="nav-link">Quick Start Guide</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../installation/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../pipeline_customization/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#json-input-documentation" class="nav-link">JSON Input Documentation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#overall-parameters" class="nav-link">Overall Parameters</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#algorithmic-parameters" class="nav-link">Algorithmic Parameters</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#stages" class="nav-link">Stages</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#using-an-existing-clustering" class="nav-link">Using an Existing Clustering</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#examples" class="nav-link">Examples</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="json-input-documentation">JSON Input Documentation</h1>
+<p>The following document will go over the different parameters for each stage as well as rules and limitations for each stage. To view a valid pipeline with all parameters included, refer to <a href="../pipeline_template.json"><code>pipeline_template.json</code></a>.</p>
+<ul>
+<li><a href="#json-input-documentation">JSON Input Documentation</a></li>
+<li><a href="#overall-parameters">Overall Parameters</a></li>
+<li><a href="#algorithmic-parameters">Algorithmic Parameters</a><ul>
+<li><a href="#leiden-cpm">Leiden-CPM</a></li>
+<li><a href="#leiden-mod">Leiden-Mod</a></li>
+<li><a href="#ikc">IKC</a></li>
+<li><a href="#infomap">Infomap</a></li>
+<li><a href="#your-own-clustering-method">Your Own Clustering Method</a></li>
+</ul>
+</li>
+<li><a href="#stages">Stages</a><ul>
+<li><a href="#cleanup">Cleanup</a></li>
+<li><a href="#clustering">Clustering</a></li>
+<li><a href="#filtering">Filtering</a></li>
+<li><a href="#connectivity-modifier">Connectivity Modifier</a></li>
+<li><a href="#stats">Stats</a></li>
+</ul>
+</li>
+<li><a href="#using-an-existing-clustering">Using an Existing Clustering</a></li>
+<li><a href="#examples">Examples</a></li>
+</ul>
+<h2 id="overall-parameters">Overall Parameters</h2>
+<p>The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:</p>
+<pre><code class="language-json">    &quot;title&quot;: &quot;cit-new-pp-output&quot;,
+    &quot;name&quot;: &quot;cit_patents&quot;,
+    &quot;input_file&quot;: &quot;/data3/chackoge/networks/cit_patents_cleaned.tsv&quot;,
+    &quot;output_dir&quot;: &quot;samples/&quot;,
+    &quot;algorithm&quot;: &quot;leiden&quot;,
+    &quot;params&quot;: [
+        {
+            &quot;res&quot;: 0.5,
+            &quot;i&quot;: 2
+        },
+        {  
+            &quot;res&quot;: 0.1,
+            &quot;i&quot;: 2
+        },
+        {
+            &quot;res&quot;: 0.01,
+            &quot;i&quot;: 2
+        }
+    ]
+    &quot;stages&quot;: [&quot;...&quot;]
+</code></pre>
+<p>All of the following parameter values are required:</p>
+<ul>
+<li><strong>title</strong>: The name of the run, can be any string that is descriptive of the pipeline</li>
+<li><strong>name</strong>: The name of the network, again can be any string that is descriptive of the network</li>
+<li><strong>input_file</strong>: The filename of the input network. Is an edgelist .tsv.</li>
+<li><strong>output_dir</strong>: The directory to store pipeline outputs.</li>
+<li><strong>algorithm</strong>: The name of the algorithm. Can choose from <code>"leiden"</code>, <code>"leiden_mod"</code>, and <code>"ikc"</code>.</li>
+<li><strong>stages</strong>: An array of <a href="#stages">stage</a> objects.</li>
+<li><strong>params</strong>: A list of dictionaries mapping algorithm parameters to their values.</li>
+</ul>
+<p><strong>NOTE</strong> Paths must be relative to the json file, or absolute.  </p>
+<h2 id="algorithmic-parameters">Algorithmic Parameters</h2>
+<p>The <code>params</code> field contains dictionaries mapping parameter values to their values. These field names will vary based on the algorithm being used.</p>
+<h3 id="leiden-cpm">Leiden-CPM</h3>
+<p>As shown above, Leiden-CPM takes resolution and iterations parameters. Designated in the json as <code>"res"</code> and <code>"i"</code> fields.</p>
+<pre><code class="language-json">{
+    &quot;res&quot;: 0.5,
+    &quot;i&quot;: 2
+}
+</code></pre>
+<h3 id="leiden-mod">Leiden-Mod</h3>
+<p>Leiden-Mod doesn't need to use a resolution parameter since it optimizes modularity and not CPM. Therefore, only an iterations parameter needs to be passed.</p>
+<pre><code class="language-json">{
+    &quot;i&quot;: 2
+}
+</code></pre>
+<h3 id="ikc">IKC</h3>
+<p>IKC only needs a k-core value passed as a parameter, designated as <code>"k"</code>.</p>
+<pre><code class="language-json">{
+    &quot;k&quot;: 10
+}
+</code></pre>
+<h3 id="infomap">Infomap</h3>
+<p>Infomap doesn't take ay parameters, so its dictionary is always empty. However, to fit the style constraints of the pipeline, any algorithm that doesnt take any parameters should use an empty dictionary as follows.</p>
+<pre><code class="language-json">{}
+</code></pre>
+<p>Since you can't have multiple runs of the same parameter set, the overall <code>"params"</code> field in the json will look like this:</p>
+<pre><code class="language-json">&quot;params&quot;: [{}]
+</code></pre>
+<h3 id="your-own-clustering-method">Your Own Clustering Method</h3>
+<p>Refer to the <a href="../pipeline_customization/">customization documentation</a> for more details on how to create your own clustering. You will be able to assign parameter names for your own clustering using this pipeline.</p>
+<p>Supposing you create a pipeline with two parameters <code>"a"</code> and <code>"b"</code> with integer values, you will be able to designate them in the pipeline file.</p>
+<pre><code class="language-json">{
+    &quot;a&quot;: 1,
+    &quot;b&quot;: 2
+}
+</code></pre>
+<h2 id="stages">Stages</h2>
+<h3 id="cleanup">Cleanup</h3>
+<p>This stage removes any self loops (i.e. edges $(u, u)$ ) and parallel edges (i.e. duplicate edges $(u, v)$ with more than one occurrence in the edge list). This stage does not take any extra parameters and has the following syntax. Add the following object in the stages array:</p>
+<pre><code class="language-json">{
+    &quot;name&quot;: &quot;cleanup&quot;
+}
+</code></pre>
+<p><strong>Limitations</strong>: This stage cannot come after a stage that outputs a clustering (ex. filtering, connectivity_modifier).</p>
+<h3 id="clustering">Clustering</h3>
+<p>This stage uses the clustering algorithm specified in the overall parameters to cluster a cleaned network. If resolutions and/or iterations are arrays, multiple clusterings are outputted. To add this stage, add the following to the stages array. Modify the parameters as needed:</p>
+<pre><code class="language-json">{
+    &quot;name&quot;: &quot;clustering&quot;,
+    &quot;parallel_limit&quot;: 2
+}
+</code></pre>
+<p><strong>Optional Parameter</strong>:</p>
+<ul>
+<li><strong>parallel_limit</strong>: The number of clustering jobs that can be run in parallel. This is useful if resolutions or iterations are arrays. In the example above, clustering jobs will be run in pairs of twos.</li>
+<li>If the limit is 1, clustering jobs will be run sequentially.</li>
+<li>If no limit is specified, all clustering jobs will be run in parallel.</li>
+</ul>
+<p><strong>Limitations</strong>: This stage cannot come after a stage that outputs a clustering.</p>
+<h3 id="filtering">Filtering</h3>
+<p>This stage takes a clustering and filters it according to a script, or series of scripts. To add this stage, add the following to the stages array. Modify the scripts as needed.:</p>
+<pre><code class="language-json">{
+    &quot;name&quot;: &quot;filtering&quot;,
+    &quot;scripts&quot;: [
+        &quot;./scripts/subset_graph_nonetworkit_treestar.R&quot;,
+        &quot;./scripts/make_cm_ready.R&quot;
+    ]
+}
+</code></pre>
+<p><strong>Required Paramters</strong>:</p>
+<ul>
+<li><strong>scripts</strong>: This is an array of script file names. If you only want to run one script, the array will have one element with the script name. The following are scripts in the repository that can be used for filtration:</li>
+<li><code>"subset_graph_nonetworkit_treestar.R"</code></li>
+<li><code>"make_cm_ready.R"</code></li>
+<li><code>"post_cm_filter.R"</code></li>
+</ul>
+<p><strong>Limitations</strong>: This stage must come after a stage that outputs a clustering.</p>
+<h3 id="connectivity-modifier">Connectivity Modifier</h3>
+<p>This is the stage that applies CM++ to a clustering to ensure connectivity requirements in clusters. To add the stage, simply add the following to the stages array. Change the parameters as needed. If the parameters are optional, they can be deleted from this template:</p>
+<pre><code class="language-json">{
+    &quot;name&quot;: &quot;connectivity_modifier&quot;,
+    &quot;memprof&quot;: true,
+    &quot;threshold&quot;: &quot;1log10&quot;,
+    &quot;nprocs&quot;: 32,
+    &quot;quiet&quot;: true,
+}
+</code></pre>
+<p><strong>Required Parameter</strong>:</p>
+<ul>
+<li><strong>threshold</strong>: The connectivity threshold. This is a string representing a linear combination between <code>log10</code>, <code>mcd</code> (minimum core degree), <code>k</code> (IKC only), and a constant. The following are valid thresholds</li>
+<li><code>1log10</code></li>
+<li><code>1log10+4mcd+1k+4</code></li>
+<li><code>mcd</code></li>
+</ul>
+<p><strong>Optional Parameters</strong>:</p>
+<ul>
+<li><strong>memprof</strong>: Profile the memory usage per process over time as CM++ is running. If this is ommitted or set to false, memory profiling will not run.</li>
+<li><strong>nprocs</strong>: Number of cores to run CM++. If omitted, this defaults to 4.</li>
+<li><strong>quiet</strong>: Silence output to terminal. If omitted, this defaults to false.</li>
+</ul>
+<p><strong>Limitations</strong>: This must come after a stage that outputs a clustering.  </p>
+<ul>
+<li><strong>NOTE: If using IKC, it's recommended to run no more than 4 processors on CM</strong></li>
+</ul>
+<h3 id="stats">Stats</h3>
+<p>This stage reports statistics of a clustering that was outputted by a stage preceding it. For more information on the statistics reporting ans its outputs. The code for the stage is the following:</p>
+<pre><code class="language-json">{
+    &quot;name&quot;: &quot;stats&quot;,
+    &quot;parallel_limit&quot;: 2,
+    &quot;universal_before&quot;: false,
+    &quot;summarize&quot;: false
+}
+</code></pre>
+<p><strong>Optional Parameters</strong>:</p>
+<ul>
+<li><strong>parallel_limit</strong>: This is the same as for the clustering stage</li>
+<li><strong>universal_before</strong>: Output extra details on which clusters were split by CM. If ommitted, this defaults to <code>false</code>.</li>
+<li><strong>summarize</strong>: Output more detailed summary statistics for the clustering overall.</li>
+</ul>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li>This stage must come after a stage that outputs a clustering.</li>
+<li>If <code>universal_before</code> is a field, CM must appear sometime before this stats stage (<em>NOTE</em>: Not necessarily one stage before, can be at any point preceding this stats stage).</li>
+</ul>
+<h2 id="using-an-existing-clustering">Using an Existing Clustering</h2>
+<pre><code class="language-json">{
+    &quot;title&quot;: &quot;cit-new-pp-output-leiden-skipstage&quot;,
+    &quot;name&quot;: &quot;cit_patents&quot;,
+    &quot;input_file&quot;: &quot;/data3/chackoge/networks/cit_patents_cleaned.tsv&quot;,
+    &quot;output_dir&quot;: &quot;samples/&quot;,
+    &quot;algorithm&quot;: &quot;leiden&quot;,
+    &quot;params&quot;: [
+        {
+            &quot;res&quot;: 0.5,
+            &quot;i&quot;: 2,
+            &quot;existing_clustering&quot;: &quot;samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.5-i2/S2_cit_patents_leiden.0.5_i2_clustering.tsv&quot;
+        },
+        {
+            &quot;res&quot;: 0.1,
+            &quot;i&quot;: 2,
+            &quot;existing_clustering&quot;: &quot;samples/cit-new-pp-output-leiden_mod-20230614-23:55:59/res-0.1-i2/S2_cit_patents_leiden.0.1_i2_clustering.tsv&quot;
+        }
+    ],
+    &quot;stages&quot;: [&quot;...&quot;]
+}
+</code></pre>
+<p>To use an existing clustering, add a value <code>"existing_clustering"</code> per parameter entry in your json header. This is applicable for any clustering method.</p>
+<h2 id="examples">Examples</h2>
+<p>View the following folder to check out examples: <a href="../examples/">examples/</a></p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

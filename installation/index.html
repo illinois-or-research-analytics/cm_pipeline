@@ -4,23 +4,23 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="None">
         
         
-        <link rel="shortcut icon" href="img/favicon.ico">
-        <title>My Docs</title>
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/base.css" rel="stylesheet">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Installation and Setup - My Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
 
-    <body class="homepage">
+    <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href=".">My Docs</a>
+                <a class="navbar-brand" href="..">My Docs</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -30,38 +30,38 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">CM++ Pipeline</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp_usage/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../dev_setup/" class="nav-link">For Developers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../examples/" class="nav-link">Example Commands</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../features/" class="nav-link">Features</a>
+                            </li>
                             <li class="navitem active">
-                                <a href="." class="nav-link">CM++ Pipeline</a>
+                                <a href="./" class="nav-link">Installation and Setup</a>
                             </li>
                             <li class="navitem">
-                                <a href="cmpp/" class="nav-link">CM++ Usage</a>
+                                <a href="../json_format/" class="nav-link">JSON Input Documentation</a>
                             </li>
                             <li class="navitem">
-                                <a href="cmpp_usage/" class="nav-link">CM++ Usage</a>
+                                <a href="../pipeline_customization/" class="nav-link">Pipeline Modification Documentation</a>
                             </li>
                             <li class="navitem">
-                                <a href="dev_setup/" class="nav-link">For Developers</a>
+                                <a href="../pipeline_usage/" class="nav-link">Pipeline Usage</a>
                             </li>
                             <li class="navitem">
-                                <a href="examples/" class="nav-link">Example Commands</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="features/" class="nav-link">Features</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="installation/" class="nav-link">Installation and Setup</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="json_format/" class="nav-link">JSON Input Documentation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="pipeline_customization/" class="nav-link">Pipeline Modification Documentation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="pipeline_usage/" class="nav-link">Pipeline Usage</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="quickstart/" class="nav-link">Quick Start Guide</a>
+                                <a href="../quickstart/" class="nav-link">Quick Start Guide</a>
                             </li>
                         </ul>
 
@@ -72,12 +72,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" class="nav-link disabled">
+                                <a rel="prev" href="../features/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="cmpp/" class="nav-link">
+                                <a rel="next" href="../json_format/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -99,25 +99,17 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#cm-pipeline" class="nav-link">CM++ Pipeline</a>
+            <li class="nav-item" data-level="1"><a href="#installation-and-setup" class="nav-link">Installation and Setup</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#quick-start-guide" class="nav-link">Quick Start Guide</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#input-and-usage" class="nav-link">Input and Usage</a>
+            <li class="nav-item" data-level="2"><a href="#requirements" class="nav-link">Requirements</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#contributing" class="nav-link">Contributing</a>
+            <li class="nav-item" data-level="2"><a href="#installation-via-cloning" class="nav-link">Installation via Cloning</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#archive" class="nav-link">Archive</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#citations" class="nav-link">Citations</a>
+            <li class="nav-item" data-level="2"><a href="#installation-via-pip-install" class="nav-link">Installation via pip install</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -128,48 +120,24 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="cm-pipeline">CM++ Pipeline</h1>
-<p><a href="https://zenodo.org/doi/10.5281/zenodo.10076513"><img alt="DOI" src="https://zenodo.org/badge/599799149.svg" /></a></p>
-<p>Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). <a href="https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main">(Original Source Code)</a></p>
-<p><img alt="cm_pipeline Overview" src="figures/cm_pp_overview.png" /></p>
-<h2 id="quick-start-guide">Quick Start Guide</h2>
+<h1 id="installation-and-setup">Installation and Setup</h1>
+<p>There are several strategies for installation. First, be sure to confirm that your system meets the requirements for installation.</p>
+<h2 id="requirements">Requirements</h2>
 <ul>
-<li><a href="features/">Features</a></li>
-<li><a href="installation/">Installation</a></li>
-<li><a href="quickstart/">Quick Start Guide</a></li>
+<li>MacOS or Linux operating system</li>
+<li><code>python3.9</code> or higher</li>
+<li><code>cmake 3.2.0</code> or higher</li>
+<li><code>gcc</code> of any version (In our analysis, <code>gcc 9.2.0</code> was used)</li>
 </ul>
-<h2 id="input-and-usage">Input and Usage</h2>
+<h2 id="installation-via-cloning">Installation via Cloning</h2>
 <ul>
-<li><a href="examples/">Example Commands</a></li>
-<li><a href="cmpp_usage/">CM++ Usage</a></li>
-<li><a href="pipeline_usage/">CM Pipeline Usage</a></li>
+<li>Clone the cm_pipeline repository</li>
+<li>Activate the venv which has the necessary packages</li>
+<li>Run <code>pip install -r requirements.txt &amp;&amp; pip install .</code></li>
+<li>Make sure everything installed properly by running <code>cd tests &amp;&amp; pytest</code></li>
 </ul>
-<h2 id="contributing">Contributing</h2>
-<ul>
-<li><a href="dev_setup/">Developer Setup</a></li>
-</ul>
-<h2 id="archive">Archive</h2>
-<ul>
-<li><a href="https://github.com/illinois-or-research-analytics/cm_pipeline/releases">View Old Release Notes</a></li>
-</ul>
-<h2 id="citations">Citations</h2>
-<pre><code class="language-bibtex">@misc{cm_pipe2023,
-    author = {Vikram Ramavarapu and Vidya Kamath and Minhyuk Park and Fabio Ayres and George Chacko},
-    title = {Connectivity Modifier Pipeline},
-    howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
-    year={2023},
-    doi={10.5281/zenodo.10076514}
-}
-
-@misc{park2023wellconnected,
-    title={Well-Connected Communities in Real-World and Synthetic Networks}, 
-    author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
-    year={2023},
-    eprint={2303.02813},
-    archivePrefix={arXiv},
-    primaryClass={cs.SI}
-}
-</code></pre></div>
+<h2 id="installation-via-pip-install">Installation via pip install</h2>
+<p>Simply run <code>pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline</code>. <strong>This will install CM++, but to use pipeline functionality, please setup via cloning.</strong></p></div>
             </div>
         </div>
 
@@ -177,14 +145,14 @@
             <hr>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
-        <script src="js/jquery-3.6.0.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
         <script>
-            var base_url = ".",
+            var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="js/base.js"></script>
-        <script src="search/main.js"></script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -249,8 +217,3 @@
 
     </body>
 </html>
-
-<!--
-MkDocs version : 1.5.3
-Build Date UTC : 2023-12-07 06:53:52.771059+00:00
--->

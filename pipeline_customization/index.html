@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Pipeline Modification Documentation - My Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">My Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">CM++ Pipeline</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../cmpp_usage/" class="nav-link">CM++ Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../dev_setup/" class="nav-link">For Developers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../examples/" class="nav-link">Example Commands</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../features/" class="nav-link">Features</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../installation/" class="nav-link">Installation and Setup</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../json_format/" class="nav-link">JSON Input Documentation</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Pipeline Modification Documentation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../pipeline_usage/" class="nav-link">Pipeline Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../quickstart/" class="nav-link">Quick Start Guide</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../json_format/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../pipeline_usage/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#pipeline-modification-documentation" class="nav-link">Pipeline Modification Documentation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#using-your-own-clustering-method" class="nav-link">Using your own clustering method</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#creating-your-own-pipeline-stage" class="nav-link">Creating your own pipeline stage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#the-stage-and-clusterer-objects" class="nav-link">The Stage and Clusterer Objects</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#submitting-your-changes" class="nav-link">Submitting your Changes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="pipeline-modification-documentation">Pipeline Modification Documentation</h1>
+<p>The CM Pipeline allows for macros and modifications that developers can insert. You will be able to modify the pipeline in the two following ways:</p>
+<ul>
+<li>Use your own clustering method</li>
+<li>Build your own pipeline stages</li>
+</ul>
+<h2 id="using-your-own-clustering-method">Using your own clustering method</h2>
+<p>First, to use your own clustering method, follow both of these procedures:</p>
+<h3 id="i-inserting-your-clustering-method-into-cm">I. Inserting your clustering method into CM++</h3>
+<ol>
+<li>From root, navigate to the <code>hm01/clusterers/external_clusterers/</code> directory</li>
+<li>Create a clusterer object that calls your clustering method. Here is a template:</li>
+</ol>
+<pre><code class="language-python">from dataclasses import dataclass
+from typing import List, Iterator, Dict, Union
+
+from hm01.clusterers.abstract_clusterer import AbstractClusterer
+
+from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
+
+@dataclass
+class TemplateClusterer(AbstractClusterer):
+
+    def __init__(args):
+        # Create a clusterer object. Args is the arguments of the clusterer
+        # Ex. Leiden-CPM would have resolution as an arg
+        pass
+
+    def cluster(self, graph: Union[Graph, RealizedSubgraph]) -&gt; Iterator[IntangibleSubgraph]:
+        # Return an iterator of intangible subgraphs representing your resultant clusters
+        pass
+
+def getclusterer(args):
+    # Construct the clusterer object from the args
+    return TemplateClusterer(args)
+
+    # Ex. Leiden-CPM's clusterer would be getclusterer(resolution)
+</code></pre>
+<ol>
+<li>Then when you call CM++, you will create a JSON file mapping arguments to their values. Here is a template/example</li>
+</ol>
+<pre><code class="language-json">{
+    &quot;arg&quot;: &quot;val&quot;,
+    &quot;resolution&quot;: 0.5 
+}
+</code></pre>
+<ol>
+<li>Then, when you call CM++, you can do the following:</li>
+</ol>
+<pre><code class="language-bash">python -m hm01.cm 
+    -i network.tsv 
+    -e clustering.tsv
+    -cfile hm01/clusterers/MyWrapper.py
+    -cargs MyArguments.json
+    -t 1log10
+</code></pre>
+<h3 id="ii-inserting-your-clustering-method-into-the-pipeline">II. Inserting your clustering method into the pipeline</h3>
+<ol>
+<li>Navigate to <code>source/clusterers/</code></li>
+<li>Create a python object file to wrap your clustering method. Here is a template:</li>
+</ol>
+<pre><code class="language-python">from source.clustering import Clustering
+
+class LeidenModClustering(Clustering):
+    def __init__(
+            self, 
+            data, 
+            input_file, 
+            network_name, 
+            resolutions, 
+            iterations, 
+            algorithm, 
+            existing_clustering, 
+            working_dir, 
+            index):
+        super().__init__(
+            data, 
+            input_file, 
+            network_name, 
+            resolutions, 
+            iterations, 
+            algorithm, 
+            existing_clustering, 
+            working_dir, 
+            index)
+
+    def initialize_clustering(self):
+        self.output_file = [
+            # process list of parameter sets into output file names
+            # For example, if Leiden CPM has parameter set 
+            #   [{
+            #       &quot;res&quot;: 0.5,
+            #       &quot;i&quot;: 2
+            #   }, {
+            #       &quot;res&quot;: 0.1,
+            #       &quot;i&quot;: 1
+            #   }]
+            # You will need two output files. One for res-0.5-i2 and one for res-0.1-i1
+            for param in self.params
+        ]
+
+    def get_stage_commands(self, project_root, prev_file):
+        # Write code that returns an array of shell commands that run your clustering method.
+        # The array of commands needs to be per, and in the same order, as your params set
+        # Refer to self.params
+        pass
+</code></pre>
+<ol>
+<li>Navigate to <code>source/typedict.py</code>. In the <code>cluster_classes</code> dictionary.</li>
+<li>Add a mapping from your clustering algorithm name to the object that you had created. Remember to import your clusterer! E. <code>'mcl': MCL</code>.</li>
+<li>To run the pipeline with your new clusterer. Do the following:</li>
+<li>Create a json file (refer to <code>pipeline.json</code> for an example) containing the parameter set that you would like to run for your method. This set will have multiple sets of parameters if you want to have multiple runs of your pipeline.</li>
+<li>If your clusterer doesnt take any parameters, your <code>"params"</code> field will look like: <code>"params": [{}]</code></li>
+<li>In the case that CM++ is in your pipeline, make sure your stage has <code>"cfile"</code> in the parameters. Note that you do not need a <code>"cargs"</code> parameter as the pipeline will automatically create an args json.</li>
+<li>Run <code>python -m main pipeline.json</code> from root.</li>
+</ol>
+<h3 id="example-infomap">Example: Infomap</h3>
+<ol>
+<li>First, I created the infomap wrapper as shown in <a href="../hm01/clusterers/external_clusterers/infomap_wrapper.py">this file</a>.</li>
+<li>The cluster method simply uses python's Infomap library, and converts the outputs into hm01 <code>IntangibleSubgraph</code> objects.</li>
+<li>The <code>get_clusterer</code> method doesn't take any arguments since InfoMap doesn't require any parameters</li>
+<li>Second, in <a href="../source/clusterers/infomap.py">this clusterer object</a>, I created a clusterer object for the pipeline.</li>
+<li>InfoMap is quite simple, it doesn't take any parameters and it doesn't have any extra requirements, so the <code>__init__</code> method doesn't need any more than it has.</li>
+<li>The <code>initialize_clustering</code> method simply sets its output file name.<ol>
+<li>You want output in the relevant directory. For infomap, that was <code>f{self.working_dir}/infomap/</code>.</li>
+<li>For your method, you should refer to the <code>self.get_folder_name(param)</code> method, where <code>param</code> is the current parameter dictionary.</li>
+</ol>
+</li>
+<li>The <code>get_stage_commands</code> method converts the stage object data into a runnable shell command by the pipeline. I have made a <a href="../scripts/run_infomap.py">run_infomap</a> script that the CM pipeline can call.</li>
+<li>In the <a href="../source/typedict.py">typedict file</a>, I have added keys for infomap</li>
+</ol>
+<h2 id="creating-your-own-pipeline-stage">Creating your own pipeline stage</h2>
+<ol>
+<li>Navigate to <code>source/</code></li>
+<li>Create an empty stage object. Start with this template. Replace names according to your preferences:</li>
+</ol>
+<pre><code class="language-python">from source.stage import Stage
+
+
+class MyStage(Stage):
+    def __init__(
+            self,
+            data,
+            input_file,
+            network_name,
+            resolutions,
+            iterations,
+            algorithm,
+            existing_clustering,
+            working_dir,
+            index
+    ):
+        super().__init__(
+            data, 
+            input_file, 
+            network_name,
+            resolutions,
+            iterations,
+            algorithm,
+            existing_clustering,
+            working_dir,
+            index)
+
+    def initialize(self, data):        
+        # This method sets required parameters of your stage
+        # The data argument is the stage data in the json (dict)
+
+        self.chainable = # Can the outputs of this stage be used as an input for the next?
+        self.outputs_clustering = # Does this stage output a clustering or something else?
+
+        self.output_file = # What filename does this stage output?
+
+    def get_stage_commands(self, project_root, prev_file):
+        # Return an array of commands that the pipeline will execute when it reaches this stage
+</code></pre>
+<ol>
+<li>Navigate to <code>source/typedict.py</code></li>
+<li>In <code>stage_classes</code>, modify the disctionary to map a string representing your stage, to the object you created. Make sure to import your code!</li>
+<li>Now, when writing your <code>pipeline.json</code>, simply add your stage in the <code>"stages"</code> array. Use the name specified in the previous step, and the arguments processed in your code.</li>
+</ol>
+<h3 id="mincut-filter">Mincut Filter</h3>
+<p><strong>TODO: This should be tested, and documented here</strong></p>
+<h2 id="the-stage-and-clusterer-objects">The Stage and Clusterer Objects</h2>
+<h3 id="extensions-of-abstractclusterer">Extensions of <code>AbstractClusterer</code></h3>
+<p>To view source code for the abstract class, see <a href="../hm01/clusterers/abstract_clusterer.py">here</a>. Objects extending the <code>AbstractClusterer</code> object must have the following:</p>
+<ul>
+<li>Object variables containing the clusterer parameters:</li>
+</ul>
+<pre><code class="language-python">@dataclass
+class IkcClusterer(AbstractClusterer):
+    k: int
+</code></pre>
+<ul>
+<li>A <code>cluster</code> method that runs the clustering algorithm and returns clusters in the form of <code>IntangibleSubgraph</code> objects in hm01. This is really just a set of vertices.</li>
+<li>
+<p>This method can also call other class helper methods</p>
+</li>
+<li>
+<p>Your file containing the object extending the <code>AbstractClusterer</code> must contain a <code>get_clusterer</code> method taking in arguments for the clusterer, and returning the clusterer object. This is so that CM can generalize to use your clustering method</p>
+</li>
+</ul>
+<h3 id="extensions-of-stage">Extensions of <code>Stage</code></h3>
+<p>To view the abstract class, click <a href="../source/stage.py">here</a>. Any extension of Stage must contain the following:</p>
+<ul>
+<li>The <code>__init__</code> can simply super the abstract class.</li>
+<li>An <code>initialize(self, data)</code> method to set the following:</li>
+<li>The <code>data</code> parameter is a dictionary representing the stage object in the json.</li>
+<li><code>self.outputs_clustering</code>: A boolean on whether your stage outputs a cluatering or something else<ul>
+<li>For example <code>cleanup</code> and <code>stats</code> outputs a graph and statistics respectively, both of which are not clusterings.</li>
+</ul>
+</li>
+<li><code>self.chainable</code>: A boolean on whether you stage's outputs can be used by the next stage<ul>
+<li>For example, if your stage outputs an aggregated graph that can be reclustered, it is chainable</li>
+</ul>
+</li>
+<li><code>self.output_file</code><ul>
+<li>If your stage outputs one file, this is a string</li>
+<li>If your stage outputs a file per parameter set, this is an array following the same order as the params specified in the json.</li>
+<li>Output files should be stored in the appropriate directory.</li>
+<li>Use <code>self.get_folder_name(param)</code> to get the folder name for the parameter dictionary used.</li>
+<li>This means that the correct folder for a param set <code>param</code> would be in <code>f'{self.working_dir}/{self.get_folder_name(param)}/</code></li>
+</ul>
+</li>
+<li>Any parameters that are specific to your clusterer can be assigned here<ul>
+<li>E.g. <code>self.scripts</code> for the filtration stage</li>
+</ul>
+</li>
+<li>A <code>get_stage_commands(self, project_root, prev_file)</code>.</li>
+<li>The <code>project_root</code> is the root folder for this repository</li>
+<li>The <code>prev_file</code> is the filename (as a string or array of strings per parameter set).</li>
+<li>This command should return an array of commands to execute when this stage is reached. These command must address all the parameter sets, and return files per each parameter set.</li>
+</ul>
+<h3 id="extensions-of-clustering">Extensions of <code>Clustering</code></h3>
+<p>Clustering is already an extension of Stage. To view the parent object, see the code <a href="../source/clustering.py">here</a>. Any extension of the clustering object should have:</p>
+<ul>
+<li><code>__init__</code> can simply super the clustering object</li>
+<li><code>initialize_clustering(self)</code>. Set the output file when this clusterer is run. This is similar to setting the stage output file.</li>
+<li><code>get_stage_commands(self, project_root, previous file)</code>. This returns a set of commands when your clustering method is run. </li>
+<li>You should have an executable for your clustering that is runnable via shell. If it is a python module (like infomap or Leiden), please make a runnable script <a href="../scripts/run_leiden.py">(like this one)</a>. If you want to submit your changes, keep your scripts in the <a href="../scripts/">scripts/</a> folder.</li>
+</ul>
+<h2 id="submitting-your-changes">Submitting your Changes</h2>
+<p>To make your new stages and clustering methods a  part of the official repo:</p>
+<ol>
+<li>Create a fork of this repository</li>
+<li>Insert your new clustering methods and stages</li>
+<li>Create a pull request and we will review and approve it</li>
+</ol></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
