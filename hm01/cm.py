@@ -315,7 +315,7 @@ def load_clusterer(module_file, clusterer_args_file):
 
     try:
         with open(clusterer_args_file, 'r') as f:
-            kwargs = json.loads(f)
+            kwargs = json.load(f)
     except:
         kwargs = {}
 
@@ -345,6 +345,7 @@ def main(
         "-q",
         help="Silence output messages.",
     ),
+    #ClustererSpec.external,
     clusterer_spec: ClustererSpec = typer.Option(
         ...,
         "--clusterer",
