@@ -345,7 +345,6 @@ def main(
         "-q",
         help="Silence output messages.",
     ),
-    #ClustererSpec.external,
     clusterer_spec: ClustererSpec = typer.Option(
         ...,
         "--clusterer",
