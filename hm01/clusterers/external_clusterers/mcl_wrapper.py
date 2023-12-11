@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Iterator, Dict, Union
+import subprocess
 
 from hm01.clusterers.abstract_clusterer import AbstractClusterer
 from hm01.context import context
@@ -12,8 +13,6 @@ class MCLClusterer(AbstractClusterer):
     def __init__(self, **kwargs):
         self.inflation_factor = kwargs["inflation_factor"]
         self.mcl_path = kwargs["mcl_path"]
-        self.mcl_working_dir = kwargs["mcl_working_dir"]
-        context.with_working_dir(self.mcl_working_dir)
 
     def run_mcl(self, edge_list_path, graph: Union[Graph, RealizedSubgraph], output_file):
         """Runs MCL given an edge list"""

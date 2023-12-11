@@ -166,6 +166,11 @@ def par_task(stack, node_mapping, node2cids):
         #     tree_node.validity_threshold = 0
         #     continue
 
+        if subgraph.n() == 0:
+            tree_node.cut_size = 0
+            tree_node.extant = False
+            continue
+
         if num_pruned > 0:
             # (VR) Set the cluster cut size to the degree of the removed node
             tree_node.cut_size = original_mcd
