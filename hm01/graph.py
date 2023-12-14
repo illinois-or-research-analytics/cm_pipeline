@@ -86,6 +86,12 @@ class Graph(AbstractGraph):
         self._data = data  # nk graph
         self._data.removeSelfLoops()
         self.index = index
+
+        # Identify and remove floater nodes
+        floater_nodes = [node for node in self._data.iterNodes() if self._data.degree(node) == 0]
+        for node in floater_nodes:
+            self._data.removeNode(node)
+
         self.construct_hydrator()
 
     def to_realized_subgraph(self):
