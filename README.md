@@ -7,7 +7,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
 - [CM++ Pipeline](#cm-pipeline)
   - [Documentation](#documentation)
   - [Overview](#overview)
-    - [Pipeline Features](#pipeline-features)
+    - [CM Pipeline Features](#cm-pipeline-features)
     - [CM++ Features](#cm-features)
     - [Requirements](#requirements)
     - [Installation and Setup](#installation-and-setup)
@@ -31,7 +31,7 @@ For the full documentation see [here](https://illinois-or-research-analytics.git
 
 ## Overview
 
-### Pipeline Features
+### CM Pipeline Features
 
 The CM Pipeline is a modular pipeline for community detection that contains the following modules:
 
