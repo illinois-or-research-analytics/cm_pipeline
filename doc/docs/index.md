@@ -23,6 +23,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
 
 - [Contibuting](contributions.md)
 - [Developer Setup](dev_setup.md)
+- [Pipeline Customization](pipeline_customization.md)
 
 ## Archive
 
