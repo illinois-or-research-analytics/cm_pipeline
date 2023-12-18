@@ -6,17 +6,16 @@ Customizable modular pipeline for testing an improved version of CM for generati
 
 - [CM++ Pipeline](#cm-pipeline)
   - [Documentation](#documentation)
-  - [Quick Start Guide](#quick-start-guide)
-    - [Features](#features)
-  - [CM++ Features](#cm-features)
+  - [Overview](#overview)
+    - [Pipeline Features](#pipeline-features)
+    - [CM++ Features](#cm-features)
     - [Requirements](#requirements)
     - [Installation and Setup](#installation-and-setup)
       - [Installation via Cloning](#installation-via-cloning)
       - [Installation via pip install](#installation-via-pip-install)
-  - [Input and Usage](#input-and-usage)
-    - [Example Commands](#example-commands)
-      - [CM++](#cm)
-      - [CM Pipeline](#cm-pipeline-1)
+  - [Example Commands](#example-commands)
+    - [CM++](#cm)
+    - [CM Pipeline](#cm-pipeline-1)
   - [For Developers](#for-developers)
     - [Loading a Developer Environment](#loading-a-developer-environment)
     - [Customizing the Pipeline](#customizing-the-pipeline)
@@ -30,9 +29,9 @@ Customizable modular pipeline for testing an improved version of CM for generati
 
 For the full documentation see [here](https://illinois-or-research-analytics.github.io/cm_pipeline/)
 
-## Quick Start Guide
+## Overview
 
-### Features
+### Pipeline Features
 
 The CM Pipeline is a modular pipeline for community detection that contains the following modules:
 
@@ -48,7 +47,7 @@ The CM Pipeline is a modular pipeline for community detection that contains the 
 
 - **CM++**
 
-## CM++ Features
+### CM++ Features
 
 CM++ is a module within the CM Pipeline, having the following features:
 
@@ -82,18 +81,16 @@ There are several strategies for installation
 
 Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm_pipeline`. **This will install CM++, but to use pipeline functionality, please setup via cloning.**
 
-## Input and Usage
+## Example Commands
 
-### Example Commands
-
-#### CM++
+### CM++
 
 - `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c leiden -g 0.5 --threshold 1log10 --nprocs 4 --quiet`
   - Runs CM++ on a Leiden with resolution 0.5 clustering with connectivity threshold $log_{10}(n)$ (Every cluster with connectivity over the log of the number of nodes is considered "well-connected")
 - `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c ikc -k 10 --threshold 1log10 --nprocs 4 --quiet`
   - Similar idea but with IKC having hyperparameter $k=10$.
 
-#### CM Pipeline
+### CM Pipeline
 
 - Suppose you have a pipeline like the one [here](examples/leiden.json). Call it `pipeline.json`
 - Then from the root of this repository run:
