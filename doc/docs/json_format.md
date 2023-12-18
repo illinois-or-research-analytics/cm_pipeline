@@ -2,23 +2,6 @@
 
 The following document will go over the different parameters for each stage as well as rules and limitations for each stage. To view a valid pipeline with all parameters included, refer to [`pipeline_template.json`](pipeline_template.json).
 
-- [JSON Input Documentation](#json-input-documentation)
-  - [Overall Parameters](#overall-parameters)
-  - [Algorithmic Parameters](#algorithmic-parameters)
-    - [Leiden-CPM](#leiden-cpm)
-    - [Leiden-Mod](#leiden-mod)
-    - [IKC](#ikc)
-    - [Infomap](#infomap)
-    - [Your Own Clustering Method](#your-own-clustering-method)
-  - [Stages](#stages)
-    - [Cleanup](#cleanup)
-    - [Clustering](#clustering)
-    - [Filtering](#filtering)
-    - [Connectivity Modifier](#connectivity-modifier)
-    - [Stats](#stats)
-  - [Using an Existing Clustering](#using-an-existing-clustering)
-  - [Examples](#examples)
-
 ## Overall Parameters
 
 The following is a general overview of the overall parameters that don't belong to a single stage but rather the entire pipeline:
