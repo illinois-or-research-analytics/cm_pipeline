@@ -13,3 +13,4 @@ nav:
   - Contributing:
     - Contributing: contributions.md
     - Developer Setup: dev_setup.md
+    - Pipeline Customization: pipeline_customization.md

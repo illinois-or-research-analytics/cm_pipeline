@@ -5,8 +5,10 @@
 Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
 
 - [CM++ Pipeline](#cm-pipeline)
+  - [Documentation](#documentation)
   - [Quick Start Guide](#quick-start-guide)
     - [Features](#features)
+  - [CM++ Features](#cm-features)
     - [Requirements](#requirements)
     - [Installation and Setup](#installation-and-setup)
       - [Installation via Cloning](#installation-via-cloning)
@@ -15,9 +17,6 @@ Customizable modular pipeline for testing an improved version of CM for generati
     - [Example Commands](#example-commands)
       - [CM++](#cm)
       - [CM Pipeline](#cm-pipeline-1)
-    - [CM++ Usage](#cm-usage)
-    - [Pipeline Usage](#pipeline-usage)
-      - [JSON Input Documentation](#json-input-documentation)
   - [For Developers](#for-developers)
     - [Loading a Developer Environment](#loading-a-developer-environment)
     - [Customizing the Pipeline](#customizing-the-pipeline)
@@ -27,13 +26,39 @@ Customizable modular pipeline for testing an improved version of CM for generati
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
 
+## Documentation
+
+For the full documentation see [here](https://illinois-or-research-analytics.github.io/cm_pipeline/)
+
 ## Quick Start Guide
 
 ### Features
 
 The CM Pipeline is a modular pipeline for community detection that contains the following modules:
 
-- **Cluster Statistics**: Compute statistics such as node and edge count, 
+- **Graph Cleaning**: Removal of parallel and duplicate edges as well as self loops
+
+- **Community Detection**: Clusters an input network with one of Leiden, IKC, and InfoMap. 
+
+- **Cluster Filtration**: A pre-processing stage that allows users to filter out clusters that are trees or have size below a given threshold.
+
+- **Community Statistics Reporting**: Generates node and edge count, modularity score, Constant Potts Model score, conductance, and edge-connectivity at multiple stages.
+
+- **Extensibility**: Developers can design new stages and wire in new algorithms. Please see [the following document](pipeline_customization.md) for instructions on how to expand the list of supported clustering algorithms as a developer.
+
+- **CM++**
+
+## CM++ Features
+
+CM++ is a module within the CM Pipeline, having the following features:
+
+- **Function**: CM++ refines your existing graph clustering by carving them into well-connected clusters with high minimum cut values.
+
+- **Flexibility**: Users can accompany their definition of a good community with well-connectedness. CM++ works with any clustering algorithm and presently provides build in support for Leiden, IKC, and Infomap.
+
+- **Dynamic Thresholding**: Connectivity thresholds can be constants, or functions of the number of nodes in the cluster, or the minimum node degree of the cluster.
+
+- **Multi-processing**: For better performance, users can specify a larger number of cores to process clusters concurrently.
 
 ### Requirements
 
@@ -73,21 +98,6 @@ Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm
 - Suppose you have a pipeline like the one [here](examples/leiden.json). Call it `pipeline.json`
 - Then from the root of this repository run:
   - `python -m main pipeline.json`
-
-### CM++ Usage
-
-To refer to usage instructions on CM++, see the following [documentation](docs/cmpp.md).
-
-### Pipeline Usage
-
-- The input to the pipeline script is a [pipeline.json](pipeline.json) file. **NOTE** that you can use any other json file as input as long as it fits the requirements in the documentation.
-- Description of the supported key-value pairs in the config file can be found here [pipeline_template.json](docs/pipeline_template.json)
-- Edit the fields of the `pipeline.json` file to reflect your inputs and requirements.
-- Run `python -m main pipeline.json`
-
-#### JSON Input Documentation
-
-- Please refer to the [json format documentation](docs/json_format.md) on how to write the `pipeline.json` file.
 
 ## For Developers
 
