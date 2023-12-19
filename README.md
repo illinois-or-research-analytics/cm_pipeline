@@ -117,7 +117,7 @@ conda activate
 
 The data used to generate the speedup curve in the manuscript can be found in the [Illinois Databank](https://databank.illinois.edu/datasets/IDB-0908742). In all runs, we followed the command:
 
-``` python3 -m hm01.cm -i (network file) -e (clustering file) -t 1log10 -g 0.001 -c leiden -q ```
+``` python3 -m hm01.cm -i (network file) -e (clustering file) -t 1log10 -g 0.001 -c leiden -q -n (1|2|4|8|16|32)```
 
 - CEN: cen_pipeline.tar.gz
   - Network: cen_cm_quiet_pipeline/cen-cm-new-pp-output-20230227-22:50:52/S1_cen_cleaned.tsv
