@@ -19,6 +19,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
   - [For Developers](#for-developers)
     - [Loading a Developer Environment](#loading-a-developer-environment)
     - [Customizing the Pipeline](#customizing-the-pipeline)
+  - [Manuscript Data](#manuscript-data)
   - [Output Files](#output-files)
   - [Archive](#archive)
   - [Citations](#citations)
@@ -111,6 +112,20 @@ conda activate
 
 - The CM++ Pipeline also allows for users to add their own pipeline stages and clustering methods.
 - Please refer to the [customization documentation](docs/pipeline_customization.md) on how to modify the code to allow for your own pipeline stages and .
+
+## Manuscript Data
+
+The data used to generate the speedup curve in the manuscript can be found in the [Illinois Databank](https://databank.illinois.edu/datasets/IDB-0908742)
+
+- CEN: cen_pipeline.tar.gz
+  - Network: cen_cm_quiet_pipeline/cen-cm-new-pp-output-20230227-22:50:52/S1_cen_cleaned.tsv
+  - Clustering: cen_cm_quiet_pipeline/cen-cm-new-pp-output-20230227-22:50:52/res-0.001/S2_cen_leiden.0.001.tsv
+- CIT_Patents: cit_patents_networks.tar.gz
+  - Network: cit_patents_processed_cm/cit_patents_cleaned.tsv
+  - Clustering: cit_patents_processed_cm/cit_patents_leiden.001.tsv
+- Orkut:
+  - [Network](https://doi.org/10.6084/m9.figshare.24859140.v1)
+  - [Clustering](https://doi.org/10.6084/m9.figshare.24860562.v1)
 
 ## Output Files
 
