@@ -21,6 +21,7 @@ dependencies:
     - HeapDict==1.0.1
     - humanfriendly==10.0
     - igraph==0.10.4
+    - infomap==2.7
     - iniconfig==2.0.0
     - jsonpickle==2.2.0
     - leidenalg==0.9.1
