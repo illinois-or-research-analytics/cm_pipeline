@@ -65,7 +65,7 @@ CM++ is a module within the CM Pipeline, having the following features:
 - MacOS or Linux operating system
 - `python3.9` or higher
 - `cmake 3.2.0` or higher
-- `gcc` of any version (In our analysis, `gcc 9.2.0` was used)
+- `gcc@10` or higher
 
 ### Installation and Setup
 
