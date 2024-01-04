@@ -2,7 +2,7 @@
 
 ## Basic Usage
 
-```
+``` bash
 python -m hm01.cm
   -i {input network}
   -e {existing clustering (optional)}
@@ -31,7 +31,7 @@ For example, you can run:
 
 If you want to use an external clustering algorithm, use the following command format:
 
-```
+``` bash
 python -m hm01.cm
   -i     {input network}
   -e     {existing clustering (optional)}
