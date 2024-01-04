@@ -63,9 +63,12 @@ CM++ is a module within the CM Pipeline, having the following features:
 ### Requirements
 
 - MacOS or Linux operating system
-- `python3.9` or higher
+- `python3.9` or higher (**UPDATE: We are looking into adding support for python3.12. For the time being, please use 3.9<=python<=3.11**)
 - `cmake 3.2.0` or higher
-- `gcc` of any version (In our analysis, `gcc 9.2.0` was used)
+- `gcc@10` or higher
+- `R` with the following packages:
+  -  `data.table`
+  -  `feather`
 
 ### Installation and Setup
 
