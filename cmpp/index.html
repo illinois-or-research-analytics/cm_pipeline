@@ -194,7 +194,7 @@
 
 <h1 id="cm-usage">CM++ Usage</h1>
 <h2 id="basic-usage">Basic Usage</h2>
-<pre><code>python -m hm01.cm
+<pre><code class="language-bash">python -m hm01.cm
   -i {input network}
   -e {existing clustering (optional)}
   -c {clustering algorithm}
@@ -218,7 +218,7 @@
 <p><code>python -m hm01.cm -i network.tsv -e clustering.tsv -c leiden -g 0.01 -t 1log10 -n 32 -o output.tsv</code></p>
 <h2 id="external-clusterers">External Clusterers</h2>
 <p>If you want to use an external clustering algorithm, use the following command format:</p>
-<pre><code>python -m hm01.cm
+<pre><code class="language-bash">python -m hm01.cm
   -i     {input network}
   -e     {existing clustering (optional)}
   -c     external
