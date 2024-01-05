@@ -8,7 +8,7 @@ There are several strategies for installation. First, be sure to confirm that yo
 - `python3.9` or higher
 - `cmake 3.2.0` or higher
 - `gcc` of any version (In our analysis, `gcc 9.2.0` was used)
-- `R`` with the following packages:
+- `R` with the following packages:
     - `data.table`
     - `feather`
 
