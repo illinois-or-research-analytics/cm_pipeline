@@ -54,15 +54,15 @@ We now present CM++ [@cm_pipe2023], which uses parallelism for scalability and h
 
 # Statement of Need
 
-We have demonstrated that several widely-used codes do not generate well-connected clusters [@park2023wellconnected]. A tool to enforce user-specified levels of well-connectedness to clusterings from multiple community detection methods is not presently available. <!---CM++ enables a user to specify a minimum level of well-connectedness and apply it to multiple clustering paradigms. CM++ and its pipeline allow a user to choose from clustering paradigms and the level of connectedness.-->
+We have demonstrated that several widely-used algorithms and packages, such as `leidenalg` and Markov Clustering, do not generate well-connected clusters [@park2023wellconnected]. A tool to enforce user-specified levels of well-connectedness to clusterings from multiple community detection methods is not presently available. <!---CM++ enables a user to specify a minimum level of well-connectedness and apply it to multiple clustering paradigms. CM++ and its pipeline allow a user to choose from clustering paradigms and the level of connectedness.-->
 
 ![(Top) A visualization of a workflow created from the CM++ Pipeline. (Bottom right) Algorithmic schematic of CM++. CM++ splits the queue of clusters evenly between the spawned processes. Each process runs an instance of CM++ on its share of clusters (recursive mincutting and reclustering until well connected). (Bottom left) Runtime curve with respect to the number of parallel cores running CM++. CEN (14 million nodes, 1.3 billion edges) is the Curated Exosome Network. orkut (3.1 million nodes, 117 million edges) and cit_patents (3.7 million nodes, 16 million edges) are both from the SNAP database [@snapnets] and processed through the removal of parallel edges and self-loops [@park2023wellconnected].](figures/Slide3.png)
 
 # CM++: Enforcing Well-Connectedness 
 
-Key Features:
+CM++ is a meta-method designed to modify an existing network clustering, ensuring that each cluster achieves connectivity values above a user-defined threshold. Key Features:
 
-- **Flexibility** For users to accompany their definition of a good community with well-connectedness, CM++ is designed to work with any clustering algorithm and presently provides built-in support for the Leiden algorithm (optimizing either the Constant Potts Model or modularity) [@Traag2019], Iterative K-core Clustering (IKC) [@10.1162/qss_a_00184], and Infomap [@doi:10.1073/pnas.0706851105].
+- **Flexibility:** For users to accompany their definition of a good community with well-connectedness, CM++ is designed to work with any clustering algorithm and presently provides built-in support for the Leiden algorithm (optimizing either the Constant Potts Model or modularity) [@Traag2019], Iterative K-core Clustering (IKC) [@10.1162/qss_a_00184], and Infomap [@doi:10.1073/pnas.0706851105].
 - **Dynamic Thresholding:** In order to allow the enforcement of connectivity to be flexible, connectivity thresholds can be constants, or functions of the number of nodes in the cluster, or the minimum node degree of the cluster.
 - **Multi-processing:** For better performance, users can specify a larger number of cores to process clusters concurrently.
 
@@ -71,11 +71,11 @@ Key Features:
 - `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c leiden -g 0.5 --threshold 1log10 --nprocs 4 --quiet`
 - `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c ikc -k 10 --threshold 1log10 --nprocs 4 --quiet`
 
-These commands run on Leiden with resolution 0.5 and IKC with k-core value 10 clusterings respectively. They both use four cores and sets a dynamic threshold of $log_{10}(n)$ where every cluster with a minimum cut above the base-10 logarithm of the number of nodes is considered "well-connected".
+These commands run on Leiden with resolution 0.5 and IKC with k-core value 10 clusterings respectively. They both use four cores and set a dynamic threshold of $log_{10}(n)$ where every cluster with a minimum cut above the base-10 logarithm of the number of nodes is considered "well-connected".
 
 # CM++ Pipeline: A Flexible and User-Friendly Community Detection Pipeline
 
-Key Features:
+The CM Pipeline is a modular pipeline for community detection, containing functions that can be reordered and modified. Key Features:
 
 - **Graph Cleaning:** Removal of parallel and duplicate edges as well as self loops.
 - **Community Detection:** Clusters an input network with one of Leiden, IKC, and InfoMap.
