@@ -147,7 +147,7 @@ The data used to generate the speedup curve in the manuscript can be found in th
 ```bibtex
 @software{vikram_ramavarapu_2024_10501118,
   author={Vikram Ramavarapu and Fabio Jose Ayres and Minhyuk Park and Vidya Kamath P and João Alfredo Cardoso Lamy and Tandy Warnow and George Chacko},
-  title={{CM++ - A High Performance Pipeline for Well-Connected Community Detection in Large Networks}},
+  title={{CM++ - A Meta-method for Well-Connected Community Detection}},
   month=jan,
   year=2024,
   publisher={Zenodo},
@@ -157,11 +157,11 @@ The data used to generate the speedup curve in the manuscript can be found in th
 }
 
 @misc{park2023wellconnected,
-    title={Well-Connected Communities in Real-World and Synthetic Networks}, 
-    author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
-    year={2023},
-    eprint={2303.02813},
-    archivePrefix={arXiv},
-    primaryClass={cs.SI}
+  title={Well-Connected Communities in Real-World and Synthetic Networks}, 
+  author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
+  year={2023},
+  eprint={2303.02813},
+  archivePrefix={arXiv},
+  primaryClass={cs.SI}
 }
 ```
