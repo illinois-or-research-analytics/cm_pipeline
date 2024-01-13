@@ -145,12 +145,15 @@ The data used to generate the speedup curve in the manuscript can be found in th
 ## Citations
 
 ```bibtex
-@misc{cm_pipe2023,
-    author = {Vikram Ramavarapu and Vidya Kamath and Minhyuk Park and Fabio Ayres and George Chacko},
-    title = {Connectivity Modifier Pipeline},
-    howpublished = {\url{https://github.com/illinois-or-research-analytics/cm_pipeline}},
-    year={2023},
-    doi={10.5281/zenodo.10076514}
+@software{vikram_ramavarapu_2024_10501118,
+  author={Vikram Ramavarapu and Fabio Jose Ayres and Minhyuk Park and Vidya Kamath P and João Alfredo Cardoso Lamy and Tandy Warnow and George Chacko},
+  title={{CM++ - A High Performance Pipeline for Well-Connected Community Detection in Large Networks}},
+  month=jan,
+  year=2024,
+  publisher={Zenodo},
+  version={v4.0.1},
+  doi={10.5281/zenodo.10501118},
+  url={https://doi.org/10.5281/zenodo.10501118}
 }
 
 @misc{park2023wellconnected,
