@@ -145,6 +145,25 @@ The data used to generate the speedup curve in the manuscript can be found in th
 
 ## Citations
 
+If you use CM++ in your research, please use the following citation:
+
+```bibtex
+@article{Ramavarapu2024,
+  doi = {10.21105/joss.06073},
+  url = {https://doi.org/10.21105/joss.06073},
+  year = {2024},
+  publisher = {The Open Journal},
+  volume = {9},
+  number = {93},
+  pages = {6073},
+  author = {Vikram Ramavarapu and Fábio Jose Ayres and Minhyuk Park and Vidya Kamath Pailodi and João Alfredo Cardoso Lamy and Tandy Warnow and George Chacko},
+  title = {CM++ - A Meta-method for Well-Connected Community Detection},
+  journal = {Journal of Open Source Software}
+}
+```
+
+### Other Citations
+
 ```bibtex
 @software{vikram_ramavarapu_2024_10501118,
   author={Vikram Ramavarapu and Fabio Jose Ayres and Minhyuk Park and Vidya Kamath P and João Alfredo Cardoso Lamy and Tandy Warnow and George Chacko},
