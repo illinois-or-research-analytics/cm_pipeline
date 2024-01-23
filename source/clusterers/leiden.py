@@ -28,7 +28,7 @@ class LeidenClustering(Clustering):
         iterations = [param['i'] for param in self.params]
 
         self.output_file = [
-            f'{self.working_dir}/{self.algorithm}_res{resolution}_i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.csv'
+            f'{self.working_dir}/{self.algorithm}_res{resolution}_i{iteration}/S{self.index}_{self.network_name}_{self.algorithm}.{resolution}_i{iteration}_{self.name}.tsv'
             for resolution, iteration in zip(resolutions, iterations)
         ]
 
