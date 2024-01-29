@@ -184,4 +184,11 @@ If you use CM++ in your research, please use the following citation:
   archivePrefix={arXiv},
   primaryClass={cs.SI}
 }
+
+@misc{cm2022,
+  author = {Baqiao Liu and Minhyuk Park},
+  title = {Connectivity Modifier},
+  howpublished = {\url{https://github.com/RuneBlaze/connectivity-modifier}},
+  year={2022},
+}
 ```
