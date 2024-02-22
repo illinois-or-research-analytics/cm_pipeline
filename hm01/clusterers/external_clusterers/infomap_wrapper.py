@@ -21,6 +21,7 @@ class InfomapClusterer(AbstractClusterer):
         for u in graph.nodes():
             for v in graph.neighbors(u):
                 im.add_link(u, v)
+        im.run()
         cluster_dict = {}
         for node in im.tree:
             if node.is_leaf:

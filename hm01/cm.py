@@ -169,6 +169,7 @@ def par_task(stack, node_mapping, node2cids):
         if subgraph.n() == 0:
             tree_node.cut_size = 0
             tree_node.extant = False
+            tree_node.cm_valid = False
             continue
 
         if num_pruned > 0:
@@ -336,8 +337,8 @@ def main(
         "-i",
         help="The input network.",
     ),
-    existing_clustering: str = typer.Option(
-        ...,
+    existing_clustering: Optional[str] = typer.Option(
+        "",
         "--existing-clustering",
         "-e",
         help="The existing clustering of the input network to be reclustered.",
