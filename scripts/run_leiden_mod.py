@@ -25,7 +25,7 @@ if __name__ == "__main__":
         )
     args = parser.parse_args()
 
-    net = igraph.Graph.Load(args.i, format='edgelist', directed=False)
+    net = igraph.Graph.Read_Ncol(args.i, directed=False)
     partition = leidenalg.find_partition(
         net, leidenalg.ModularityVertexPartition, 
         seed=1234, n_iterations=args.n
