@@ -322,7 +322,8 @@ def load_clusterer(module_file, clusterer_args_file):
     try:
         with open(clusterer_args_file, 'r') as f:
             kwargs = json.load(f)
-    except:
+    except Exception as e:
+        print(e)
         kwargs = {}
 
     print(module)

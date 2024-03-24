@@ -11,6 +11,10 @@ from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
 @dataclass
 class SBMClusterer(AbstractClusterer):
 
+    def __init__(self, **kwargs):
+        self.block_state = kwargs["block_state"]
+        self.degree_corrected = kwargs["degree_corrected"]
+
     def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
         """Returns a list of (labeled) subgraphs on the graph"""
         sbm_graph = gt.Graph(directed=False)
@@ -24,9 +28,19 @@ class SBMClusterer(AbstractClusterer):
                     yield u,v
         vpm_name = sbm_graph.add_edge_list(edge_list_iterable(), hashed=True, hash_type="int")
 
-        sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state_args={"deg_corr": True})
-        block_membership = sbm_clustering.get_blocks()
+        sbm_clustering = None
+        if self.block_state == "non_nested_sbm":
+            if self.degree_corrected:
+                sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": True})
+            else:
+                sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": False})
+        elif self.block_state == "planted_partition_model":
+            sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.PPBlockState)
 
+        if not sbm_clustering:
+            return []
+
+        block_membership = sbm_clustering.get_blocks()
 
         cluster_dict = {}
         for new_node_id in sbm_graph.vertices():
@@ -40,5 +54,17 @@ class SBMClusterer(AbstractClusterer):
                 cluster_member_arr, str(local_cluster_id)
             )
 
-def get_clusterer():
-    return SBMClusterer()
+    def from_existing_clustering(self, filepath) -> List[IntangibleSubgraph]:
+        # node_id cluster_id format
+        clusters: Dict[str, IntangibleSubgraph] = {}
+        with open(filepath) as f:
+            for line in f:
+                node_id, cluster_id = line.split()
+                clusters.setdefault(
+                    cluster_id, IntangibleSubgraph([], cluster_id)
+                ).subset.append(int(node_id))
+        return list(v for v in clusters.values() if v.n() > 1)
+
+def get_clusterer(**kwargs):
+    return SBMClusterer(**kwargs)
+
