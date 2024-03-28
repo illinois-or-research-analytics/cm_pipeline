@@ -20,6 +20,7 @@ import networkit as nk
 import treeswift as ts
 import typer
 from hm01.cluster_tree import ClusterTreeNode
+from hm01.clusterers.nop_clusterer import NopClusterer
 from hm01.clusterers.ikc_wrapper import IkcClusterer
 from hm01.clusterers.leiden_wrapper import LeidenClusterer, Quality
 # (VR) Change: I removed the context import since we do everything in memory
@@ -40,6 +41,7 @@ class ClustererSpec(str, Enum):
     leiden = "leiden"
     ikc = "ikc"
     leiden_mod = "leiden_mod"
+    nop = "nop"
     external = "external"
 
 
@@ -156,7 +158,9 @@ def par_task(stack, node_mapping, node2cids):
         original_mcd = subgraph.mcd()
 
         # (VR) Pruning: Remove singletons with node degree under threshold until there exists none
-        num_pruned = prune_graph(subgraph, requirement, clusterer)
+        num_pruned = 0
+        if not no_prune_g:
+            num_pruned = prune_graph(subgraph, requirement, clusterer)
 
         # if subgraph.n() <= 1:
         #     # somehow all nodes have been pruned away and the graph is empty or has one node
@@ -227,9 +231,13 @@ def par_task(stack, node_mapping, node2cids):
                     node.cm_valid = False
                     tree_node.add_child(node)
                     node_mapping[p.index] = node
-
-                    subp = list(clusterer.cluster_without_singletons(p))
-                    subp = [s.realize(p) for s in subp]
+                    subp = []
+                    if isinstance(clusterer, NopClusterer):
+                        p.index += "nop"
+                        subp.append(p)
+                    else:
+                        subp = list(clusterer.cluster_without_singletons(p))
+                        subp = [s.realize(p) for s in subp]
 
                     for sg in subp:
                         n = ClusterTreeNode()
@@ -265,6 +273,7 @@ def algorithm_g(
     # Share quiet variable with processes
     global quiet_g
     quiet_g = quiet
+    global no_prune_g
 
     if not quiet:
         log = get_logger()
@@ -352,6 +361,11 @@ def main(
         "-q",
         help="Silence output messages.",
     ),
+    no_prune: Optional[bool] = typer.Option(
+        False,
+        "--no-prune",
+        help="Skip the pruning step.",
+    ),
     clusterer_spec: ClustererSpec = typer.Option(
         ...,
         "--clusterer",
@@ -420,6 +434,8 @@ def main(
     global clusterer
     global requirement
     global global_graph
+    global no_prune_g
+    no_prune_g = no_prune
 
     # (VR) Setting a really high recursion limit to prevent stack overflow errors
     sys.setrecursionlimit(1231231234)
@@ -434,6 +450,8 @@ def main(
     elif clusterer_spec == ClustererSpec.ikc:
         assert k != -1, "IKC requires k"
         clusterer = IkcClusterer(k)
+    elif clusterer_spec == ClustererSpec.nop:
+        clusterer = NopClusterer()
     else:
         assert clusterer_file != "", "File is required for external clusterers"
         # It is an external clusterer, load it.
@@ -473,6 +491,9 @@ def main(
 
     # (VR) Load clustering
     if not existing_clustering:
+        if isinstance(clusterer, NopClusterer):
+            log.error("Existing clustering must be provided if using the none clusterer")
+            return
         if not quiet:
             log.info(f"running clusterer before algorithm-g", clusterer=clusterer)
         clusters = list(clusterer.cluster_without_singletons(global_graph))

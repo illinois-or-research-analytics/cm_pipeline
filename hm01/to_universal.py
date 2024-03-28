@@ -88,7 +88,7 @@ class ClusteringSkeleton:
                 ClusteringSkeleton(
                     g.index,
                     list(g.subset),
-                    info.cut_size,                  # (VR) Change: We should allow json outputs to show connectivities of 0
+                    info.cut_size if hasattr(info, "cut_size") else -1,                  # (VR) Change: We should allow json outputs to show connectivities of 0
                     # (VR) Change: (info.cut_size or 1) if info else 1,
                     descendants,
                     info.cm_valid,
