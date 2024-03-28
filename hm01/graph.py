@@ -463,6 +463,11 @@ class RealizedSubgraph(AbstractGraph):
         num = self.get_border_edges(graph)
         deg_sum = sum(graph.degree(v) for v in self.nodeset)
         den = min(deg_sum, 2*graph.m() - deg_sum)
+        if den == 0:
+            # 1. singlenode cluster
+            # 2. entire graph is one cluster
+            # 3. cluster has no intracluster edges
+            return -42
         return num/den
 
     @property
