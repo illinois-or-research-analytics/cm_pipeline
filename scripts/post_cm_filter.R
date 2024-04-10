@@ -1,4 +1,6 @@
 # script that filters out small clusters after cm
+# Apr 10, 2024 added a line to enforce utf8 before group and count operations, 
+# which otherwise affects clusterIDs with trailing deltas. => "enc2utf8(V2)]"
 
 ## Example: Rscript postcm_filter.R post_cm_file.tsv output_file.tsv
 
@@ -22,6 +24,8 @@ if (file_size == 0) {
 
 # read in post-cm clustering
 c <- fread(args[1])
+# convert V2 to UTF-8
+c[,V2 := enc2utf8(V2)]
 
 # identify clusters of size 11 or greater
 c_10 <- c[,.N,by='V2'][N>10]
