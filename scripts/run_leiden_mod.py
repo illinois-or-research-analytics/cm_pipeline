@@ -27,9 +27,9 @@ if __name__ == "__main__":
 
     net = igraph.Graph.Read_Ncol(args.i, directed=False)
     partition = leidenalg.find_partition(
-        net, leidenalg.ModularityVertexPartition, 
+        net, leidenalg.ModularityVertexPartition,
         seed=1234, n_iterations=args.n
         )
     with open(args.o, "w") as f:
         for n, m in enumerate(partition.membership):
-            f.write(f"{n}\t{m}\n")
+            f.write(f"{net.vs[n]['name']}\t{m}\n")

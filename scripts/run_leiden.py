@@ -36,4 +36,4 @@ if __name__ == "__main__":
         )
     with open(args.o, "w") as f:
         for n, m in enumerate(partition.membership):
-            f.write(f"{n}\t{m}\n")
+            f.write(f"{net.vs[n]['name']}\t{m}\n")
