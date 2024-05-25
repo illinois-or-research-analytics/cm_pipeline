@@ -23,9 +23,9 @@ if (file_size == 0) {
 }
 
 # read in post-cm clustering
-c <- fread(args[1])
+c <- fread(args[1], colClasses=list(character=2), encoding="UTF-8")
 # convert V2 to UTF-8
-c[,V2 := enc2utf8(V2)]
+# c[,V2 := enc2utf8(V2)]
 
 # identify clusters of size 11 or greater
 c_10 <- c[,.N,by='V2'][N>10]
@@ -34,4 +34,4 @@ c_10 <- c[,.N,by='V2'][N>10]
 c <- c[V2 %in% c_10$V2]
 
 #write to tsv
-write.table(c,file=args[2],sep='\t',row.names=F,col.names=F)
+write.table(c,file=args[2],sep='\t',row.names=F,col.names=F, quote=FALSE)
