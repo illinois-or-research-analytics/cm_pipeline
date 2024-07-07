@@ -94,6 +94,10 @@ Simply run `pip install git+https://github.com/illinois-or-research-analytics/cm
   - Runs CM++ on a Leiden with resolution 0.5 clustering with connectivity threshold $log_{10}(n)$ (Every cluster with connectivity over the log of the number of nodes is considered "well-connected")
 - `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c ikc -k 10 --threshold 1log10 --nprocs 4 --quiet`
   - Similar idea but with IKC having hyperparameter $k=10$.
+- `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c nop --threshold 0.1 --nprocs 4 --quiet`
+  - Similar idea but with a nop clusterer, meaning it won't recursively cluster, and only ensure that every cluster is connected. This is sometimes called CM-cc or just -cc for short.
+- `python3 -m hm01.cm -i network.tsv -e clustering.tsv -o output.tsv -c nop --threshold 1log10 --nprocs 4 --quiet`
+  - Similar idea but with a nop clusterer, meaning it won't recursively cluster, and only ensure that every cluster is well-connected by performing repeated mincuts. This is sometimes called CM-wcc or just -wcc for short.
 
 ### CM Pipeline
 
