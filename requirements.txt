@@ -11,7 +11,7 @@ igraph==0.10
 iniconfig==2.0
 jsonpickle==2.2
 leidenalg
-numpy
+numpy==1.26.0
 packaging==23.0
 pandas
 pip
