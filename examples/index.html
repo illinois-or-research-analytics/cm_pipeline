@@ -200,23 +200,20 @@
 
 <h1 id="example-commands">Example Commands</h1>
 <h2 id="default-cm">Default CM:</h2>
-<p>CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than $\log_{10}{n}$ where $n$ is the number of nodes in the cluster)</p>
-<details>
-<summary><sub>Click to expand example command </sub></summary>
-
-- command: `python -m main pipeline.json`
-- pipeline.json:
-
-  ```
-  {
-      "title": <custom name for this run>,
-      "name": <custom name of your network>,
-      "input_file": <path to your network edgelist>,
-      "output_dir": <output directory>,
-      "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
+<p>CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than Log base 10 of n where n is the number of nodes in the cluster)</p>
+<ul>
+<li>command: <code>python -m main pipeline.json</code></li>
+<li>pipeline.json:</li>
+</ul>
+<p><code>{
+      "title": &lt;custom name for this run&gt;,
+      "name": &lt;custom name of your network&gt;,
+      "input_file": &lt;path to your network edgelist&gt;,
+      "output_dir": &lt;output directory&gt;,
+      "algorithm": &lt;clustering algorithm e.g., ikc, leiden, leiden_mod&gt;,
       "params": [
           {
-              <parameter name e.g., res, i>: <parameter value>
+              &lt;parameter name e.g., res, i&gt;: &lt;parameter value&gt;
           }
       ],
       "stages": [
@@ -240,10 +237,10 @@
           },
           {
               "name": "connectivity_modifier",
-              "memprof": <boolean for whether to profile memory e.g., true or false>,
-              "threshold": <well-connectedness threshold e.g., 1log10>,
-              "nprocs": <number of processors for parallelism>,
-              "quiet": <boolean whether to print outputs to console e.g., true or false>
+              "memprof": &lt;boolean for whether to profile memory e.g., true or false&gt;,
+              "threshold": &lt;well-connectedness threshold e.g., 1log10&gt;,
+              "nprocs": &lt;number of processors for parallelism&gt;,
+              "quiet": &lt;boolean whether to print outputs to console e.g., true or false&gt;
           },
           {
               "name": "filtering",
@@ -256,91 +253,70 @@
               "parallel_limit": 2
           }
       ]
-  }
-  ```
-</details>
-
+  }</code></p>
 <h2 id="cm-without-removing-small-clusters-or-tree-like-clusters">CM without removing small clusters or tree-like clusters</h2>
-<details>
-  <summary><sub>Click to expand example command </sub></summary>
-
-  - command: `python -m main pipeline.json`
-  - pipeline.json:
-
-    ```
-    {
-        "title": <custom name for this run>,
-        "name": <custom name of your network>,
-        "input_file": <path to your network edgelist>,
-        "output_dir": <output directory>,
-        "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
-        "params": [
-            {
-                <parameter name e.g., res, i>: <parameter value>
-            }
-        ],
-        "stages": [
-            {
-                "name": "cleanup"
-            },
-            {
-                "name": "clustering",
-                "parallel_limit": 2
-            },
-            {
-                "name": "stats",
-                "parallel_limit": 2
-            },
-            {
-                "name": "connectivity_modifier",
-                "memprof": <boolean for whether to profile memory e.g., true or false>,
-                "threshold": <well-connectedness threshold e.g., 1log10>,
-                "nprocs": <number of processors for parallelism>,
-                "quiet": <boolean whether to print outputs to console e.g., true or false>
-            },
-            {
-                "name": "stats",
-                "parallel_limit": 2
-            }
-        ]
-    }
-    ```
-  </details>
-
+<ul>
+<li>command: <code>python -m main pipeline.json</code></li>
+<li>
+<p>pipeline.json:</p>
+<p><code>{
+    "title": &lt;custom name for this run&gt;,
+    "name": &lt;custom name of your network&gt;,
+    "input_file": &lt;path to your network edgelist&gt;,
+    "output_dir": &lt;output directory&gt;,
+    "algorithm": &lt;clustering algorithm e.g., ikc, leiden, leiden_mod&gt;,
+    "params": [
+        {
+            &lt;parameter name e.g., res, i&gt;: &lt;parameter value&gt;
+        }
+    ],
+    "stages": [
+        {
+            "name": "cleanup"
+        },
+        {
+            "name": "clustering",
+            "parallel_limit": 2
+        },
+        {
+            "name": "stats",
+            "parallel_limit": 2
+        },
+        {
+            "name": "connectivity_modifier",
+            "memprof": &lt;boolean for whether to profile memory e.g., true or false&gt;,
+            "threshold": &lt;well-connectedness threshold e.g., 1log10&gt;,
+            "nprocs": &lt;number of processors for parallelism&gt;,
+            "quiet": &lt;boolean whether to print outputs to console e.g., true or false&gt;
+        },
+        {
+            "name": "stats",
+            "parallel_limit": 2
+        }
+    ]
+}</code></p>
+</li>
+</ul>
 <h2 id="wcc-well-connected-components">WCC (Well Connected Components)</h2>
-<p>Only obtain well-connected components without re-clustering
-<br />
-<details>
-  <summary><sub>Click to expand example command </sub></summary>
-
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>`
-  </details>
-</p>
+<p>Only obtain well-connected components without re-clustering</p>
+<ul>
+<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold &lt;threshold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;</code></li>
+</ul>
 <h2 id="cc-connected-components">CC (Connected Components)</h2>
-<p>Only obtain connected components
-<br />
-<details>
-  <summary><sub>Click to expand example command </sub></summary>
-
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
-  </details>
-</p>
+<p>Only obtain connected components</p>
+<ul>
+<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold 0.1 --nprocs &lt;number of processors&gt;</code></li>
+</ul>
 <h2 id="cm-with-user-supplied-clusterer">CM with User-Supplied Clusterer</h2>
-<p>Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
-<br />
-<details>
-  <summary><sub>Click to expand example command </sub></summary>
-
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
-  - cargs.json:
-  ```
-  {
-      <param key e.g., "block_state">: <param value e.g., "non_nested_sbm", "planted_partition_model">
-      <param key 2 e.g., "degree_corrected">: <param value e.g. true, false>
-  }
-  ```
-  </details>
-</p></div>
+<p>Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.</p>
+<ul>
+<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c external -cfile &lt;clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py&gt; --threshold &lt;threhsold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;</code></li>
+<li>cargs.json:
+  <code>{
+      &lt;param key e.g., "block_state"&gt;: &lt;param value e.g., "non_nested_sbm", "planted_partition_model"&gt;
+      &lt;param key 2 e.g., "degree_corrected"&gt;: &lt;param value e.g. true, false&gt;
+  }</code></li>
+</ul></div>
         
         
     </div>
