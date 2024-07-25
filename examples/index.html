@@ -184,79 +184,163 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="first-level active"><a href="#example-commands">Example Commands</a></li>
-            <li class="second-level"><a href="#cm">CM++</a></li>
+            <li class="second-level"><a href="#default-cm">Default CM:</a></li>
                 
-            <li class="second-level"><a href="#cm-pipeline">CM Pipeline</a></li>
+            <li class="second-level"><a href="#cm-without-removing-small-clusters-or-tree-like-clusters">CM without removing small clusters or tree-like clusters</a></li>
+                
+            <li class="second-level"><a href="#wcc-well-connected-components">WCC (Well Connected Components)</a></li>
+                
+            <li class="second-level"><a href="#cc-connected-components">CC (Connected Components)</a></li>
+                
+            <li class="second-level"><a href="#cm-with-user-supplied-clusterer">CM with User-Supplied Clusterer</a></li>
                 
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
 <h1 id="example-commands">Example Commands</h1>
-<h2 id="cm">CM++</h2>
-<pre><code class="language-bash">python3 -m hm01.cm 
-  -i network.tsv 
-  -e clustering.tsv 
-  -o output.tsv 
-  -c leiden 
-  -g 0.5 
-  -t 1log10 
-  --nprocs 4 
-  --quiet
-</code></pre>
-<ul>
-<li>Runs CM++ on a Leiden with resolution 0.5 clustering with connectivity threshold <code>log10(n)</code> (Every cluster with connectivity over the log of the number of nodes <code>n</code> is considered "well-connected")</li>
-</ul>
-<pre><code class="language-bash">python3 -m hm01.cm 
-  -i network.tsv 
-  -e clustering.tsv 
-  -o output.tsv 
-  -c ikc
-  -k 10 
-  -t 1log10 
-  --nprocs 4 
-  --quiet
-</code></pre>
-<ul>
-<li>Similar idea but with IKC having hyperparameter <code>k=10</code>.</li>
-</ul>
-<h2 id="cm-pipeline">CM Pipeline</h2>
-<ul>
-<li>Suppose we have a network and a clustering<ul>
-<li><a href="../network.tsv">network.tsv</a></li>
-<li><a href="../clustering.tsv">clustering.tsv</a></li>
-</ul>
-</li>
-<li>We can then construct the following <code>pipeline.json</code>:</li>
-</ul>
-<pre><code class="language-json">{
-    &quot;title&quot;: &quot;example&quot;,
-    &quot;name&quot;: &quot;example&quot;,
-    &quot;input_file&quot;: &quot;network.tsv&quot;,
-    &quot;output_dir&quot;: &quot;samples/&quot;,
-    &quot;algorithm&quot;: &quot;leiden&quot;,
-    &quot;params&quot;: [{
-        &quot;res&quot;: 0.5,
-        &quot;i&quot;: 2,
-        &quot;existing_clustering&quot;: &quot;clustering.tsv&quot;
-    }],
-    &quot;stages&quot;: [
-        {
-            &quot;name&quot;: &quot;connectivity_modifier&quot;,
-            &quot;memprof&quot;: false,
-            &quot;threshold&quot;: &quot;1log10&quot;,
-            &quot;nprocs&quot;: 1,
-            &quot;quiet&quot;: true
-        }
-    ]
-}
-</code></pre>
-<ul>
-<li>Then from the root of this repository run:<ul>
-<li><code>python -m main pipeline.json</code></li>
-</ul>
-</li>
-</ul></div>
+<h2 id="default-cm">Default CM:</h2>
+<p>CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than $\log_{10}{n}$ where $n$ is the number of nodes in the cluster)</p>
+<details>
+<summary><sub>Click to expand example command </sub></summary>
+
+- command: `python -m main pipeline.json`
+- pipeline.json:
+
+  ```
+  {
+      "title": <custom name for this run>,
+      "name": <custom name of your network>,
+      "input_file": <path to your network edgelist>,
+      "output_dir": <output directory>,
+      "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
+      "params": [
+          {
+              <parameter name e.g., res, i>: <parameter value>
+          }
+      ],
+      "stages": [
+          {
+              "name": "cleanup"
+          },
+          {
+              "name": "clustering",
+              "parallel_limit": 2
+          },
+          {
+              "name": "stats",
+              "parallel_limit": 2
+          },
+          {
+              "name": "filtering",
+              "scripts": [
+                  "./scripts/subset_graph_nonetworkit_treestar.R",
+                  "./scripts/make_cm_ready.R"
+              ]
+          },
+          {
+              "name": "connectivity_modifier",
+              "memprof": <boolean for whether to profile memory e.g., true or false>,
+              "threshold": <well-connectedness threshold e.g., 1log10>,
+              "nprocs": <number of processors for parallelism>,
+              "quiet": <boolean whether to print outputs to console e.g., true or false>
+          },
+          {
+              "name": "filtering",
+              "scripts": [
+                  "./scripts/post_cm_filter.R"
+              ]
+          },
+          {
+              "name": "stats",
+              "parallel_limit": 2
+          }
+      ]
+  }
+  ```
+</details>
+
+<h2 id="cm-without-removing-small-clusters-or-tree-like-clusters">CM without removing small clusters or tree-like clusters</h2>
+<details>
+  <summary><sub>Click to expand example command </sub></summary>
+
+  - command: `python -m main pipeline.json`
+  - pipeline.json:
+
+    ```
+    {
+        "title": <custom name for this run>,
+        "name": <custom name of your network>,
+        "input_file": <path to your network edgelist>,
+        "output_dir": <output directory>,
+        "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
+        "params": [
+            {
+                <parameter name e.g., res, i>: <parameter value>
+            }
+        ],
+        "stages": [
+            {
+                "name": "cleanup"
+            },
+            {
+                "name": "clustering",
+                "parallel_limit": 2
+            },
+            {
+                "name": "stats",
+                "parallel_limit": 2
+            },
+            {
+                "name": "connectivity_modifier",
+                "memprof": <boolean for whether to profile memory e.g., true or false>,
+                "threshold": <well-connectedness threshold e.g., 1log10>,
+                "nprocs": <number of processors for parallelism>,
+                "quiet": <boolean whether to print outputs to console e.g., true or false>
+            },
+            {
+                "name": "stats",
+                "parallel_limit": 2
+            }
+        ]
+    }
+    ```
+  </details>
+
+<h2 id="wcc-well-connected-components">WCC (Well Connected Components)</h2>
+<p>Only obtain well-connected components without re-clustering
+<br />
+<details>
+  <summary><sub>Click to expand example command </sub></summary>
+
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>`
+  </details>
+</p>
+<h2 id="cc-connected-components">CC (Connected Components)</h2>
+<p>Only obtain connected components
+<br />
+<details>
+  <summary><sub>Click to expand example command </sub></summary>
+
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
+  </details>
+</p>
+<h2 id="cm-with-user-supplied-clusterer">CM with User-Supplied Clusterer</h2>
+<p>Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
+<br />
+<details>
+  <summary><sub>Click to expand example command </sub></summary>
+
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
+  - cargs.json:
+  ```
+  {
+      <param key e.g., "block_state">: <param value e.g., "non_nested_sbm", "planted_partition_model">
+      <param key 2 e.g., "degree_corrected">: <param value e.g. true, false>
+  }
+  ```
+  </details>
+</p></div>
         
         
     </div>
