@@ -202,7 +202,11 @@
 <h2 id="default-cm">Default CM:</h2>
 <p>CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than Log base 10 of n where n is the number of nodes in the cluster)</p>
 <ul>
-<li>command: <code>python -m main pipeline.json</code></li>
+<li>command:</li>
+</ul>
+<pre><code>python -m main pipeline.json
+</code></pre>
+<ul>
 <li>pipeline.json:</li>
 </ul>
 <pre><code>{
@@ -257,7 +261,11 @@
 </code></pre>
 <h2 id="cm-without-removing-small-clusters-or-tree-like-clusters">CM without removing small clusters or tree-like clusters</h2>
 <ul>
-<li>command: <code>python -m main pipeline.json</code></li>
+<li>command:</li>
+</ul>
+<pre><code>python -m main pipeline.json
+</code></pre>
+<ul>
 <li>pipeline.json:</li>
 </ul>
 <pre><code>{
@@ -300,17 +308,25 @@
 <h2 id="wcc-well-connected-components">WCC (Well Connected Components)</h2>
 <p>Only obtain well-connected components without re-clustering</p>
 <ul>
-<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold &lt;threshold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;</code></li>
+<li>command:</li>
 </ul>
+<pre><code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold &lt;threshold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;
+</code></pre>
 <h2 id="cc-connected-components">CC (Connected Components)</h2>
 <p>Only obtain connected components</p>
 <ul>
-<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold 0.1 --nprocs &lt;number of processors&gt;</code></li>
+<li>command:</li>
 </ul>
+<pre><code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c nop --threshold 0.1 --nprocs &lt;number of processors&gt;
+</code></pre>
 <h2 id="cm-with-user-supplied-clusterer">CM with User-Supplied Clusterer</h2>
 <p>Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.</p>
 <ul>
-<li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c external -cfile &lt;clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py&gt; --threshold &lt;threhsold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;</code></li>
+<li>command:</li>
+</ul>
+<pre><code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c external -cfile &lt;clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py&gt; --threshold &lt;threhsold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;
+</code></pre>
+<ul>
 <li>cargs.json:</li>
 </ul>
 <pre><code>{
