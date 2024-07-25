@@ -27,7 +27,7 @@ Customizable modular pipeline for testing an improved version of CM for generati
   - [Citations](#citations)
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
-Figure: **CM Pipeline Overview** Leiden and IKC are just two of the example clustering methods that can be used out of the box. Any clustering method can be easily integrated into the pipeline.
+Figure: **CM Pipeline Overview** The Connectivity Modifier pipeline starts with an input network and a clustering algorithm. In the first step, an initial clustering on the entire network is obtained. Afterwards, clusters below size $B$ (default: $B=11$ ) and tree clusters are removed from this initial clustering. On this filtered clustering, each cluster is processed as follows. If a cluster has an edge cut below the threshold (default: $\log_{10}{n}$ where $n$ is the number of nodes in the cluster) the edge cut is removed and the two pieces are re-clustered. This process repeats until all clusters are well-connected. The final processing removes small clusters. Note the user can change the value for $B$ and the threshold for connectivity as these are user-defined. The user has the option to not apply the recursive clustering. See information on [CC](#cc-connected-components) and [WCC](#wcc-well-connected-components).
 
 
 ## Documentation
@@ -148,7 +148,7 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
   </details>
 
 #### WCC (Well Connected Components)
-Only obtain well-connected components without re-clustering
+This is equivalent to running CM pipeline with the pre and post filtering steps turned off and not applying clustering recursively. Equivalently, each cluster is repeatedly cut until it is well-connected. The user has the option of adding in the filtering steps if desired.
   <details>
   <summary><sub>Click to expand example command </sub></summary>
     
@@ -156,15 +156,15 @@ Only obtain well-connected components without re-clustering
   </details>
 
 #### CC (Connected Components)
-Only obtain connected components
+Some clustering methods produce disconnected clusters. CC will take such a clustering and returns the connected components of these clusters. The user has the option of adding in the filtering steps if desired.
   <details>
   <summary><sub>Click to expand example command </sub></summary>
     
   - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
   </details>
 
-#### CM with User-Supplied Clusterer
-Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
+#### Clustering methods that can be used with CM
+CM currently enables the use of Leiden optimizing the constant Potts Model, Leiden optimizing under modularity, Iterative K-Core, Markov CLustering, Infomap, and Stochastic Block Models. Example for Stochastic Block Model shown below.
   <details>
   <summary><sub>Click to expand example command </sub></summary>
     
