@@ -205,7 +205,8 @@
 <li>command: <code>python -m main pipeline.json</code></li>
 <li>pipeline.json:</li>
 </ul>
-<p><code>{
+<p><code>bash
+  {
       "title": &lt;custom name for this run&gt;,
       "name": &lt;custom name of your network&gt;,
       "input_file": &lt;path to your network edgelist&gt;,
@@ -259,7 +260,8 @@
 <li>command: <code>python -m main pipeline.json</code></li>
 <li>
 <p>pipeline.json:</p>
-<p><code>{
+<p><code>bash
+{
     "title": &lt;custom name for this run&gt;,
     "name": &lt;custom name of your network&gt;,
     "input_file": &lt;path to your network edgelist&gt;,
@@ -312,7 +314,8 @@
 <ul>
 <li>command: <code>python3 -m hm01.cm -i &lt;input network edgelist path&gt; -e &lt;input existing clustering path&gt; -o &lt;output filepath&gt; -c external -cfile &lt;clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py&gt; --threshold &lt;threhsold e.g., 1log10&gt; --nprocs &lt;number of processors&gt;</code></li>
 <li>cargs.json:
-  <code>{
+  <code>bash
+  {
       &lt;param key e.g., "block_state"&gt;: &lt;param value e.g., "non_nested_sbm", "planted_partition_model"&gt;
       &lt;param key 2 e.g., "degree_corrected"&gt;: &lt;param value e.g. true, false&gt;
   }</code></li>
