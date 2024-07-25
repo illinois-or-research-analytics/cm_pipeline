@@ -40,7 +40,7 @@ For the full documentation see [here](https://illinois-or-research-analytics.git
 By default, CM modifies an input clustering to ensure that each cluster is well-connected. CM does this by doing rounds of mincut and clustering. It is also possible to run CM in a way that does not recursively cluster (CC and WCC).
 
 #### Default CM:
-CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than $\log_{10}{n}$ where $n$ is the number of nodes in the cluster)
+CM under default settings of $B=11$ and threshold= $\log_{10}{n}$ where $n$ is the number of nodes in the cluster, meaning remove tree clusters and clusters below size $B$ and also ensure that each cluster has a minimum edge cut size greater than the threshold.
 <details>
 <summary><sub>Click to expand example command </sub></summary>
   
@@ -100,7 +100,7 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
   ```
 </details>
     
-#### CM without removing small clusters or tree-like clusters
+#### CM without removing small clusters or tree clusters
   <details>
   <summary><sub>Click to expand example command </sub></summary>
   
