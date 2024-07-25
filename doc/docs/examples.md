@@ -3,7 +3,11 @@
 ## Default CM:
 CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than Log base 10 of n where n is the number of nodes in the cluster)
   
-- command: `python -m main pipeline.json`
+- command:
+```
+python -m main pipeline.json
+```
+
 - pipeline.json:
   
 ```
@@ -61,7 +65,11 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
     
 ## CM without removing small clusters or tree-like clusters
   
-  - command: `python -m main pipeline.json`
+  - command:
+```
+python -m main pipeline.json
+```
+
   - pipeline.json:
     
 ```
@@ -106,19 +114,28 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
 ## WCC (Well Connected Components)
 Only obtain well-connected components without re-clustering
     
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>`
+  - command:
+```
+python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>
+```
 
 
 ## CC (Connected Components)
 Only obtain connected components
     
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
-
+  - command:
+```
+python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>
+```
 
 ## CM with User-Supplied Clusterer
 Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
     
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
+  - command:
+```
+python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>
+```
+
   - cargs.json:
 
 ```
