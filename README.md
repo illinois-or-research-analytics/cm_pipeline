@@ -8,8 +8,9 @@ Customizable modular pipeline for testing an improved version of CM for generati
 - [CM++ Pipeline](#cm-pipeline)
   - [Documentation](#documentation)
   - [Overview](#overview)
-    - [CM Pipeline Features](#cm-pipeline-features)
-    - [CM++ Features](#cm-features)
+    - [Main Features](#main-features)
+    - [CM Pipeline Overview](#cm-pipeline-overview)
+    - [CM++ Overview](#cm-overview)
     - [Requirements](#requirements)
     - [Installation and Setup](#installation-and-setup)
       - [Installation via Cloning](#installation-via-cloning)
@@ -33,7 +34,135 @@ For the full documentation see [here](https://illinois-or-research-analytics.git
 
 ## Overview
 
-### CM Pipeline Features
+### Main Features
+By default, CM modifies an input clustering to ensure that each cluster is well-connected. CM does this by doing rounds of mincut and clustering. It is also possible to run CM in a way that does not recursively cluster (CC and WCC).
+
+#### Default CM:
+CM under default settings (remove small clusters and tree-like clusters with B=10 and threshold= $\log_{10}{n}$ )
+<details>
+<summary><sub>Click to expand example command </sub></summary>
+  
+- command: `python -m main pipeline.json`
+- pipeline.json:
+  
+  ```
+  {
+      "title": <custom name for this run>,
+      "name": <custom name of your network>,
+      "input_file": <path to your network edgelist>,
+      "output_dir": <output directory>,
+      "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
+      "params": [
+          {
+              <parameter name e.g., res, i>: <parameter value>
+          }
+      ],
+      "stages": [
+          {
+              "name": "cleanup"
+          },
+          {
+              "name": "clustering",
+              "parallel_limit": 2
+          },
+          {
+              "name": "stats",
+              "parallel_limit": 2
+          },
+          {
+              "name": "filtering",
+              "scripts": [
+                  "./scripts/subset_graph_nonetworkit_treestar.R",
+                  "./scripts/make_cm_ready.R"
+              ]
+          },
+          {
+              "name": "connectivity_modifier",
+              "memprof": <boolean for whether to profile memory e.g., true or false>,
+              "threshold": <well-connectedness threshold e.g., 1log10>,
+              "nprocs": <number of processors for parallelism>,
+              "quiet": <boolean whether to print outputs to console e.g., true or false>
+          },
+          {
+              "name": "filtering",
+              "scripts": [
+                  "./scripts/post_cm_filter.R"
+              ]
+          },
+          {
+              "name": "stats",
+              "parallel_limit": 2
+          }
+      ]
+  }
+  ```
+</details>
+    
+#### CM without removing small clusters or tree-like clusters
+  <details>
+  <summary><sub>Click to expand example command </sub></summary>
+  
+  - command: `python -m main pipeline.json`
+  - pipeline.json:
+    
+    ```
+    {
+        "title": <custom name for this run>,
+        "name": <custom name of your network>,
+        "input_file": <path to your network edgelist>,
+        "output_dir": <output directory>,
+        "algorithm": <clustering algorithm e.g., ikc, leiden, leiden_mod>,
+        "params": [
+            {
+                <parameter name e.g., res, i>: <parameter value>
+            }
+        ],
+        "stages": [
+            {
+                "name": "cleanup"
+            },
+            {
+                "name": "clustering",
+                "parallel_limit": 2
+            },
+            {
+                "name": "stats",
+                "parallel_limit": 2
+            },
+            {
+                "name": "connectivity_modifier",
+                "memprof": <boolean for whether to profile memory e.g., true or false>,
+                "threshold": <well-connectedness threshold e.g., 1log10>,
+                "nprocs": <number of processors for parallelism>,
+                "quiet": <boolean whether to print outputs to console e.g., true or false>
+            },
+            {
+                "name": "stats",
+                "parallel_limit": 2
+            }
+        ]
+    }
+    ```
+  </details>
+
+#### WCC
+Only obtain well-connected components without re-clustering
+  <details>
+  <summary><sub>Click to expand example command </sub></summary>
+    
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>`
+  </details>
+
+#### CC
+Only obtain connected components
+  <details>
+  <summary><sub>Click to expand example command </sub></summary>
+    
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
+  </details>
+
+
+### CM Pipeline Overview
 
 The CM Pipeline is a modular pipeline for community detection that contains the following modules:
 
@@ -49,7 +178,7 @@ The CM Pipeline is a modular pipeline for community detection that contains the 
 
 - **CM++**
 
-### CM++ Features
+### CM++ Overview
 
 CM++ is a module within the CM Pipeline, having the following features:
 
