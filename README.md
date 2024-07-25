@@ -27,6 +27,8 @@ Customizable modular pipeline for testing an improved version of CM for generati
   - [Citations](#citations)
 
 ![cm_pipeline Overview](figures/cm_pp_overview.png)
+Figure: **CM Pipeline Overview** Leiden and IKC are just two of the example clustering methods that can be used out of the box. Any clustering method can be easily integrated into the pipeline.
+
 
 ## Documentation
 
@@ -38,7 +40,7 @@ For the full documentation see [here](https://illinois-or-research-analytics.git
 By default, CM modifies an input clustering to ensure that each cluster is well-connected. CM does this by doing rounds of mincut and clustering. It is also possible to run CM in a way that does not recursively cluster (CC and WCC).
 
 #### Default CM:
-CM under default settings (remove small clusters and tree-like clusters with B=10 and threshold= $\log_{10}{n}$ )
+CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than $\log_{10}{n}$ where $n$ is the number of nodes in the cluster)
 <details>
 <summary><sub>Click to expand example command </sub></summary>
   
@@ -145,7 +147,7 @@ CM under default settings (remove small clusters and tree-like clusters with B=1
     ```
   </details>
 
-#### WCC
+#### WCC (Well Connected Components)
 Only obtain well-connected components without re-clustering
   <details>
   <summary><sub>Click to expand example command </sub></summary>
@@ -153,7 +155,7 @@ Only obtain well-connected components without re-clustering
   - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold <threshold e.g., 1log10> --nprocs <number of processors>`
   </details>
 
-#### CC
+#### CC (Connected Components)
 Only obtain connected components
   <details>
   <summary><sub>Click to expand example command </sub></summary>
@@ -161,12 +163,12 @@ Only obtain connected components
   - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
   </details>
 
-#### CM with External Clusterer
-External means not Leiden-CPM, Leiden-Mod, or IKC. Currently, MCL, Infomap, and SBM external clusterers are pre-made for user convenience.
+#### CM with User-Supplied Clusterer
+Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
   <details>
   <summary><sub>Click to expand example command </sub></summary>
     
-  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <External clusterer file the path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
   - cargs.json:
   ```
   {
