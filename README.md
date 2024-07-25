@@ -161,6 +161,21 @@ Only obtain connected components
   - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>`
   </details>
 
+#### CM with External Clusterer
+External means not Leiden-CPM, Leiden-Mod, or IKC. Currently, MCL, Infomap, and SBM external clusterers are pre-made for user convenience.
+  <details>
+  <summary><sub>Click to expand example command </sub></summary>
+    
+  - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <External clusterer file the path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
+  - cargs.json:
+  ```
+  {
+      <param key e.g., "block_state">: <param value e.g., "non_nested_sbm", "planted_partition_model">
+      <param key 2 e.g., "degree_corrected">: <param value e.g. true, false>
+  }
+  ```
+  </details>
+
 
 ### CM Pipeline Overview
 
