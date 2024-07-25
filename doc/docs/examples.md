@@ -1,7 +1,7 @@
 # Example Commands
 
 ## Default CM:
-CM under default settings (1. remove small clusters of size 10 or less and tree-like clusters and 2. ensure each cluster has a minimum edge cut size greater than Log base 10 of n where n is the number of nodes in the cluster)
+CM under default settings of B = 11 and threshold = log base 10 of n where n is the number of nodes in the cluster, meaning remove tree clusters and clusters below size and also ensure that each cluster has a minimum edge cut size greater than the threshold.
   
 - command:
 ```
@@ -112,7 +112,7 @@ python -m main pipeline.json
 ```
 
 ## WCC (Well Connected Components)
-Only obtain well-connected components without re-clustering
+This is equivalent to running CM pipeline with the pre and post filtering steps turned off and not applying clustering recursively. Equivalently, each cluster is repeatedly cut until it is well-connected. The user has the option of adding in the filtering steps if desired.
     
   - command:
 ```
@@ -121,15 +121,15 @@ python3 -m hm01.cm -i <input network edgelist path> -e <input existing clusterin
 
 
 ## CC (Connected Components)
-Only obtain connected components
+Some clustering methods produce disconnected clusters. CC will take such a clustering and returns the connected components of these clusters. The user has the option of adding in the filtering steps if desired.
     
   - command:
 ```
 python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c nop --threshold 0.1 --nprocs <number of processors>
 ```
 
-## CM with User-Supplied Clusterer
-Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Additionally, MCL, Infomap, and SBM clusterers are pre-made for the user provided as examples of how one would use CM with a custom clusterer.
+## Clustering methods that can be used with CM
+CM currently enables the use of Leiden optimizing the constant Potts Model, Leiden optimizing under modularity, Iterative K-Core, Markov CLustering, Infomap, and Stochastic Block Models. Example for Stochastic Block Model shown below.
     
   - command:
 ```
