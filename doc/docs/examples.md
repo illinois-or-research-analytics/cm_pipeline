@@ -6,7 +6,7 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
 - command: `python -m main pipeline.json`
 - pipeline.json:
   
-  ```
+  ```bash
   {
       "title": <custom name for this run>,
       "name": <custom name of your network>,
@@ -64,7 +64,7 @@ CM under default settings (1. remove small clusters of size 10 or less and tree-
   - command: `python -m main pipeline.json`
   - pipeline.json:
     
-    ```
+    ```bash
     {
         "title": <custom name for this run>,
         "name": <custom name of your network>,
@@ -120,7 +120,7 @@ Leiden-CPM, Leiden-Mod, and IKC clusterers work with CM out of the box. Addition
     
   - command: `python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>`
   - cargs.json:
-  ```
+  ```bash
   {
       <param key e.g., "block_state">: <param value e.g., "non_nested_sbm", "planted_partition_model">
       <param key 2 e.g., "degree_corrected">: <param value e.g. true, false>
