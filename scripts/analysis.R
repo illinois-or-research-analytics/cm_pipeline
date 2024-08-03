@@ -9,11 +9,9 @@ args = commandArgs(trailingOnly=TRUE)
 
 
 if (length(args) < 3) {
-  stop("At least three arguments must be supplied: parent_network_cleaned.tsv <desired_name_of_output_file.csv file_1.tsv", call.=FALSE)
-} else if (length(args)==3) {
-  print("OK 3 params supplied")
+  stop("At least three arguments must be supplied: parent_network_cleaned.tsv user-specified-analysis.csv file_1.tsv", call.=FALSE)
 } else {
-  print(length(args), "params supplied")
+  print(sprintf("OK %d params supplied", length(args)))
 }
 
 # read parent_network_cleaned.tsv
