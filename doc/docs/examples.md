@@ -133,7 +133,7 @@ CM currently enables the use of Leiden optimizing the constant Potts Model, Leid
     
   - command:
 ```
-python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>
+python3 -m hm01.cm -i <input network edgelist path> -e <input existing clustering path> -o <output filepath> -c external  -cargs cargs.json -cfile <clusterer file path e.g., path to hm01/clusterers/external_clusterers/sbm_wrapper.py> --threshold <threhsold e.g., 1log10> --nprocs <number of processors>
 ```
 
   - cargs.json:
