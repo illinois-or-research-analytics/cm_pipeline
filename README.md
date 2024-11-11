@@ -315,6 +315,22 @@ If you use CM++ in your research, please use the following citation:
 ### Other Citations
 
 ```bibtex
+@article{Park2024,
+  title = {Well-connectedness and community detection},
+  volume = {1},
+  ISSN = {2837-8830},
+  url = {http://dx.doi.org/10.1371/journal.pcsy.0000009},
+  DOI = {10.1371/journal.pcsy.0000009},
+  number = {3},
+  journal = {PLOS Complex Systems},
+  publisher = {Public Library of Science (PLoS)},
+  author = {Park, Minhyuk and Tabatabaee, Yasamin and Ramavarapu, Vikram and Liu, Baqiao and Pailodi, Vidya Kamath and Ramachandran, Rajiv and Korobskiy, Dmitriy and Ayres, Fabio and Chacko, George and Warnow, Tandy},
+  editor = {Albert, Réka},
+  year = {2024},
+  month = nov,
+  pages = {e0000009}
+}
+
 @software{vikram_ramavarapu_2024_10501118,
   author={Vikram Ramavarapu and Fabio Jose Ayres and Minhyuk Park and Vidya Kamath P and João Alfredo Cardoso Lamy and Tandy Warnow and George Chacko},
   title={{CM++ - A Meta-method for Well-Connected Community Detection}},
@@ -333,12 +349,5 @@ If you use CM++ in your research, please use the following citation:
   eprint={2303.02813},
   archivePrefix={arXiv},
   primaryClass={cs.SI}
-}
-
-@misc{cm2022,
-  author = {Baqiao Liu and Minhyuk Park},
-  title = {Connectivity Modifier},
-  howpublished = {\url{https://github.com/RuneBlaze/connectivity-modifier}},
-  year={2022},
 }
 ```
