@@ -40,6 +40,22 @@ Customizable modular pipeline for testing an improved version of CM for generati
     doi={10.5281/zenodo.10076514}
 }
 
+@article{Park2024,
+  title = {Well-connectedness and community detection},
+  volume = {1},
+  ISSN = {2837-8830},
+  url = {http://dx.doi.org/10.1371/journal.pcsy.0000009},
+  DOI = {10.1371/journal.pcsy.0000009},
+  number = {3},
+  journal = {PLOS Complex Systems},
+  publisher = {Public Library of Science (PLoS)},
+  author = {Park,  Minhyuk and Tabatabaee,  Yasamin and Ramavarapu,  Vikram and Liu,  Baqiao and Pailodi,  Vidya Kamath and Ramachandran,  Rajiv and Korobskiy,  Dmitriy and Ayres,  Fabio and Chacko,  George and Warnow,  Tandy},
+  editor = {Albert,  Réka},
+  year = {2024},
+  month = nov,
+  pages = {e0000009}
+}
+
 @misc{park2023wellconnected,
     title={Well-Connected Communities in Real-World and Synthetic Networks}, 
     author={Minhyuk Park and Yasamin Tabatabaee and Vikram Ramavarapu and Baqiao Liu and Vidya Kamath Pailodi and Rajiv Ramachandran and Dmitriy Korobskiy and Fabio Ayres and George Chacko and Tandy Warnow},
