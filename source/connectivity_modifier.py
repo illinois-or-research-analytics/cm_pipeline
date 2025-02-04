@@ -162,7 +162,7 @@ class CM(Stage):
         for i, (param, output_file) in enumerate(zip(self.params, self.output_file)):
             cmd.append(f'echo "Currently on param set {i}"')
 
-            cmd.append(f'echo "{dumps(param)}" > cargs.json')
+            cmd.append(f"echo '{dumps(param)}' > cargs.json")
 
             c = f'{project_root}/hm01/tests/mp-memprofile/profiler.sh ' if self.memprof else ''
             c = c + f'python3 -m hm01.cm \
