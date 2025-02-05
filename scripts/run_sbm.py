@@ -16,7 +16,7 @@ if __name__ == "__main__":
         help='non_nested_sbm or planted_partition_model'
         )
     parser.add_argument(
-        '-d', metavar='degree_corrected', type=bool, required=True,
+        '-d', metavar='degree_corrected', type=bool, required=False,
         help='whether to run degree corrected or not'
         )
     parser.add_argument(

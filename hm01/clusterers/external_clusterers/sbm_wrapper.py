@@ -13,7 +13,9 @@ class SBMClusterer(AbstractClusterer):
 
     def __init__(self, **kwargs):
         self.block_state = kwargs["block_state"]
-        self.degree_corrected = kwargs["degree_corrected"]
+        self.degree_corrected = "NA"
+        if "degree_corrected" in kwargs:
+            self.degree_corrected = kwargs["degree_corrected"]
 
     def cluster(self, graph: Union[Graph, RealizedSubgraph]) -> Iterator[IntangibleSubgraph]:
         """Returns a list of (labeled) subgraphs on the graph"""
@@ -30,10 +32,11 @@ class SBMClusterer(AbstractClusterer):
 
         sbm_clustering = None
         if self.block_state == "non_nested_sbm":
-            if self.degree_corrected:
-                sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": True})
-            else:
-                sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": False})
+            sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": self.degree_corrected})
+            # if self.degree_corrected:
+                # sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": True})
+            # else:
+            #     sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.BlockState, state_args={"deg_corr": False})
         elif self.block_state == "planted_partition_model":
             sbm_clustering = gt.minimize_blockmodel_dl(sbm_graph, state=gt.PPBlockState)
 
