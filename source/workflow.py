@@ -144,8 +144,9 @@ class Workflow:
                                         else stage.output_file[i])
                 
                 other_args = ' '.join(other_files)
-                self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{filename}_analysis.csv {other_args} &')
-            
+                if len(other_args.strip()) != 0:
+                    self.commands.append(f'Rscript {self.current_script}/scripts/analysis.R {cleaned_file} analysis/{filename}_analysis.csv {other_args} &')
+           
             # Get PIDs
             self.commands.append(f'pids[{i}]=$!')
 
