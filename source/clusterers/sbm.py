@@ -31,7 +31,7 @@ class SBMClustering(Clustering):
         # self.output_file =  f'{self.working_dir}/{self.algorithm}_degree_corrected{self.params[0]["degree_corrected"]}_block_state{self.params[0]["block_state"]}/S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv'
 
         self.output_file = [
-            f'{self.working_dir}/{self.algorithm}_degree_corrected{degree_corrected}_block_state{block_state}/S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv'
+            f'{self.working_dir}/{self.algorithm}_block_state{block_state}_degree_corrected{degree_corrected}/S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv'
             for block_state,degree_corrected in zip(block_states, degree_correcteds)
         ]
 
