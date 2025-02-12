@@ -1,0 +1,26 @@
+{
+    "title": "sbm-example",
+    "name": "sbm-example-name",
+    "input_file": "/projects/illinois/eng/cs/chackoge/chackoge/files_for_mcl_infomap/S1_cit_hepph_cleanup.tsv",
+    "output_dir": "/projects/illinois/eng/cs/chackoge/chackoge/minhyuk2/cluster_runs/cm_tests/output/",
+    "algorithm": "sbm",
+    "params": [
+        {
+            "degree_corrected": true,
+            "block_state": "non_nested_sbm"
+        }
+    ],
+    "stages": [
+        {
+            "name": "cleanup"
+        },
+        {
+            "name": "clustering",
+            "parallel_limit": 2
+        },
+        {
+            "name": "stats",
+            "parallel_limit": 2
+        }
+    ]
+}
