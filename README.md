@@ -3,7 +3,7 @@
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06073/status.svg)](https://doi.org/10.21105/joss.06073)
 [![DOI](https://zenodo.org/badge/599799149.svg)](https://zenodo.org/doi/10.5281/zenodo.10076513)
 
-Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main
+Customizable modular pipeline for testing an improved version of CM for generating well-connected clusters. Image below from arXiv preprint: Park et. al. (2023). https://github.com/illinois-or-research-analytics/cm_pipeline/tree/main with a [GUI](https://github.com/alfredjynx/GUI-CM) now available!
 
 - [CM++ Pipeline](#cm-pipeline)
   - [Documentation](#documentation)
