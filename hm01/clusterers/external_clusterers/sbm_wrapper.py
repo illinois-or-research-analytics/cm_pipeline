@@ -12,6 +12,7 @@ from hm01.graph import Graph, IntangibleSubgraph, RealizedSubgraph
 class SBMClusterer(AbstractClusterer):
 
     def __init__(self, **kwargs):
+        gt.openmp_set_num_threads(1)
         self.block_state = kwargs["block_state"]
         self.degree_corrected = "NA"
         if "degree_corrected" in kwargs:
