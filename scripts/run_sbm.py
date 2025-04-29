@@ -25,7 +25,7 @@ if __name__ == "__main__":
         )
 
     args = parser.parse_args()
-
+    gt.openmp_set_num_threads(1)
     sbm_graph = gt.Graph(directed=False)
     def edge_list_iterable():
         with open(args.i, "r") as f:
