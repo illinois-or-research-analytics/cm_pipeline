@@ -31,11 +31,11 @@ class SBMClustering(Clustering):
         # self.output_file =  f'{self.working_dir}/{self.algorithm}_degree_corrected{self.params[0]["degree_corrected"]}_block_state{self.params[0]["block_state"]}/S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv'
         output_files = []
         for param in self.params:
-            current_output_file = f'{self.algorithm}'
+            current_output_file = f'{self.working_dir}/{self.algorithm}'
             for k, v in param.items():
                 if k != 'existing_clustering':
                     current_output_file += f'_{k}{v}'
-            current_output_file += f"S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv"
+            current_output_file += f"/S{self.index}_{self.network_name}_{self.algorithm}_{self.name}.tsv"
             output_files.append(current_output_file)
         self.output_file = output_files
 
