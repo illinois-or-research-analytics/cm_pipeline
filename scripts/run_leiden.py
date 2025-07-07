@@ -5,6 +5,8 @@
 import leidenalg
 import igraph
 import argparse
+import csv
+import pandas as pd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script for running leiden.')
@@ -27,13 +29,23 @@ if __name__ == "__main__":
         '-n', metavar='n_iterations', type=int, required=True,
         help='number of iterations'
         )
+    parser.add_argument(
+        '-s', type=str, default = '\t',
+        help='output separator'
+        )
     args = parser.parse_args()
 
-    net = igraph.Graph.Read_Ncol(args.i, directed=False)
+    with open(args.i, "r") as f:
+        sample = f.read(1024)
+        delim, header = csv.Sniffer().sniff(sample).delimiter, csv.Sniffer().has_header(sample)
+
+    edgelist = pd.read_csv( args.i, sep = delim, skiprows = int(header) )
+    vertices = pd.DataFrame(pd.unique(edgelist.values.ravel()))
+    net = igraph.Graph.DataFrame(edgelist, directed = False, use_vids = False, vertices = vertices)
     partition = leidenalg.find_partition(
         net, leidenalg.CPMVertexPartition, resolution_parameter=args.r,
         seed=1234, n_iterations=args.n
-        )
+    )
     with open(args.o, "w") as f:
         for n, m in enumerate(partition.membership):
-            f.write(f"{net.vs[n]['name']}\t{m}\n")
+            f.write(f"{vertices.iloc[n].iloc[0]}{args.s}{m}\n")
