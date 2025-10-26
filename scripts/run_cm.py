@@ -59,11 +59,17 @@ def run_cm(input, working_directory, existing_clustering, quiet, no_prune, clust
         cm_optional_arguments += f" --resolution {resolution}"
     print(f"python -m hm01.cm {cm_required_arguments} {cm_optional_arguments}")
 
+    current_cluster_id = 0
+    current_cluster_id_dict = {}
     with open(tsv_output, "r") as fr:
         with open(original_csv_output, "w") as fw:
             fw.write("node_id,cluster_id\n")
             for line in fr:
-                fw.write(line.replace("\t", ","))
+                node_id,original_cluster_id = line.replace("\t", ",")
+                if original_cluster_id not in current_cluster_id_dict:
+                    current_cluster_id_dict[original_cluster_id] = current_cluster_id
+                    current_cluster_id += 1
+                fw.write(f"{node_id},{current_cluster_id_dict[original_cluster_id]}\n")
 
 if __name__ == "__main__":
     run_cm()

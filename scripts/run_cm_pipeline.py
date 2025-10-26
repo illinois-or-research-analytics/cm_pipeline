@@ -76,11 +76,18 @@ def run_cm_pipeline(pipeline_file, working_directory):
                 ".csv",
                 f"./{original_output_directory}/{current_path.name}/{max_stage_file_name}",
             )
+
+            current_cluster_id = 0
+            current_cluster_id_dict = {}
             with open(max_stage_file, "r") as fr:
                 with open(max_stage_file_csv, "w") as fw:
                     fw.write("node_id,cluster_id\n")
                     for line in fr:
-                        fw.write(line.replace("\t", ","))
+                        node_id,original_cluster_id = line.replace("\t", ",")
+                        if original_cluster_id not in current_cluster_id_dict:
+                            current_cluster_id_dict[original_cluster_id] = current_cluster_id
+                            current_cluster_id += 1
+                        fw.write(f"{node_id},{current_cluster_id_dict[original_cluster_id]}\n")
 
 
 if __name__ == "__main__":
