@@ -19,7 +19,8 @@ import re
 @click.option("--threshold", required=True, type=str, help="Connectivity threshold wich all clusters should be above")
 @click.option("--output", required=True, type=click.Path(), help="Output filename")
 @click.option("--nprocs", required=False, type=int, default=1, help="Number of cores to run in parallel")
-def run_cm(input, working_directory, existing_clustering, quiet, no_prune, clusterer, clusterer_file, clusterer_args, k, resolution, threshold, output, nprocs):
+@click.option("--mincut-type", required=False, type=str, default="cactus", help="Type of mincut")
+def run_cm(input, working_directory, existing_clustering, quiet, no_prune, clusterer, clusterer_file, clusterer_args, k, resolution, threshold, output, nprocs, mincut_type):
     original_input_network = input
     converted_input_network = f"{working_directory}/network.tsv"
     original_existing_clustering = existing_clustering
@@ -57,7 +58,9 @@ def run_cm(input, working_directory, existing_clustering, quiet, no_prune, clust
         cm_optional_arguments += f" --k {k}"
     if resolution != -1:
         cm_optional_arguments += f" --resolution {resolution}"
-    print(f"python -m hm01.cm {cm_required_arguments} {cm_optional_arguments}")
+    if mincut_type != "cactus":
+        cm_optional_arguments += f" --mincut_type {mincut_type}"
+    os.system(f"python -m hm01.cm {cm_required_arguments} {cm_optional_arguments}")
 
     current_cluster_id = 0
     current_cluster_id_dict = {}
@@ -65,7 +68,8 @@ def run_cm(input, working_directory, existing_clustering, quiet, no_prune, clust
         with open(original_csv_output, "w") as fw:
             fw.write("node_id,cluster_id\n")
             for line in fr:
-                node_id,original_cluster_id = line.replace("\t", ",")
+                # node_id,original_cluster_id = line.replace("\t", ",")
+                node_id,original_cluster_id = line.strip().split()
                 if original_cluster_id not in current_cluster_id_dict:
                     current_cluster_id_dict[original_cluster_id] = current_cluster_id
                     current_cluster_id += 1

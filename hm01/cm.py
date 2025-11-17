@@ -203,7 +203,7 @@ def par_task(stack, node_mapping, node2cids):
             update_cid_membership(subgraph, node2cids)
 
         # (VR) Compute the mincut and validity threshold of the cluster
-        mincut_res = subgraph.find_mincut()
+        mincut_res = subgraph.find_mincut(mincut_type_g)
         valid_threshold = requirement.validity_threshold(clusterer, subgraph)
         if not quiet_g:
             log.debug("calculated validity threshold", validity_threshold=valid_threshold)
@@ -414,6 +414,12 @@ def main(
         "-n",
         help="Number of cores to run in parallel.",
     ),
+    mincut_type: str = typer.Option(
+        "cactus",
+        "--mincut_type",
+        "-m",
+        help="Mincut type",
+    ),
     # first_tsv: bool = typer.Option(
     #     False,
     #     "--firsttsv",
@@ -435,7 +441,9 @@ def main(
     global requirement
     global global_graph
     global no_prune_g
+    global mincut_type_g
     no_prune_g = no_prune
+    mincut_type_g = mincut_type
 
     # (VR) Setting a really high recursion limit to prevent stack overflow errors
     sys.setrecursionlimit(1231231234)

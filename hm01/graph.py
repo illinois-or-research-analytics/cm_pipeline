@@ -137,9 +137,9 @@ class Graph(AbstractGraph):
         exp = n_c*(n_c - 1) / 2
         return e_c - resolution * exp
 
-    def find_mincut(self):
+    def find_mincut(self, mincut_type: str):
         """ Find a mincut wrapped over Viecut """
-        return mincut.viecut(self)
+        return mincut.viecut(self, mincut_type)
 
     def neighbors(self, u):
         yield from self._data.iterNeighbors(u)
@@ -427,9 +427,9 @@ class RealizedSubgraph(AbstractGraph):
         return p
 
 
-    def find_mincut(self) -> MincutResult:
+    def find_mincut(self, mincut_type: str) -> MincutResult:
         """ (VR) Compute mincut via the wrapped VieCut """
-        return mincut.viecut(self)
+        return mincut.viecut(self, mincut_type)
 
     def cut_by_mincut(
         self, mincut_res: MincutResult
