@@ -1,7 +1,7 @@
 # from mincut_wrapper import MincutResult
 
 
-def viecut(graph, mincut_type):
+def viecut(graph, mincut_type="cactus"):
     """ (VR) Compute the mincut result via VieCut """
     if graph.n() == 2 and graph.m() == 1:
         # (VR) If we have a single edge, save the effort by splitting it
@@ -12,7 +12,7 @@ def viecut(graph, mincut_type):
     return cut_result
 
 
-def run_viecut_command(pygraph, mincut_type):
+def run_viecut_command(pygraph, mincut_type="cactus"):
     """ (VR) Run the viecut command and return the mincut result object """
     # algorithm = 'cactus'  # (VR) Mincut algorithm from Nagamochi et. al.
     algorithm = mincut_type
